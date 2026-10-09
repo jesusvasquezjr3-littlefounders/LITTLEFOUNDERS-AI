@@ -45,6 +45,7 @@ How it looks and behaves.
 
 - [[DESIGN-SYSTEM]]: The visual and interaction language: tokens, components, patterns and the rules for using them.
 - [[UI-LIBRARIES]]: The seven mandatory UI libraries, how they are wired here and the rules for using them.
+- [[RESEARCH-FOUNDATION]]: The published evidence behind the design (color, shape, gamification, rewards, children's motor ability), graded, and what it means for the current tokens.
 
 ## Engineering
 

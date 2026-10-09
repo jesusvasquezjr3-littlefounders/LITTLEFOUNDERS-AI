@@ -26,18 +26,28 @@ The owner defines the new frontend rules here. Agents follow them for every chan
 - [ ] State management and server-state rules.
 - [ ] Data fetching, caching and error handling against the API contract.
 - [ ] Forms and validation at the boundary.
-- [ ] Internationalization: every user-visible string lives in a locale file, in en-US, es-MX and pt-BR.
-- [ ] Theming (light and dark) and responsive behavior.
+- [ ] Theming (light and dark).
 - [ ] Accessibility requirements.
 - [ ] Performance budgets and bundle limits.
 - [ ] Client security: XSS, content security policy, token and storage handling.
 - [ ] Consent-gated analytics and 3D asset loading.
 
+## The five non-negotiable rules
+
+The owner set these on 2026-10-09 (D-009 in [[DECISIONS]]). They apply to every screen, every library component and every change under `frontend/`; nothing is exempt, and a change that breaks one is not done.
+
+1. **i18n: no hardcoded text.** Every word a person can read or hear has a key in `src/i18n/en-US`, `es-MX` and `pt-BR`, and the three files carry the same keys. That includes accessible names (`aria-label`, `title`, `alt`), toasts, loading and error messages, the document title, the brand name, the contact address and the language names (each in its own language). A string literal in a component is a defect. When a library supplies a default string (a close label, a "Total", a loading name), pass ours through its prop, or do not use that part of the component; the known cases are in [[UI-LIBRARIES]]. Copy is written for the language it is read in, to the humanizer standard (rule 12 in [[CLAUDE]]); numbers and dates are formatted for the active locale.
+2. **Desktop and mobile, each optimized, on clear grids.** Pages are mobile-first CSS grids whose column count is visible in the class list (`grid-cols-1 md:grid-cols-2`): one column below 768 px, and the page container is at most 1120 px wide with 12 px gutters on narrow phones and 24 px from 640 px. Breakpoints are Tailwind's `sm` 640, `md` 768, `lg` 1024 and `xl` 1280. The smallest supported width is 320 px. Layout is never done with absolute positioning. On a phone the primary action is full width and actions stack. A change is checked at 320, 360, 390, 768, 1024 and 1440 px, in light and dark, in all three languages.
+3. **Text is never cut.** No ellipsis, no line clamp, no fixed-height box around text, no clipping by `overflow: hidden`, no horizontal page scroll. Labels wrap and their container grows (buttons included: the Cojeev button is made to wrap in `lf-theme.css`), long words and addresses break, and flex and grid children that hold text can shrink (`min-w-0`). Design for the longest language: es-MX and pt-BR run well past en-US.
+4. **Iconography: our own for what identifies the product.** Icons that represent features, the main actions of the application, navigation and achievements are the product's own, drawn and audited in-house. Utility icons (close, chevrons, menu, theme, status marks) come from the libraries in [[UI-LIBRARIES]]: Lucide icon data through Morphicons, and Cojeev's. An icon never carries a meaning alone: it has an accessible name, and a meaning that matters (right or wrong, a status, a category) also has a word. No other icon set is added. The process for drawing and auditing our own icons (format, grid, review, registry) is not defined yet: T-012, to be settled with the owner at the first feature that needs one.
+5. **Design from evidence.** Design claims about color, shape, gamification, rewards and children's motor ability are used only at the strength the literature gives them: grade A may become a rule, B a default, C a guideline with its caveat, D nothing. The evidence, the grades and what they mean for the current tokens are in [[RESEARCH-FOUNDATION]].
+
+How the rules were last checked (2026-10-09): axe-core and a keyboard pass for accessibility, and a layout pass that opens the page, the preferences sheet and the language menu at 320, 360, 390, 768 and 1440 px in the three languages and flags page-level horizontal scroll, ellipsis, line clamps, clipped text and text that spills out of its box or the viewport. The scripts are not part of the repository; a change runs the same kind of check before it is called done.
+
 ## Decided
 
 - Use the seven libraries in [[UI-LIBRARIES]] before writing any component, animation, chart, toast, icon morph or loader by hand; another library needs the owner (D-007 in [[DECISIONS]]).
 - Reduced motion is honored once at the root (`MotionConfig reducedMotion="user"`) and per component where a library has its own switch.
-- Every user-visible string is a locale key, in en-US, es-MX and pt-BR, and is written to the humanizer standard (rule 12 in [[CLAUDE]]): written for the language it is read in, not translated word for word.
 - Accessibility floor, met on the landing and kept for every screen: the skip link is the first Tab stop; every interactive target is at least 48 px; focus is always visible; a dialog traps focus and returns it to what opened it; no axe violation in light and dark in en-US, es-MX and pt-BR. How it was checked: [[UI-LIBRARIES]].
 - Folders: `src/components/` (ours), `src/components/ui/` and `src/components/charts/` (copied from registries, not linted, edited only for the patches listed in [[UI-LIBRARIES]]), `src/features/<name>/` (one folder per page or feature), `src/styles/` (Tailwind entry and tokens), `src/i18n/` (copy).
 
@@ -49,6 +59,7 @@ The owner defines the new frontend rules here. Agents follow them for every chan
 
 - [[DESIGN-SYSTEM]]
 - [[UI-LIBRARIES]]
+- [[RESEARCH-FOUNDATION]]
 - [[CODE-STYLE-GUIDE]]
 - [[API-GUIDE]]
 - [[SECURITY-GUIDE]]

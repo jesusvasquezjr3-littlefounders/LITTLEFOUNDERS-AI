@@ -69,8 +69,8 @@ export function CookieConsentBanner({ onDecision }: { onDecision?: (granted: boo
   const current = choice === 'granted' ? copy.currentGranted : choice === 'denied' ? copy.currentDenied : copy.currentUnset;
 
   const decisions = <>
-    <Button type="button" variant="outline" size="lg" className="flex-1" onClick={() => decide(false)}>{copy.reject}</Button>
-    <Button type="button" variant="outline" size="lg" className="flex-1" onClick={() => decide(true)}>{copy.accept}</Button>
+    <Button type="button" variant="outline" size="lg" className="w-full" onClick={() => decide(false)}>{copy.reject}</Button>
+    <Button type="button" variant="outline" size="lg" className="w-full" onClick={() => decide(true)}>{copy.accept}</Button>
   </>;
 
   return <>
@@ -83,7 +83,7 @@ export function CookieConsentBanner({ onDecision }: { onDecision?: (granted: boo
             <h2 id={headingId} className="text-[length:var(--fs-title)] font-bold">{copy.title}</h2>
             <p className="text-[length:var(--fs-small)] text-[var(--muted-foreground)]">{copy.body}</p>
           </div>
-          <div className="flex flex-[1_1_auto] flex-wrap gap-3">
+          <div className="grid w-full gap-3 sm:w-auto sm:grid-flow-col sm:auto-cols-max">
             {decisions}
             <Button type="button" variant="ghost" aria-haspopup="dialog" onClick={openPreferences}>{copy.preferences}</Button>
           </div>
@@ -113,7 +113,7 @@ export function CookieConsentBanner({ onDecision }: { onDecision?: (granted: boo
           </li>)}
         </ul>
         <p className="text-[length:var(--fs-small)]">{copy.together}</p>
-        <SheetFooter className="flex gap-3">{decisions}</SheetFooter>
+        <SheetFooter className="grid gap-3 sm:grid-cols-2">{decisions}</SheetFooter>
       </SheetContent>
     </Sheet>
   </>;

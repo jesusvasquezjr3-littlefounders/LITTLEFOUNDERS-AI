@@ -23,9 +23,9 @@ export function Hero() {
         {copy.title}{' '}<span className="block text-[var(--primary-ink)]">{copy.titleAccent}</span>
       </motion.h1>
       <motion.p variants={rise} className="max-w-[28em] text-[length:var(--fs-lead)] text-balance text-[var(--muted-foreground)]">{copy.lead}</motion.p>
-      <motion.div variants={rise} className="flex flex-wrap justify-center gap-x-4 gap-y-3 md:justify-start">
-        <Button type="button" variant="accent" size="lg" data-cta="become-tutor" data-origin="landing-hero">{copy.heroParent}</Button>
-        <Button type="button" variant="outline" size="lg" data-cta="start-free" data-origin="landing-hero-learn">{copy.heroLearn}</Button>
+      <motion.div variants={rise} className="grid w-full max-w-sm gap-3 sm:flex sm:w-auto sm:max-w-none sm:flex-wrap md:justify-start">
+        <Button type="button" variant="accent" size="lg" className="w-full sm:w-auto" data-cta="become-tutor" data-origin="landing-hero">{copy.heroParent}</Button>
+        <Button type="button" variant="outline" size="lg" className="w-full sm:w-auto" data-cta="start-free" data-origin="landing-hero-learn">{copy.heroLearn}</Button>
       </motion.div>
     </motion.div>
     <div role="img" aria-label={copy.heroSceneAlt} className="pointer-events-none aspect-[5/4] max-h-[72dvh] w-full min-w-0 justify-self-center [mask-image:radial-gradient(ellipse_72%_70%_at_50%_52%,#000_74%,transparent_100%)]">

@@ -37,6 +37,8 @@ Gives agents and humans one place to see what to do next. Each task is small, ha
 | T-009 | Bring Bencho blocks into the product one at a time as screens need them | open | Procedure and licence in [[UI-LIBRARIES]]; nothing to unblock. |
 | T-010 | Cut the frontend payload further, if it ever matters | open | Measured 2026-10-09: 289 KB gzip of JavaScript for the landing (React DOM 84, app 131, Motion 49, i18n 17.5, router 7, page 10) plus a lazy 77 KB chunk of icon data. React DOM and Motion are not reducible (Cojeev and Bklit import the full Motion). Stable libraries are now split into their own chunks for caching. Revisit with real pages and measured load times; see [[PERFORMANCE-AND-SCALING]]. |
 | T-011 | Run a real screen reader (NVDA on Windows, VoiceOver on a Mac or phone) and a phone pass over the landing | open | The axe and keyboard audit is done and recorded in [[UI-LIBRARIES]]; what only a person with that equipment can confirm is left. |
+| T-012 | Define how the product's own icons are drawn and audited (format, grid, review, registry) and draw the first set when a feature needs it | open | Rule 4 in [[FRONTEND-GUIDE]]; today there are none and utility icons come from the libraries. |
+| T-013 | Decide with the owner which surfaces are young-child surfaces (76 px targets) and which age bands the product uses | open | Directive 4 in [[RESEARCH-FOUNDATION]]. |
 | T-007 | Define the security baseline with the owner and fill [[SECURITY-GUIDE]] and [[CHILD-SAFETY-AND-PRIVACY]] | open |  |
 
 ## Related

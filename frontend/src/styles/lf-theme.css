@@ -50,11 +50,15 @@
   --v-danger-soft: #ffebe9;
 
 
-  /* Touch targets for children: 48 px is the floor, 56 px the default. */
+  /*
+   * Touch targets. 48 px is the floor everywhere and 56 px the default. Surfaces where a young
+   * child answers or plays use --ctl-xl, 76 px = 2 cm, the size Nielsen Norman Group recommends
+   * for young children (docs/design/RESEARCH-FOUNDATION.md).
+   */
   --ctl-sm: 48px;
   --ctl-md: 56px;
   --ctl-lg: 64px;
-  --ctl-xl: 72px;
+  --ctl-xl: 76px;
 }
 
 :root[data-mode='dark'] {
@@ -157,4 +161,30 @@ html:root[data-mode] {
 
 [data-sileo-viewport] [data-sileo-title] {
   text-transform: none;
+}
+
+/*
+ * Rule 3: no text is ever cut. Cojeev's button is one fixed-height line that never wraps; here a label
+ * wraps and the button grows (icon-only buttons keep their fixed square), and long words break instead
+ * of overflowing their box.
+ */
+.v-btn[data-slot]:not([data-icon-only]) {
+  height: auto;
+  min-height: var(--ctl-md);
+  padding-block: var(--s-3);
+  line-height: 1.2;
+  text-align: center;
+  white-space: normal;
+}
+
+.v-btn.-sm[data-slot]:not([data-icon-only]) {
+  min-height: var(--ctl-sm);
+}
+
+.v-btn.-lg[data-slot]:not([data-icon-only]) {
+  min-height: var(--ctl-lg);
+}
+
+:where(h1, h2, h3, h4, p, li, label, a, button) {
+  overflow-wrap: break-word;
 }

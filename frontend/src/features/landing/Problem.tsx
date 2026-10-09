@@ -39,7 +39,7 @@ export function Problem() {
             </RingChart>
           </div>
         </div>
-        <p className="min-w-[12em] flex-1 text-[length:var(--fs-section)] leading-tight font-bold text-balance"><strong className="text-[var(--primary-ink)]">{copy.problemFigure}</strong> {copy.problemFact}</p>
+        <p className="min-w-0 flex-[1_1_12em] text-[length:var(--fs-section)] leading-tight font-bold text-balance"><strong className="text-[var(--primary-ink)]">{copy.problemFigure}</strong> {copy.problemFact}</p>
       </div>
       <p className="max-w-[36em] rounded-[var(--r-frame)] bg-[var(--v-beige)] px-6 py-4 text-[length:var(--fs-section)] leading-tight font-bold text-balance text-[var(--primary-ink)]">{copy.problemBridge}</p>
       <p className="text-[length:var(--fs-meta)] font-semibold text-[var(--muted-foreground)]">{copy.problemSources}</p>

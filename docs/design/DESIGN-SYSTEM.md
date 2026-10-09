@@ -32,6 +32,7 @@ Tells an agent how the product must look and behave so every screen is consisten
 
 ## Decided
 
+- The evidence behind color, shape, feedback and target sizes is [[RESEARCH-FOUNDATION]] (rule 5 in [[FRONTEND-GUIDE]]).
 - The interface is built with the libraries in [[UI-LIBRARIES]] (D-007 in [[DECISIONS]]). One token file feeds all of them.
 
 ## Current state
@@ -41,6 +42,7 @@ Tells an agent how the product must look and behave so every screen is consisten
 ## Related
 
 - [[UI-LIBRARIES]]
+- [[RESEARCH-FOUNDATION]]
 - [[FRONTEND-GUIDE]]
 - [[USER-FLOWS]]
 - [[CODE-STYLE-GUIDE]]

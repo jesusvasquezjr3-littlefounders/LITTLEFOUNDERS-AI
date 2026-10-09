@@ -1,7 +1,8 @@
 {
   "appShell": {
     "skip": "Ir al contenido",
-    "loading": "Cargando"
+    "loading": "Cargando",
+    "brand": "LittleFounders"
   },
   "siteShell": {
     "legal": "Legal",
@@ -9,6 +10,12 @@
     "language": "Idioma",
     "themeLight": "Claro",
     "themeDark": "Oscuro",
-    "rights": "Todos los derechos reservados."
+    "rights": "Todos los derechos reservados.",
+    "contactEmail": "informame@littlefounders.ai"
+  },
+  "languages": {
+    "es-MX": "Español",
+    "en-US": "English",
+    "pt-BR": "Português"
   }
 }

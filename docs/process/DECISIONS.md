@@ -73,9 +73,15 @@ Date: 2026-10-09. Status: accepted.
 
 `humanizer` is the standing standard for every word a person reads (rule 12 in [[CLAUDE]]). `impeccable` and the taste-skill design skills are installed but run only when the owner invokes them. Understand-Anything and os-taxonomy were reviewed and not installed. Details and pinned versions: [[AI-WORKFLOW]].
 
+### D-009: The five frontend rules
+
+Date: 2026-10-09. Status: accepted.
+
+Non-negotiable for every screen: (1) all text through i18n in en-US, es-MX and pt-BR, nothing hardcoded; (2) desktop and mobile each optimized, on clear grids; (3) text is never cut or overflowed; (4) the product's own audited icons for features and main actions, libraries for the rest; (5) design from evidence: the literature, graded, in [[RESEARCH-FOUNDATION]]. Rules and how they are checked: [[FRONTEND-GUIDE]].
+
 ## Related
 
-- [[AI-WORKFLOW]]
+- [[RESEARCH-FOUNDATION]]
 - [[UI-LIBRARIES]]
 - [[PRODUCT-REQUIREMENTS]]
 - [[ARCHITECTURE]]

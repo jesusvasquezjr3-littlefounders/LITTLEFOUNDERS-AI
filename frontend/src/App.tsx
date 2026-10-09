@@ -17,8 +17,7 @@ function PageLoading() {
   const label = useCoreCopy().appShell.loading;
 
   return <div role="status" className="grid min-h-[60dvh] place-items-center">
-    <ThinkingOrb state="working" size={64} />
-    <span className="sr-only">{label}</span>
+    <ThinkingOrb state="working" size={64} aria-label={label} />
   </div>;
 }
 

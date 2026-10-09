@@ -12,10 +12,6 @@ import { landingTitle } from '@/siteTitle';
  * settings and copyright. The document title follows the page (WCAG 2.4.2).
  */
 
-const APP_NAME = 'LittleFounders';
-
-const CONTACT_EMAIL = 'informame@littlefounders.ai';
-
 const CONTAINER = 'mx-auto w-full max-w-[1120px] px-4 sm:px-6';
 
 export function AppShell() {
@@ -23,8 +19,10 @@ export function AppShell() {
   const locale = useLocale();
   const mainId = `${useId().replace(/:/g, '')}-main`;
   const pageTitle = landingTitle(locale);
+  const appName = copy.appShell.brand;
+  const contactEmail = copy.siteShell.contactEmail;
 
-  useEffect(() => { document.title = pageTitle ? `${pageTitle} · ${APP_NAME}` : APP_NAME; }, [pageTitle]);
+  useEffect(() => { document.title = pageTitle ? `${pageTitle} · ${appName}` : appName; }, [pageTitle, appName]);
 
   return <div className="flex min-h-dvh flex-col bg-[var(--background)] text-[var(--foreground)]" lang={locale}>
     <a href={`#${mainId}`} className="sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-[var(--primary)] focus:px-5 focus:py-3 focus:text-[var(--primary-foreground)]"
@@ -37,8 +35,8 @@ export function AppShell() {
         main.focus();
       }}>{copy.appShell.skip}</a>
     <header className="sticky top-0 z-30 border-b border-[var(--v-border)] bg-[var(--background)]/90 backdrop-blur">
-      <div className={`${CONTAINER} flex h-[72px] items-center justify-between`}>
-        <a href="/" aria-label={APP_NAME} className="flex min-h-12 items-center"><img src="/brand/logo.png" alt={APP_NAME} width={560} height={102} className="h-8 w-auto" /></a>
+      <div className="mx-auto flex h-[72px] w-full max-w-[1120px] items-center justify-between gap-2 px-3 sm:px-6">
+        <a href="/" aria-label={appName} className="flex min-h-12 min-w-0 items-center"><img src="/brand/logo.png" alt={appName} width={560} height={102} className="h-7 w-auto sm:h-8" /></a>
         <TopbarControls />
       </div>
     </header>
@@ -47,9 +45,9 @@ export function AppShell() {
       <div className={`${CONTAINER} flex flex-col gap-3 py-8 text-[length:var(--fs-small)] text-[var(--muted-foreground)]`}>
         <nav aria-label={copy.siteShell.legal} className="flex flex-wrap items-center gap-x-5 gap-y-2">
           <Button type="button" variant="ghost" size="sm" onClick={openCookiePreferences}>{copy.siteShell.cookies}</Button>
-          <a href={`mailto:${CONTACT_EMAIL}`} className="inline-flex min-h-12 items-center break-all underline underline-offset-4">{CONTACT_EMAIL}</a>
+          <a href={`mailto:${contactEmail}`} className="inline-flex min-h-12 items-center break-all underline underline-offset-4">{contactEmail}</a>
         </nav>
-        <p>© {new Date().getFullYear()} {APP_NAME}. {copy.siteShell.rights}</p>
+        <p>© {new Date().getFullYear()} {appName}. {copy.siteShell.rights}</p>
       </div>
     </footer>
   </div>;
