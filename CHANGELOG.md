@@ -10,6 +10,7 @@ All notable changes to the repository. Newest first. Updated in the same commit 
 - Security tooling: vendored anti-slop Oxlint rules (`npm run lint:slop`), Strix security skills and references, rules for AI penetration testing ([[ai-pentesting]]).
 - Google Analytics 4, consent-gated, next to Plausible and Umami.
 - Git LFS tracking for the 3D character files.
+- `layout-grid` skill (manual only) for grid and layout work; see [[AI-WORKFLOW]].
 - [[LANDING-MESSAGING]]: what the landing says and why, from the advisor call.
 - [[RESEARCH-FOUNDATION]]: the published evidence behind the design, adapted from the previous version, graded, with the contrast and color-vision numbers measured again on the current palette; and the five non-negotiable frontend rules (D-009) in [[FRONTEND-GUIDE]].
 - Skills for words and design (D-008): `humanizer` as the always-on standard for user-facing text (new rule 12 in [[CLAUDE]] and [[AGENTS]]), and `impeccable` plus seven taste-skill design skills that run only when the owner invokes them; see [[AI-WORKFLOW]].
