@@ -26,12 +26,40 @@
     "toastDenied": "Cookies opcionales rechazadas"
   },
   "landingV2": {
-    "title": "El campo de práctica para",
-    "titleAccent": "su futuro financiero.",
-    "lead": "Preparándolos para el mundo real, una decisión a la vez.",
+    "title": "Que tus hijos practiquen con el dinero",
+    "titleAccent": "antes de que sea real.",
+    "lead": "Un espacio para jugar y aprender de 6 a 18 años, sin dinero real. Hábitos con el dinero, ahorro, evitar deudas y emprender.",
     "heroParent": "Soy Padre",
     "heroLearn": "Solo quiero aprender",
     "heroSceneAlt": "El Dr. Rho y Zara, dos Mentores, con una llama, un libro, una bombilla, una estrella, bloques de juego y semillas flotando a su alrededor.",
+    "pathTitle": "Cuatro habilidades, un paso a la vez",
+    "pathLead": "Empiezan por lo básico y suben de nivel cuando están listos, como cuando se aprende un idioma.",
+    "path": [
+      {
+        "step": "Paso 1",
+        "name": "Hábitos con el dinero",
+        "age": "Desde los 6 años",
+        "text": "Cómo ven el dinero y para qué sirve: gastar, querer y elegir."
+      },
+      {
+        "step": "Paso 2",
+        "name": "Ahorro",
+        "age": "Desde los 12 años",
+        "text": "Ponerse una meta, apartar dinero y verlo crecer."
+      },
+      {
+        "step": "Paso 3",
+        "name": "Evitar las deudas",
+        "age": "Desde los 15 años",
+        "text": "Cuánto cuesta realmente endeudarse y cómo salir si pasa."
+      },
+      {
+        "step": "Paso 4",
+        "name": "Emprender",
+        "age": "Desde los 17 años",
+        "text": "Convertir una idea en algo propio."
+      }
+    ],
     "problemBig": "A los 7 años",
     "problemTitle": "se forman los hábitos con el dinero.",
     "problemLink": "Y muchos llegan a adultos sin haber aprendido a manejarlo:",
@@ -40,6 +68,18 @@
     "problemChartLabel": "de 10",
     "problemLost": 7,
     "problemBridge": "Por eso tu hijo puede empezar a practicar hoy, sin riesgo.",
-    "problemSources": "Fuentes: Universidad de Cambridge, 2013 · S&P Global FinLit Survey, 2014"
+    "problemSources": "Fuentes: Universidad de Cambridge, 2013 · S&P Global FinLit Survey, 2014",
+    "principlesTitle": "Práctica que da confianza",
+    "principles": [
+      {
+        "name": "Nada de dinero real",
+        "text": "Todo ocurre en un mundo de práctica. Nada de lo que hacen aquí toca una cuenta de banco ni una tarjeta."
+      },
+      {
+        "name": "Sus decisiones, sus resultados",
+        "text": "Tu hijo elige, ve qué pasa y vuelve a intentarlo. Así un hábito empieza a sentirse suyo."
+      }
+    ],
+    "ctaTitle": "Dales un lugar donde practicar"
   }
 }

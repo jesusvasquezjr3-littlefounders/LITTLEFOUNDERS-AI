@@ -10,6 +10,7 @@ All notable changes to the repository. Newest first. Updated in the same commit 
 - Security tooling: vendored anti-slop Oxlint rules (`npm run lint:slop`), Strix security skills and references, rules for AI penetration testing ([[ai-pentesting]]).
 - Google Analytics 4, consent-gated, next to Plausible and Umami.
 - Git LFS tracking for the 3D character files.
+- [[LANDING-MESSAGING]]: what the landing says and why, from the advisor call.
 - [[RESEARCH-FOUNDATION]]: the published evidence behind the design, adapted from the previous version, graded, with the contrast and color-vision numbers measured again on the current palette; and the five non-negotiable frontend rules (D-009) in [[FRONTEND-GUIDE]].
 - Skills for words and design (D-008): `humanizer` as the always-on standard for user-facing text (new rule 12 in [[CLAUDE]] and [[AGENTS]]), and `impeccable` plus seven taste-skill design skills that run only when the owner invokes them; see [[AI-WORKFLOW]].
 - [[UI-LIBRARIES]]: the seven mandatory UI libraries (Bklit UI, Motion, Sileo, 000h by Cojeev, Bencho, Morphicons, Thinking Orbs), decision D-007 and tasks T-009 to T-011; the Bencho procedure and licence are recorded in it.
@@ -17,6 +18,7 @@ All notable changes to the repository. Newest first. Updated in the same commit 
 ### Changed
 
 - The frontend moved to React 19, Tailwind CSS v4 and shadcn. The hand-written design system (`src/rebuild/`) and its asset manifest were deleted; the landing, shell, cookie choice, theme toggle and language menu were rebuilt on the libraries, with brand tokens in `src/styles/lf-theme.css`. The "ten seeds" row became a Bklit ring chart. Public assets moved from `/rebuild/...` to `/landing/` and `/brand/`; copy files from `rebuild-*.json` to `core.json` and `site.json`.
+- Landing copy rebuilt (see [[LANDING-MESSAGING]]): a headline that speaks to the parent ("Let your kids practice money before it's real"), the four skills as a staircase, two statements about what stays true, and a closing call to action, in en-US, es-MX and pt-BR, with a shared type scale and a fixed 16 px floor. The 3D compositions are unchanged. The search title, description and prerendered HTML follow the new copy, and no longer promise a free start or an AI Mentor.
 - Sileo toasts take the brand colors and show their text as written; Sileo shares our Motion copy (`overrides` in `package.json`), which cut the entry chunk from 987 KB to 860 KB.
 - Landing brought to the five frontend rules: brand name, contact address and language names moved into the locale files, the loading orb is named in the active language, no overflow from 320 to 1440 px in the three languages, a clear single-column grid and full-width actions on phones, buttons that wrap instead of cutting a label, and the young-child touch target token set to 76 px (2 cm).
 - Accessibility pass on the landing (axe, keyboard): the skip link is the first Tab stop, targets are at least 48 px, closing the cookie sheet returns focus to its opener, and menus no longer contain a focusable scroll wrapper (one local patch to copied code, listed in [[UI-LIBRARIES]]). Stable libraries are built into their own chunks.

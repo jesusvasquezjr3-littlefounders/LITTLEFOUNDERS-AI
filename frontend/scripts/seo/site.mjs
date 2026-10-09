@@ -153,29 +153,29 @@ export const PAGES = [
   {
     path: '/',
     index: true,
-    lastmod: '2026-10-08',
+    lastmod: '2026-10-09',
     priority: '1.0',
     changefreq: 'weekly',
     /** Included in llms.txt so an agent knows what the page is for. */
     agentSummary: 'What LittleFounders is and how to start.',
     meta: {
       'en-US': {
-        title: 'Financial literacy for kids and teens | LittleFounders',
+        title: 'A playground where kids and teens practice money | LittleFounders',
         description:
-          'Help your child save, solve problems and develop ideas through interactive challenges and an AI Mentor. Free to start.',
-        h1: 'Help your child understand the value of money.',
+          'A playground for ages 6 to 18 to practice money habits, saving, staying out of debt and starting a business, with no real money.',
+        h1: "Let your kids practice money before it's real.",
       },
       'es-MX': {
-        title: 'Educación financiera para niños y adolescentes | LittleFounders',
+        title: 'Un espacio donde niños y jóvenes practican con el dinero | LittleFounders',
         description:
-          'Ayúdalo a ahorrar, resolver problemas y crear ideas con retos interactivos y un Mentor de IA. Gratis para empezar.',
-        h1: 'Que tu hijo entienda el valor del dinero.',
+          'Un espacio para que niños y jóvenes de 6 a 18 años practiquen hábitos con el dinero, ahorro, evitar deudas y emprender, sin dinero real.',
+        h1: 'Que tus hijos practiquen con el dinero antes de que sea real.',
       },
       'pt-BR': {
-        title: 'Educação financeira para crianças e adolescentes | LittleFounders',
+        title: 'Um playground onde crianças e jovens praticam com dinheiro | LittleFounders',
         description:
-          'Ajude a poupar, resolver problemas e criar ideias com desafios interativos e um Mentor de IA. Grátis para começar.',
-        h1: 'Ajude seu filho a entender o valor do dinheiro.',
+          'Um playground para quem tem de 6 a 18 anos praticar hábitos com dinheiro, poupança, evitar dívidas e empreender, sem dinheiro de verdade.',
+        h1: 'Deixe seus filhos praticarem com dinheiro antes de ser de verdade.',
       },
     },
   },

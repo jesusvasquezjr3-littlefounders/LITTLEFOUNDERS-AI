@@ -214,6 +214,8 @@ function shellFor(page, locale, marketing) {
     parts.push(
       `<p>${esc(l.lead)}</p>`,
       section(l.problemTitle, `${l.problemFigure} ${l.problemFact}`, l.problemBridge),
+      section(l.pathTitle, l.pathLead, ...l.path.map((s) => `${s.step}: ${s.name}. ${s.age}. ${s.text}`)),
+      section(l.principlesTitle, ...l.principles.map((p) => `${p.name}. ${p.text}`)),
     );
   } else {
     parts.push(`<p>${esc(meta.description)}</p>`);

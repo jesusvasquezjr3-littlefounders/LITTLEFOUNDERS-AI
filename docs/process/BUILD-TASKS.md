@@ -39,6 +39,8 @@ Gives agents and humans one place to see what to do next. Each task is small, ha
 | T-011 | Run a real screen reader (NVDA on Windows, VoiceOver on a Mac or phone) and a phone pass over the landing | open | The axe and keyboard audit is done and recorded in [[UI-LIBRARIES]]; what only a person with that equipment can confirm is left. |
 | T-012 | Define how the product's own icons are drawn and audited (format, grid, review, registry) and draw the first set when a feature needs it | open | Rule 4 in [[FRONTEND-GUIDE]]; today there are none and utility icons come from the libraries. |
 | T-013 | Decide with the owner which surfaces are young-child surfaces (76 px targets) and which age bands the product uses | open | Directive 4 in [[RESEARCH-FOUNDATION]]. |
+| T-014 | Talk to parents: test the landing words and the age ranges, and collect real quotes (with consent) for the page | open | From the advisor call; see [[LANDING-MESSAGING]]. Nothing is invented in the meantime. |
+| T-015 | Decide what an active user is and break usage down by age segment; decide who each return-visit message goes to, the parent or the child | open | From the same call. Product and analytics, not landing text. |
 | T-007 | Define the security baseline with the owner and fill [[SECURITY-GUIDE]] and [[CHILD-SAFETY-AND-PRIVACY]] | open |  |
 
 ## Related

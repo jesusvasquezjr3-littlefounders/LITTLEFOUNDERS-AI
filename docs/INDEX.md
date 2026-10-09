@@ -37,6 +37,7 @@ What is built, for whom.
 
 - [[PRODUCT-REQUIREMENTS]]: What LittleFounders is, for whom, and why. The source of truth for scope.
 - [[USER-FLOWS]]: How each kind of user moves through the product, screen by screen and state by state.
+- [[LANDING-MESSAGING]]: What the landing says and why: audience, promise, section order, and the assumptions still to test.
 - [[GLOSSARY]]: The one agreed vocabulary of the domain, so code, UI copy, data and documents use the same words.
 
 ## Design
