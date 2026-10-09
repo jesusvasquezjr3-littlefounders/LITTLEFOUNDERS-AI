@@ -1,10 +1,10 @@
-// Puts the reference render and its vector trace side by side (and the trace over a plain page color), so a trace
+// Puts the reference render and its vector side by side (and the trace over a plain page color), so a trace
 // can be judged by eye: audit-out/avatars/<character>/compare.png. A developer tool run by hand.
 //
 //   npm run avatars:compare                         all four characters
 //   npm run avatars:compare -- --character Rho
 //
-// Needs Chrome and the files made by reference.mjs and trace.py.
+// Needs Chrome and the files made by reference.mjs and vectorize.py.
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -21,13 +21,13 @@ try {
   for (const character of characters) {
     const folder = join(base, character.toLowerCase());
 
-    if (!existsSync(join(folder, 'trace.svg'))) { console.log(`${character}: no trace.svg yet`); continue; }
+    if (!existsSync(join(folder, 'vector.svg'))) { console.log(`${character}: no vector.svg yet`); continue; }
 
     const url = (name) => pathToFileURL(join(folder, name)).href;
     const cell = (label, src, bg) => `<figure style="margin:0;background:${bg};padding:12px"><img src="${src}" style="height:${height}px;display:block"><figcaption style="font:14px sans-serif;color:#555;padding-top:6px">${label}</figcaption></figure>`;
 
     mkdirSync(folder, { recursive: true });
-    writeFileSync(join(folder, 'compare.html'), `<!doctype html><body style="margin:0;display:flex;gap:8px;background:#fff">${cell('reference (albedo)', url('ref-albedo.png'), '#f4f5fd')}${cell('vector trace', url('trace.svg'), '#f4f5fd')}${cell('vector trace on dark', url('trace.svg'), '#0b0d1b')}</body>`);
+    writeFileSync(join(folder, 'compare.html'), `<!doctype html><body style="margin:0;display:flex;gap:8px;background:#fff">${cell('reference (albedo)', url('ref-albedo.png'), '#f4f5fd')}${cell('smooth vector', url('vector.svg'), '#f4f5fd')}${cell('smooth vector on dark', url('vector.svg'), '#0b0d1b')}</body>`);
 
     const page = await browser.newPage({ width: 2400, height: height + 80, url: pathToFileURL(join(folder, 'compare.html')).href, settle: 1500 });
     const width = await page.ev('Math.ceil(document.body.scrollWidth)');

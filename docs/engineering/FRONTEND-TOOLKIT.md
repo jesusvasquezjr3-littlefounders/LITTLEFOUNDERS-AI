@@ -135,7 +135,7 @@ For a scene with the characters (hero, problem, the sign-in window). `npm run re
 
 ## 7. The avatar tools
 
-For the 2D vector heads of the characters ([[CHARACTER-AVATARS]]), in `frontend/tools/avatars/`, run by hand: `npm run avatars:reference` renders each head from the source model in `glb/` (flat and lit passes) into `audit-out/avatars/<character>/`; `python tools/avatars/trace.py <Character>` flattens and traces it into `trace.svg` (needs `pip install vtracer opencv-python-headless numpy`); `npm run avatars:compare` writes a side-by-side image to look at. They share the static server in `tools/render/serve.mjs` and need Chrome.
+For the 2D vector heads of the characters ([[CHARACTER-AVATARS]]), in `frontend/tools/avatars/`, run by hand: `npm run avatars:reference` renders each head from the source model in `glb/` (flat and lit passes) into `audit-out/avatars/<character>/`; `python tools/avatars/vectorize.py <Character>` turns it into a smooth vector, `vector.svg` (needs `pip install opencv-python-headless numpy`); `npm run avatars:compare` writes a side-by-side image to look at. They share the static server in `tools/render/serve.mjs` and need Chrome.
 
 ## Related
 

@@ -111,9 +111,13 @@ Each step ends with something the owner can see and accept or stop.
 
 ## Progress
 
-**Steps 1 and 2 are done for all four characters (2026-10-09).** `npm run avatars:reference` renders each head from the source model, cut at the neck (Dina by her bones, Zara's hair kept to her shoulders), flat and unlit, on a transparent background. `python tools/avatars/trace.py <Character>` flattens that render to 16 colors and traces it with VTracer into a layered SVG; `npm run avatars:compare` puts reference, trace and trace on dark side by side. First results: Rho 273 KB and 269 paths, Zara 198 KB and 268, Liruf 327 KB and 397, Dina 285 KB and 290. By eye the traces are faithful for all four; the weight is far above the budget because they are single pictures with no parts yet. Known flaws to fix: Dina's smooth glow turns into visible bands (more colors or a fitted gradient), Zara's hair has a ragged lower edge where it is cut, and Rho's collar shows at the bottom.
+**Steps 1 and 2 are done for all four characters, as a first version (2026-10-09).** `npm run avatars:reference` renders each head from the source model, cut at the neck (Dina by her bones, Zara's hair kept to her shoulders), flat and unlit, on a transparent background. `python tools/avatars/vectorize.py <Character>` turns that render into a smooth SVG: the head is split into color regions (shading counts little, so a shaded skin stays one region), region borders are smoothed and fitted with Bezier curves, and each region is filled with a gradient fitted to the original colors, or a flat color. `npm run avatars:compare` puts reference and vector side by side. An earlier approach (flatten to 16 colors, trace with VTracer) was faithful but posterized and was dropped.
 
-Next (needs the owner's approval of the look): separate the animated parts (eyes, brows, mouth, mustache, glasses, ears, hair or cap) from the traced head and rebuild each as clean shapes with the hidden parts drawn; then the rig and the format spike.
+The owner asked (same day) for the textures and gradients to be softened and the skin tones to be clean and vector, never pixelated: that is what the second approach does. Sizes: Rho 155 KB, Zara 144 KB, Liruf 92 KB, Dina 111 KB, all one picture with no parts yet.
+
+By eye: Rho and Liruf are close to the reference. Open flaws: Dina's smooth forehead glow still shows as a few bands (a better technique is smooth shading as large blurred overlays on one base color, to try next); Zara's hair has stray light specks and a flat look; Rho's cap has a few glitches and the nose and cheeks lose their soft pink; the cut of Zara's hair at the bottom is straight and has to be finished with a tapered end. Settings that suit Zara and Dina better are kept as presets in the script.
+
+Next (needs the owner's approval of the look): separate the animated parts (eyes, brows, mouth, mustache, glasses, ears, hair or cap) and rebuild each as clean shapes with the hidden parts drawn; then the rig and the format spike.
 
 ## Questions that were open and are now answered
 
