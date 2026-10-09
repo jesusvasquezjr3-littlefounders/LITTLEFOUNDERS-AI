@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { CircleFlag, LOCALE_FLAG } from '@/components/CircleFlag';
+import { SignInDialog } from '@/components/SignInDialog';
 import { LOCALES } from '@/i18n';
 import { useCoreCopy, useLocale } from '@/i18n/useCopy';
 import { useTheme } from '@/theme/useTheme';
@@ -48,10 +49,11 @@ function LanguageMenu() {
   </DropdownMenu>;
 }
 
-/** Theme, then language: the order everywhere they appear. */
+/** Theme, then language, then Sign in: the order everywhere they appear. */
 export function TopbarControls() {
   return <div className="flex items-center gap-3">
     <ThemeToggle />
     <LanguageMenu />
+    <SignInDialog />
   </div>;
 }

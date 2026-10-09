@@ -18,6 +18,9 @@ All notable changes to the repository. Newest first. Updated in the same commit 
 
 - [[CHARACTER-POSES]]: what exists for Liruf, Dina, Zara and Rho after the restart, and the previous version's 100 named poses recovered from the archive tag as a draft to review (T-018). No character code was brought back.
 
+- Sign-in window (frontend only): a "Sign in" button in the topbar opens a window with Google, email or username, and "create an account", with a looping scene of Rho and Dina at a table under floating glass screens in a loading state, at most 30 % of the window's height. Every action is a placeholder in `lib/authRoutes.ts` (T-019). Cojeev Dialog added. Rule 14 and D-011: every route path is in English.
+- [[CHARACTER-COMPOSITIONS]] (D-012) and the render tool `frontend/tools/render/` (`npm run render:signin`, `three` as a development dependency).
+
 ### Changed
 
 - The frontend moved to React 19, Tailwind CSS v4 and shadcn. The hand-written design system (`src/rebuild/`) and its asset manifest were deleted; the landing, shell, cookie choice, theme toggle and language menu were rebuilt on the libraries, with brand tokens in `src/styles/lf-theme.css`. The "ten seeds" row became a Bklit ring chart. Public assets moved from `/rebuild/...` to `/landing/` and `/brand/`; copy files from `rebuild-*.json` to `core.json` and `site.json`.

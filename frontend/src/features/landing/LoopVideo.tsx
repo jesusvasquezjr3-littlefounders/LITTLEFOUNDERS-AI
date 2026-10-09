@@ -36,13 +36,17 @@ function useStillOnly() {
   return still;
 }
 
-export function LoopVideo({ name, className }: { name: 'hero' | 'problem'; className?: string }) {
+/** Delivered pixel size of each scene (the tools in tools/render/ produce exactly this). */
+const SCENE_SIZE = { hero: { width: 1000, height: 800 }, problem: { width: 1000, height: 800 }, signin: { width: 1440, height: 420 } } as const;
+
+export function LoopVideo({ name, className }: { name: keyof typeof SCENE_SIZE; className?: string }) {
   const { isDark } = useTheme();
   const mode = isDark ? 'dark' : 'light';
   const still = useStillOnly();
   const video = useRef<HTMLVideoElement>(null);
   const base = `/landing/${name}`;
   const poster = `${base}/${name}-${mode}-poster.webp`;
+  const { width, height } = SCENE_SIZE[name];
 
   useEffect(() => {
     const element = video.current;
@@ -59,9 +63,9 @@ export function LoopVideo({ name, className }: { name: 'hero' | 'problem'; class
     return () => watch.disconnect();
   }, [mode, still]);
 
-  if (still) return <img className={className} src={poster} alt="" width={1000} height={800} decoding="async" />;
+  if (still) return <img className={className} src={poster} alt="" width={width} height={height} decoding="async" />;
 
-  return <video key={mode} ref={video} className={className} poster={poster} width={1000} height={800} autoPlay muted loop playsInline preload="auto"
+  return <video key={mode} ref={video} className={className} poster={poster} width={width} height={height} autoPlay muted loop playsInline preload="auto"
     aria-hidden="true" disablePictureInPicture>
     <source src={`${base}/${name}-${mode}.mp4`} type="video/mp4" />
   </video>;

@@ -11,7 +11,18 @@
     "themeLight": "Light",
     "themeDark": "Dark",
     "rights": "All rights reserved.",
-    "contactEmail": "informame@littlefounders.ai"
+    "contactEmail": "informame@littlefounders.ai",
+    "signIn": "Sign in"
+  },
+  "auth": {
+    "title": "Sign in",
+    "description": "Choose how you want to sign in.",
+    "google": "Continue with Google",
+    "emailOrUsername": "Continue with email or username",
+    "newHere": "New here?",
+    "createAccount": "Create an account",
+    "close": "Close",
+    "soon": "Accounts aren't open yet."
   },
   "languages": {
     "es-MX": "Español",

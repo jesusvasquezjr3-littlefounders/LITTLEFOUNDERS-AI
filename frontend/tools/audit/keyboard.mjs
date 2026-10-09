@@ -3,11 +3,11 @@
 //   - every stop shows a focus indicator;
 //   - every visible interactive target is at least 48 px both ways (docs/engineering/FRONTEND-GUIDE.md);
 //   - the language menu opens with Enter, moves with ArrowDown and Escape returns focus to its button;
-//   - the preferences sheet traps focus and Escape returns focus to the control that opened it.
+//   - the preferences sheet and the sign-in window trap focus and Escape returns focus to the control that opened them.
 //
 //   npm run audit:keyboard                              one page: light, en-US, 1440 px
 //   npm run audit:keyboard -- --matrix --themes light,dark
-import { OPEN_PREFERENCES, describe, parseArgs, run, sleep } from './lib.mjs';
+import { OPEN_PREFERENCES, OPEN_SIGN_IN, describe, parseArgs, run, sleep } from './lib.mjs';
 
 const WHERE = `(() => {
   const a = document.activeElement;
@@ -75,6 +75,23 @@ await run('keyboard', parseArgs(), async (page, config) => {
   await page.press('Escape');
   await sleep(700);
   expect((await page.ev(WHERE))?.name === opener, `Escape did not return focus to "${opener}"`);
+
+  await page.ev(`(${OPEN_SIGN_IN.replace('.click()', '.focus()')})`);
+
+  const signInOpener = (await page.ev(WHERE))?.name;
+
+  await page.press('Enter');
+  await sleep(900);
+  expect((await page.ev(WHERE))?.inDialog, 'Enter on Sign in did not move focus into the window');
+
+  const signInTrapped = new Set();
+
+  for (let i = 0; i < 6; i++) { await page.press('Tab'); signInTrapped.add(JSON.stringify(await page.ev(WHERE))); }
+
+  expect([...signInTrapped].every((s) => JSON.parse(s)?.inDialog), 'Tab left the sign-in window');
+  await page.press('Escape');
+  await sleep(700);
+  expect((await page.ev(WHERE))?.name === signInOpener, `Escape did not return focus to "${signInOpener}"`);
 
   console.log(`${tag} ${failures.length === 0 ? 'ok' : failures.length + ' finding(s)'}`);
 

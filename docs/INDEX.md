@@ -46,6 +46,7 @@ How it looks and behaves.
 
 - [[DESIGN-SYSTEM]]: The visual and interaction language: tokens, components, patterns and the rules for using them.
 - [[UI-LIBRARIES]]: The seven mandatory UI libraries, how they are wired here and the rules for using them.
+- [[CHARACTER-COMPOSITIONS]]: The rules for every scene that shows the characters, how scenes are rendered, and the scenes that exist.
 - [[CHARACTER-POSES]]: The four characters, what survived the restart, and the previous version's catalog of 100 poses kept as a draft to review.
 - [[RESEARCH-FOUNDATION]]: The published evidence behind the design (color, shape, gamification, rewards, children's motor ability), graded, and what it means for the current tokens.
 

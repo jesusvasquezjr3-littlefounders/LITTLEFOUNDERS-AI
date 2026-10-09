@@ -6,7 +6,7 @@
 //   npm run audit:layout -- --matrix                    320, 390, 768, 1024 and 1440 px in the three languages
 //
 // Visually hidden text (the skip link, the "Step 1:" labels; boxes of 2 px or less) is skipped on purpose.
-import { CLOSE_WITH_ESCAPE, OPEN_LANGUAGE_MENU, OPEN_PREFERENCES, describe, parseArgs, run, sleep } from './lib.mjs';
+import { CLOSE_WITH_ESCAPE, OPEN_LANGUAGE_MENU, OPEN_PREFERENCES, OPEN_SIGN_IN, describe, parseArgs, run, sleep } from './lib.mjs';
 
 const CHECK = `(() => {
   const out = [];
@@ -68,6 +68,11 @@ await run('layout', parseArgs(), async (page, config) => {
   await page.ev(OPEN_PREFERENCES);
   await sleep(1500);
   await check('preferences sheet');
+  await page.ev(CLOSE_WITH_ESCAPE);
+  await sleep(900);
+  await page.ev(OPEN_SIGN_IN);
+  await sleep(1500);
+  await check('sign-in window');
   await page.ev(CLOSE_WITH_ESCAPE);
   await sleep(900);
   await page.ev(OPEN_LANGUAGE_MENU);

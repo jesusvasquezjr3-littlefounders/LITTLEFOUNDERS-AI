@@ -212,5 +212,6 @@ export async function run(title, args, visit, widths) {
 
 /** The two states of the page that open on top of it, for checks that look at them. */
 export const OPEN_PREFERENCES = `[...document.querySelectorAll('button')].find((b) => /preferences|preferencias|preferências/i.test(b.textContent)).click()`;
+export const OPEN_SIGN_IN = `[...document.querySelectorAll('header button')].find((b) => /sign in|iniciar sesión|entrar/i.test(b.getAttribute('aria-label') || b.textContent)).click()`;
 export const CLOSE_WITH_ESCAPE = `document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))`;
 export const OPEN_LANGUAGE_MENU = `document.querySelector('header button[aria-label^="Language"], header button[aria-label^="Idioma"]').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0, pointerType: 'mouse' }))`;

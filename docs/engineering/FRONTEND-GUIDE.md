@@ -30,6 +30,8 @@ The owner set these on 2026-10-09 (D-009 in [[DECISIONS]]). They apply to every 
 4. **Iconography: our own for what identifies the product.** Icons that represent features, the main actions of the application, navigation and achievements are the product's own, drawn and audited in-house. Utility icons (close, chevrons, menu, theme, status marks) come from the libraries in [[UI-LIBRARIES]]: Lucide icon data through Morphicons, and Cojeev's. An icon never carries a meaning alone: it has an accessible name, and a meaning that matters (right or wrong, a status, a category) also has a word. No other icon set is added. The process for drawing and auditing our own icons (format, grid, review, registry) is not defined yet: T-012, to be settled with the owner at the first feature that needs one.
 5. **Design from evidence.** Design claims about color, shape, gamification, rewards and children's motor ability are used only at the strength the literature gives them: grade A may become a rule, B a default, C a guideline with its caveat, D nothing. The evidence, the grades and what they mean for the current tokens are in [[RESEARCH-FOUNDATION]].
 
+Also in force: **route paths are in English** whatever the interface language (D-011), and scenes with the characters follow [[CHARACTER-COMPOSITIONS]] (D-012).
+
 ## Stack and commands
 
 Node 24. Everything below is run from `frontend/`.
@@ -50,6 +52,7 @@ Node 24. Everything below is run from `frontend/`.
 | `npm run lint` | ESLint. Registry code is excluded |
 | `npm run lint:slop` | Anti-slop rules on our own TypeScript: parse input at the boundary, no `unknown` parameters, no chained or unjustified type assertions. Registry code is excluded. Older files still have findings (T-001); new code should have none |
 | `npm run build` | The production build, as CI runs it |
+| `npm run render:signin` | Renders the sign-in window's scene to `public/landing/signin/`: a developer tool ([[CHARACTER-COMPOSITIONS]]) |
 | `npm run audit:*` | The audit tools in `tools/audit/`: developer tools, not a gate ([[FRONTEND-TOOLKIT]]) |
 
 ## Where things live
@@ -62,6 +65,7 @@ frontend/
                          fonts/ (Plus Jakarta Sans), og/, scenes/ (the 3D scenes, Git LFS: never delete or overwrite)
   scripts/seo/           the page table (titles, descriptions), prerender, sitemap, llms.txt
   tools/oxlint/          the vendored anti-slop rules
+  tools/render/          the scene render tools (page, renderer, encoder); see CHARACTER-COMPOSITIONS
   tools/audit/           the audit tools (a11y, keyboard, layout, grid, scene, color, shot); output goes to audit-out/, not tracked
   src/
     main.tsx  App.tsx    entry, providers, routes

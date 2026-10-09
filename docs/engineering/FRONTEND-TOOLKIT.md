@@ -129,6 +129,10 @@ Every tool takes `--theme light|dark`, `--lang en-US|es-MX|pt-BR`, `--width <px>
 
 Typical use: `npm run audit:layout -- --matrix`, `npm run audit:a11y -- --matrix`, `npm run audit:keyboard -- --matrix --themes light,dark`, then `npm run audit:grid -- --width 390 --lang es-MX` and `npm run audit:shot -- --width 390` to see it. Run the matrix of a check after a change that could affect it. When a page or a component is added, extend the tool that would otherwise miss it (the sheet and the menu are opened by selectors in `lib.mjs`; the section structure is read from `main > div > section`).
 
+## 6. The render tool
+
+For a scene with the characters (hero, problem, the sign-in window). `npm run render:signin` renders the window's scene to `public/landing/signin/` as an MP4 and a WebP poster for each color mode; `--still 0,3,6` writes PNGs to `audit-out/` to look at first; `--mode` and `--frames` narrow a run. Chrome and Blender are required (`BLENDER` and `CHROME_PATH` name them if they are elsewhere), and the artist models come from `glb/`. Method, rules and the scenes that exist: [[CHARACTER-COMPOSITIONS]]. Like the audit tools it is run by hand and is not a gate.
+
 ## Related
 
 - [[FRONTEND-GUIDE]]

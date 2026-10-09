@@ -33,7 +33,7 @@ export function AppShell() {
       }}>{copy.appShell.skip}</a>
     <header className="sticky top-0 z-30 border-b border-[var(--v-border)] bg-[var(--background)]/90 backdrop-blur">
       <div className={`${CONTAINER} flex h-[72px] items-center justify-between gap-2`}>
-        <a href="/" aria-label={appName} className="flex min-h-12 min-w-0 items-center"><img src="/brand/logo.png" alt={appName} width={560} height={102} className="h-7 w-auto sm:h-8" /></a>
+        <a href="/" aria-label={appName} className="flex min-h-12 min-w-0 items-center"><img src="/brand/logo.png" alt={appName} width={560} height={102} className="h-5 w-auto min-[400px]:h-6 sm:h-8" /></a>
         <TopbarControls />
       </div>
     </header>

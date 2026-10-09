@@ -19,6 +19,7 @@
 @import "@/styles/cojeev/item-adornment.css";
 @import "@/styles/cojeev/alert.css";
 @import "@/styles/cojeev/dropdown-menu.css";
+@import "@/styles/cojeev/dialog.css";
 @import "@/styles/lf-theme.css";
 
 @custom-variant dark (&:is(.dark *));

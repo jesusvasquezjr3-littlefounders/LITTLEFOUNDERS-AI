@@ -1,5 +1,5 @@
 // Accessibility: axe-core (WCAG 2.0 to 2.2 A and AA plus best practices) on the page, with the cookie preferences
-// sheet open, and with the language menu open.
+// sheet open, with the sign-in window open, and with the language menu open.
 //
 //   npm run audit:a11y                                  one page: light, en-US, 1440 px
 //   npm run audit:a11y -- --matrix                      every width and language, light and dark alternating
@@ -9,7 +9,7 @@
 // landmark-one-main, page-has-heading-one and region; those four are expected there and not counted.
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { CLOSE_WITH_ESCAPE, OPEN_LANGUAGE_MENU, OPEN_PREFERENCES, describe, parseArgs, run, sleep } from './lib.mjs';
+import { CLOSE_WITH_ESCAPE, OPEN_LANGUAGE_MENU, OPEN_PREFERENCES, OPEN_SIGN_IN, describe, parseArgs, run, sleep } from './lib.mjs';
 
 const axeSource = readFileSync(createRequire(import.meta.url).resolve('axe-core/axe.min.js'), 'utf8');
 const EXPECTED_WITH_MENU_OPEN = new Set(['aria-hidden-focus', 'landmark-one-main', 'page-has-heading-one', 'region']);
@@ -36,6 +36,11 @@ await run('a11y', parseArgs(), async (page, config) => {
   await page.ev(OPEN_PREFERENCES);
   await sleep(1500);
   await check('preferences sheet');
+  await page.ev(CLOSE_WITH_ESCAPE);
+  await sleep(900);
+  await page.ev(OPEN_SIGN_IN);
+  await sleep(1500);
+  await check('sign-in window');
   await page.ev(CLOSE_WITH_ESCAPE);
   await sleep(900);
   await page.ev(OPEN_LANGUAGE_MENU);

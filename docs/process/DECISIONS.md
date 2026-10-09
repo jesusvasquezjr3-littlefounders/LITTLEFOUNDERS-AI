@@ -85,6 +85,18 @@ Date: 2026-10-09. Status: accepted.
 
 The frontend audit scripts (accessibility, keyboard, layout, grid, scene framing, color, screenshots) live in `frontend/tools/audit/` as developer tools, run by hand with `npm run audit:*`. They are not a CI gate and not a test suite, so rule 5 in [[CLAUDE]] (no test suites or gates unless the owner asks) stands for those. Method and thresholds: [[FRONTEND-TOOLKIT]].
 
+### D-011: Every route path is in English
+
+Date: 2026-10-09. Status: accepted.
+
+Every route path in the platform is in English, whatever the interface language: `/sign-up`, never `/crear-cuenta`. Only the words on screen are translated ([[FRONTEND-GUIDE]] rule 1). Sign-in is not a page: it is a window opened from the topbar, and its actions read their destinations from `frontend/src/lib/authRoutes.ts`, which holds placeholders until the first application routes exist.
+
+### D-012: Rules for character compositions
+
+Date: 2026-10-09. Status: accepted.
+
+Scenes with the characters follow one set of rules (true scale with Dina large, bright light in both modes, no visible edges, no collisions, delivered as video, rendered from the artist sources, at most 30 % of a window's height), written in [[CHARACTER-COMPOSITIONS]], and are rendered with the tools in `frontend/tools/render/`. `three` is a development dependency for those tools only.
+
 ## Related
 
 - [[RESEARCH-FOUNDATION]]

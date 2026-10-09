@@ -33,7 +33,7 @@ Names the only building blocks of the interface, so no agent reaches for another
 | Library | Role | Arrives as | Where it is used now |
 |---|---|---|---|
 | Motion | All animation | npm `motion`, import from `motion/react` | Hero and section reveals, the cookie banner, `MotionConfig reducedMotion="user"` in `App.tsx`; Cojeev and Bklit are built on it |
-| 000h by Cojeev | General components | shadcn registry `@cojeev` | Button, Sheet, Dropdown menu, Badge, Alert (`src/components/ui/`) |
+| 000h by Cojeev | General components | shadcn registry `@cojeev` | Button, Sheet, Dialog, Dropdown menu, Badge, Alert (`src/components/ui/`). The Dialog close button is not used (it has a fixed English label); the sign-in window uses its own close button with a locale string |
 | Bklit UI | Charts | shadcn registry `@bklit` | Ring chart for the "4 in 10" figure (`src/components/charts/`) |
 | Sileo | Toasts | npm `sileo` + `sileo/styles.css` | Cookie choice confirmation; `<Toaster>` in `App.tsx` |
 | Morphicons | Icons that change state | npm `morphicons` + `lucide` icon data | Sun/moon theme toggle |

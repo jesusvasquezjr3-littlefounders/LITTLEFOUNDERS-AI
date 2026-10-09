@@ -32,6 +32,7 @@ The code that played them is in the git tag `archive/pre-restart-2026-10-09` onl
 
 ## Facts about the models that matter when rebuilding
 
+- **Scale**: the files are small, the characters are not. Dina is a large animal and stands taller than Rho on screen ([[CHARACTER-COMPOSITIONS]]).
 These come from the notes of the previous version and were measured on the files that are still here, so they are evidence, not decisions.
 
 - Liruf, Rho and Zara share 24 bone names, so one clip file drives all three. They do **not** share a rest pose (23 of the 24 bones differ), so a shared clip carries rotation only and is applied on top of each character's own pose. Played as absolute values it deforms two of the three.
@@ -201,6 +202,7 @@ These are written down, not answered. Tracked as T-018.
 
 ## Related
 
+- [[CHARACTER-COMPOSITIONS]]
 - [[DESIGN-SYSTEM]]
 - [[LANDING-MESSAGING]]
 - [[FRONTEND-GUIDE]]
