@@ -31,7 +31,8 @@ npm-debug.log*
 Thumbs.db
 
 # AI agent workspaces and local config (never commit: may hold tokens)
-.claude/
+.claude/*
+!.claude/skills/
 .agents/
 .codex/
 .mcp.json
