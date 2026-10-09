@@ -35,7 +35,7 @@ export function AppShell() {
         main.focus();
       }}>{copy.appShell.skip}</a>
     <header className="sticky top-0 z-30 border-b border-[var(--v-border)] bg-[var(--background)]/90 backdrop-blur">
-      <div className="mx-auto flex h-[72px] w-full max-w-[1120px] items-center justify-between gap-2 px-3 sm:px-6">
+      <div className={`${CONTAINER} flex h-[72px] items-center justify-between gap-2`}>
         <a href="/" aria-label={appName} className="flex min-h-12 min-w-0 items-center"><img src="/brand/logo.png" alt={appName} width={560} height={102} className="h-7 w-auto sm:h-8" /></a>
         <TopbarControls />
       </div>
@@ -44,7 +44,7 @@ export function AppShell() {
     <footer className="border-t border-[var(--v-border)]">
       <div className={`${CONTAINER} flex flex-col gap-3 py-8 text-[length:var(--fs-small)] text-[var(--muted-foreground)]`}>
         <nav aria-label={copy.siteShell.legal} className="flex flex-wrap items-center gap-x-5 gap-y-2">
-          <Button type="button" variant="ghost" size="sm" onClick={openCookiePreferences}>{copy.siteShell.cookies}</Button>
+          <Button type="button" variant="ghost" size="sm" className="-ms-4" onClick={openCookiePreferences}>{copy.siteShell.cookies}</Button>
           <a href={`mailto:${contactEmail}`} className="inline-flex min-h-12 items-center break-all underline underline-offset-4">{contactEmail}</a>
         </nav>
         <p>© {new Date().getFullYear()} {appName}. {copy.siteShell.rights}</p>

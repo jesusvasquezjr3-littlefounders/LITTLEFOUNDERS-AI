@@ -2,40 +2,43 @@ import { useId, type CSSProperties } from 'react';
 import { motion } from 'motion/react';
 import { Badge } from '@/components/ui/badge';
 import { useLocale, useSiteCopy } from '@/i18n/useCopy';
-import { body, heading, lead, section, title } from '@/features/landing/type';
+import { body, grid, heading, lead, section, title } from '@/features/landing/type';
 
 /*
- * The four skills as a staircase: each step opens when the child is ready and sits one tread
- * higher than the last, so the order is read from the shape before any word. The sequence is
- * the information, which is why the steps carry numbers. Color is only a tint; the number, the
- * name and the age say the same thing in words (RESEARCH-FOUNDATION, directive 3).
- *
- * Phones get one column, tablets two, desktop four with the rising treads.
+ * The four skills in order: the heading and its sentence on five columns, the steps on seven, one
+ * row per step. The order is the information, so each step carries its number; the number sits in a
+ * tinted square, and the name, the age and the sentence say the rest in words. Color is only a tag
+ * (RESEARCH-FOUNDATION, directive 3), and the label on each tint is the one measured for it.
+ * Below 1024 px the heading stacks over the steps.
  */
-const TONES = ['var(--v-blue)', 'var(--v-olive)', 'var(--v-pink)', 'var(--primary)'] as const;
+const TONES = [
+  { fill: 'var(--v-blue)', ink: 'var(--v-on-accent)' },
+  { fill: 'var(--v-olive)', ink: 'var(--v-on-accent)' },
+  { fill: 'var(--v-pink)', ink: 'var(--v-on-accent)' },
+  { fill: 'var(--primary)', ink: 'var(--primary-foreground)' },
+] as const;
 
 export function Path() {
   const copy = useSiteCopy().landingV2;
   const number = new Intl.NumberFormat(useLocale());
   const titleId = useId();
-  const last = copy.path.length - 1;
 
-  return <section aria-labelledby={titleId} className={`grid gap-10 ${section}`}>
-    <div className="grid gap-4">
-      <h2 id={titleId} className={`${heading} max-w-[24ch]`}>{copy.pathTitle}</h2>
+  return <section aria-labelledby={titleId} className={`${grid} gap-y-10 ${section}`}>
+    <div className="col-span-4 grid min-w-0 content-start gap-4 md:col-span-8 lg:col-span-5">
+      <h2 id={titleId} className={heading}>{copy.pathTitle}</h2>
       <p className={lead}>{copy.pathLead}</p>
     </div>
-    <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
+    <ol className="col-span-4 grid md:col-span-8 lg:col-span-7">
       {copy.path.map((step, index) => <motion.li key={step.name}
-        style={{ '--tone': TONES[index], '--rise': last - index } as CSSProperties}
-        className="grid min-w-0 content-start gap-4 rounded-[var(--r-card)] border-t-[3px] border-[var(--tone)] bg-[color-mix(in_oklab,var(--tone)_12%,var(--background))] p-5 lg:mt-[calc(var(--rise)*3.25rem)] lg:p-6"
-        initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.25 }}
-        transition={{ duration: 0.6, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}>
-        <div className="flex items-baseline gap-3">
-          <span aria-hidden="true" className="text-5xl leading-none font-extrabold tabular-nums">{number.format(index + 1)}</span>
+        style={{ '--fill': TONES[index]?.fill, '--ink': TONES[index]?.ink } as CSSProperties}
+        className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-5 gap-y-2 border-t border-[var(--v-border)] py-6 first:border-t-0 first:pt-0 last:pb-0"
+        initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }}
+        transition={{ duration: 0.5, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}>
+        <span aria-hidden="true" className="row-span-3 grid size-14 place-items-center rounded-[var(--r-card-sm)] bg-[var(--fill)] text-2xl leading-none font-extrabold tabular-nums text-[var(--ink)]">{number.format(index + 1)}</span>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
           <h3 className={title}><span className="sr-only">{step.step}: </span>{step.name}</h3>
+          <Badge variant="cream">{step.age}</Badge>
         </div>
-        <Badge variant="cream" className="w-fit">{step.age}</Badge>
         <p className={body}>{step.text}</p>
       </motion.li>)}
     </ol>

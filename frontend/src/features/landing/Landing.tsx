@@ -4,7 +4,7 @@ import { Path } from '@/features/landing/Path';
 import { Principles } from '@/features/landing/Principles';
 import { Problem } from '@/features/landing/Problem';
 
-/** `/`: the landing page. Who it is for and what it promises, the evidence, the path, what stays true, the ask. */
+/** `/`: the landing page. Who it is for and what it promises, the evidence, the path, what stays true, the ask. Layout rules: type.ts. */
 export function Landing() {
   return <div>
     <Hero />
