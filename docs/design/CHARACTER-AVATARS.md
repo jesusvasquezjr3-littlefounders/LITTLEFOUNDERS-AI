@@ -6,71 +6,81 @@ updated: 2026-10-09
 
 # Character avatars
 
-> A plan to turn the heads of Liruf, Dina, Zara and Rho into light, interactive avatars (speech, expressions, gaze, micro-interactions) that run inside the platform without a 3D renderer and without pre-rendered video. Research, options, a recommendation, and the spikes that decide it.
+> A plan to rebuild the heads of Liruf, Dina, Zara and Rho as light 2D vector avatars (speech, expressions, gaze, micro-interactions) that run inside the platform with no 3D and no per-state video. The owner's decisions, the research, the way to rebuild a head faithfully, the format candidates and the spikes that choose between them.
 
-> **Status: draft.** Nothing here is decided. The owner's goal and constraints are in the first two sections; the recommendation is mine and is to be tested by the spikes before anything is built.
+> **Status: draft.** The first section is decided by the owner. Everything after it is a proposal to be tested by the spikes before anything is built.
 
 ## Role
 
-The characters exist as 3D models, used for marketing compositions ([[CHARACTER-COMPOSITIONS]]). Inside the product a live 3D scene costs the user's device, and a video for every state would be too many files and too heavy. The avatar is a third thing: a head that reacts. It does not replace the compositions or the models. Poses it should be able to express: [[CHARACTER-POSES]].
+The characters exist as 3D models, used for marketing compositions ([[CHARACTER-COMPOSITIONS]]). Inside the product a live 3D scene costs the user's device and a video per state is too heavy. The avatar is a third thing: a head that reacts, drawn in 2D. It does not replace the compositions or the models. The expressions it should cover start from [[CHARACTER-POSES]].
 
 ## Read this when
 
 - Deciding the format, the runtime or the pipeline for in-product character heads.
 - Any screen asks a character to speak, react, look at something or follow the cursor.
 
-## Goals and constraints (from the owner)
+## Decided by the owner (2026-10-09)
 
-1. The **head only**, faithful to the canon of each `.glb`, for the four characters.
-2. Fast to render, with **no 3D renderer** and no per-state video.
-3. **Control**: speech, facial expressions, cursor following, micro-interactions.
-4. A format such as Lottie (`.lottie`, `.json`) or similar. The reference given is [bible-strong-avatar-lab](https://github.com/smontlouis/bible-strong-avatar-lab).
-5. Not a replacement for marketing compositions or the `.glb` files.
+1. The avatar is the **head only**, a reconstruction **faithful to the `.glb`** of each character.
+2. **No 3D**, no 3D models and no 3D renderer in the product for avatars.
+3. **No mouth atlas or mouth cards.** A picture placed in front of the mouth reads as paper over the 3D face and is rejected. The mouth has to be part of the drawing.
+4. The format may be Lottie, Rive, SVG or similar, as long as it is 2D.
+5. Prefer licenses without strings: try the reference (bible-strong-avatar-lab) or another alternative.
+6. Avatars do not replace marketing compositions or the `.glb` files.
 
-Added by this plan, from the project rules, to be confirmed: every avatar is decorative or has a text equivalent and honors reduced motion ([[FRONTEND-GUIDE]] rules); no camera, no microphone and no face tracking of the child, only the cursor ([[CHILD-SAFETY-AND-PRIVACY]]); weight and CPU budgets as below ([[PERFORMANCE-AND-SCALING]]).
+Added by this plan from the project rules, to be confirmed: every avatar is decorative or has a text equivalent and honors reduced motion ([[FRONTEND-GUIDE]]); no camera, microphone or face tracking of the child, only the cursor ([[CHILD-SAFETY-AND-PRIVACY]]); small weight and low CPU ([[PERFORMANCE-AND-SCALING]]).
 
 ## What the research found
 
-**The reference is a different technique.** bible-strong-avatar-lab builds *procedural* 2D avatars: geometry described in JSON and drawn as SVG by its own runtime (`avatar-core`, with React and DOM renderers). Its useful ideas: expressions are stored as differences from the neutral face, so the same behavior works on different faces; an animation is a sequence of expressions with hold and transition times; automatic blinking; one portable definition file read by one framework-independent runtime. It is not baked from a 3D model, and it is licensed **AGPL-3.0**, so none of its code can go into this product without opening ours: take ideas only.
+**The reference does not fit, for two reasons.** bible-strong-avatar-lab builds *procedural* 2D avatars: a body made of primitives and eyes, drawn as SVG by its own runtime. (1) All three of its runtime packages (`avatar-core`, `avatar-react`, `avatar-web`) are licensed **AGPL-3.0-only**; using one in the product would require publishing the product's source under the same license. (2) It has no mouth: its README lists body, colors and eyes, and a code search of the repository finds no "mouth" and no "viseme". It cannot speak and its shapes are not built from our models. The Studio itself runs in the browser and its output is a JSON file, but that file needs the AGPL runtime to draw. Three of its ideas are worth taking, as ideas: expressions stored as differences from the neutral face; animations as sequences of expressions with hold and transition times; automatic blinking.
 
-**Our models are hard to take apart.** Measured on the source files in `glb/`:
+**What the models give us** (measured on the sources in `glb/`):
 
 | | Rho | Dina |
 |---|---|---|
 | Vertices | 3,026 | 95,076 |
-| Texture | one 2048 px image | one 2048 px image |
+| Texture | one 2048 px image, fragmented atlas | one 2048 px image, fragmented atlas |
 | Morph targets (blendshapes) | none | none |
 
-Both textures are a *fragmented atlas*: the eyes, the mouth and the skin are scattered islands in no readable layout. So the faces cannot be edited as layers from the texture, and there are no blendshapes to drive a mouth. The only reliable source of "what the character looks like" is a **render of the model**. The previous version already faced this: `frontend/public/scenes/mouth/` still holds one 8-cell mouth atlas per character (closed, wide open, and six intermediate shapes) painted over a skin-colored patch, which is a mouth drawn on top of the painted one. That is a precedent for the approach below, not a design to copy.
+The faces are painted into a fragmented texture, so there are no separable eye or mouth parts and no blendshapes. The only reliable record of what a character looks like is a **render of the model**, and everything that is hidden in the model (the eyeball behind the lid, the inside of the mouth, the teeth, the skin behind the hair) does not exist and has to be drawn.
 
-**Format facts** (searched 2026-10-09; sizes of runtimes are not verified):
+**Tools and licenses** (checked 2026-10-09 on each project's repository unless noted):
 
-- **dotLottie** has state machines (since v2.4): inputs of number, boolean and string kind, pointer events (click, hover, custom), and the web player wires the listeners itself. Raster images inside a Lottie are embedded and are the biggest cause of heavy files; Lottie is designed around vector shapes.
-- **Rive** has a canvas runtime that draws with the browser's 2D context (no WebGL, so no limit on how many are on a page), supports raster images and mesh deformation, state-machine inputs, and mouths driven by bones or meshes. Its editor is proprietary and files are authored by hand in it; the runtimes are open source.
-- **Visemes**: classic charts use about 8 to 12 mouth shapes (closed M-B-P, rounded O, wide E, F-V, and so on); Adobe Character Animator ships 11. The shapes are mostly shared across English, Spanish and Portuguese, so one set serves the three interface languages.
+| Piece | License | Note |
+|---|---|---|
+| Rive runtime (`rive-wasm`) | MIT | Canvas 2D renderer, no WebGL limit; vector paths, bones, raster meshes, state-machine inputs. The editor is proprietary and files are authored by hand in it |
+| dotLottie player (`dotlottie-web`) and `thorvg` | MIT | Lottie with state machines (number, boolean, string inputs, pointer events); designed for vectors |
+| `lottie-web` | MIT | The classic player, no state machine |
+| VTracer | MIT | Raster to layered SVG; usable as a build tool |
+| diffvg (reported as Apache-2.0, not checked) | Apache-2.0 | Fits vector shapes to an image by optimization; usable as a build tool |
+| Live2D Cubism | Proprietary SDK; free under about 10M yen of yearly revenue, otherwise a paid release license | Layered raster art with mesh deformation and parameters (the industry standard for 2D faces that turn); `pixi-live2d-display` is MIT but needs the proprietary core |
+| Inkscape, Figma | GPL / commercial | Hand cleanup tools; the product ships only their output |
 
-## The options
+Viseme charts use about 8 to 12 mouth shapes and the shapes are largely shared by English, Spanish and Portuguese, so one set serves the three languages.
 
-| | A. Baked sprite rig, our own small runtime | B. Rive | C. dotLottie | D. Head-only 3D in WebGL |
-|---|---|---|---|---|
-| Fidelity to the canon | Highest: pixels are renders of the `.glb` | High if sprites are imported; deformation is hand-made | Same limit, plus the raster weight problem | Highest, but the models have no mouth rig |
-| Weight | Small and predictable (WebP layers) | Medium (runtime plus file) | Heavy with images | Heavy (3D library, GPU) |
-| Concurrent avatars | Many (2D canvas or DOM) | Many (2D canvas) | Many | Few, or one shared canvas |
-| Speech, gaze, micro-interactions | Whatever we code: full control | Strong: state machines and bones | Good: state machines | Full |
-| Produced by script from the `.glb` | Yes | No: hand authoring in the editor | Partly (the JSON can be generated) | Yes, but needs blendshapes authored |
-| Lock-in and license | None, ours | Editor is a product we depend on | Open format | None |
-| Fits the "no 3D renderer" goal | Yes | Yes | Yes | No |
+## How to rebuild a head faithfully (proposal)
 
-## Recommendation
+Be exact about what "faithful" can mean. For the **neutral face seen from the front** it is checkable: the vector head can be drawn over the render of the model and compared. For **everything the model never shows** (open mouths, closed eyes, other expressions) there is no ground truth: those are drawn in the character's own style (same colors, same outline weight, same shading) and approved by the owner against the canon. This plan promises the first strictly and the second with a review.
 
-**Option A, a baked sprite rig, as the default**, with a time-boxed comparison against Rive. Reasons: it is the only option that keeps the heads literally faithful (they are renders of the models), it can be produced by script from the `.glb` files with the render tool we already have ([[CHARACTER-COMPOSITIONS]]), it is the lightest, and it leaves us in control of speech and gaze. Lottie is built for vector shapes and our heads are raster, so it is the weakest fit. Rive is the strongest alternative when real deformation matters; the spike tells us whether it is worth the hand authoring.
+1. **Reference renders.** With the render tool we already have ([[CHARACTER-COMPOSITIONS]]), render each head from the source model at maximum quality: a front view, and a few turned views, in separate passes: color without light (the painted surface), light only (shading), and an outline.
+2. **Separate the parts.** Eyes (white, iris, pupil, highlight, lids), brows, nose, mouth (lips, inside, teeth, tongue), ears, hair or hat, mustache, glasses, crest or horns, the head silhouette. Most of this is cut out by color from the unlit pass, then corrected by hand.
+3. **Redraw each part as vector shapes**: a first pass with VTracer for the base shapes, then cleaned by hand into smooth Bezier curves with the same number of points wherever a part will change shape. Soft shading becomes a few flat shadow and highlight shapes or fitted gradients; edges and flats are kept; photographic detail is not.
+4. **Draw what is hidden**: the full eyeball, the lids, the mouth interior, a set of mouth shapes built from real lips, teeth and tongue (not a card on top), the skin behind hair. This is the main hand-art cost.
+5. **Rig**: the mouth morphs between shapes as a path; lids close; the iris moves inside the eye for gaze; parts shift by depth for a head that follows the cursor; small idle movement; named expressions as differences from neutral.
+6. **Check**: the vector neutral over the render (overlay and an image difference), then each expression sheet against the canon by the owner.
 
-How A works:
+## Candidate formats for the rig
 
-1. **Base head**: the head and neck rendered from the model at several turns (for example three to five yaw angles, with pitch done by a 2D transform), with the painted mouth covered by a skin-colored patch, as the old mouth cards did. Rendered at maximum quality from the sources in `glb/`.
-2. **Face decals** drawn on the base, each with its position, scale and skew per turn angle stored in the file: eyes (open, half, closed, plus a pupil that moves for gaze), eyebrows, and the **mouth** (8 to 12 viseme shapes, from the existing atlases as a start).
-3. **A definition file** (`avatar.json`, one per character, validated when read): parts, anchors, visemes, expressions stored as differences from neutral (borrowed idea), and named behaviors (blink every few seconds, idle sway, a nod, a look-away).
-4. **A tiny runtime** (a React component over a 2D canvas) with a small interface: `expression`, `speaking` (a timeline of visemes with times, or an amplitude), `gaze` (a point, or the cursor), and one-shot micro-interactions. Easing with Motion, which is already in the stack.
+All of them can carry the vector parts above; the choice is about how much control, how much hand authoring and what lock-in.
+
+| | Rive | dotLottie | Our own SVG runtime |
+|---|---|---|---|
+| What it is | Vector rig with state machine and bones | Vector animation with a state machine | The parts as SVG, driven by code |
+| Control (visemes, gaze, cursor) | Strong: inputs and bones | Good: inputs and pointer events; morphing mouths means many keyframes | Full, anything we code |
+| Made by script from the art | No: authored by hand in the editor | Partly (the JSON can be generated) | Yes |
+| Weight | Small binary file plus runtime | Small JSON or archive plus runtime | Smallest runtime; SVG as data |
+| Lock-in | A proprietary editor | Open format, open players | None |
+| Risk | Hand work and tool dependence | Interactivity is simpler than Rive's | We build and maintain the runtime |
 
 ## Plan
 
@@ -78,33 +88,34 @@ Each step ends with something the owner can see and accept or stop.
 
 | Step | What | Done when |
 |---|---|---|
-| 0. Decide | Head extent (head only or neck and shoulders); which characters first; where avatars will be used; the expressions needed (the seven emotions of [[CHARACTER-POSES]] are the starting list) | The owner answers the open questions below |
-| 1. Spike A | Rho and Dina by hand through the render tool: base turns, one set of visemes, blink and gaze; a throwaway runtime in a test page. Dina first among the hard cases: a non-human face with a crest and a large head | A page where the head follows the cursor, blinks and speaks a test phrase; weight and frame cost measured on a mid-range phone |
-| 2. Spike B | The same heads in Rive, built by hand | The same behaviors; the comparison table below filled with measurements |
-| 3. Decide | Pick the format from the measurements and the owner's eye | Decision recorded in [[DECISIONS]] |
-| 4. Schema | Write the `avatar.json` specification and its validation | Document at status accepted |
-| 5. Bake tool | `frontend/tools/avatars/`: one command bakes a character from its `.glb` into the layers and the file | Rho and Dina baked without hand steps except the art that must be redrawn |
-| 6. Runtime | The component in `frontend/src/`, with i18n for any text, reduced motion, an accessible name or hiding, and checks with the audit tools | One avatar in a real screen, in the three languages and both themes |
-| 7. The rest | Zara and Liruf, then the expressions the screens ask for | Owner approves each character against its canon |
+| 0. Decide | Head extent (head only or with neck and shoulders); which character first; where avatars appear; the expressions needed | The owner answers the open questions below |
+| 1. Reference | Render the reference passes of Rho and Dina with a new mode of the render tool | A sheet of passes per character to look at |
+| 2. Spike on one head | Rebuild **Rho** as vector (neutral, blink, three mouth shapes, gaze) in the three candidate formats, same art | One page per format; the overlay of the vector on the render; weight and cost measured on a mid-range phone |
+| 3. Hard case | Dina (large non-human head, crest, wide mouth) in the format that won | Dina neutral and an open mouth that the owner accepts as hers |
+| 4. Decide | The format, from the owner's eye and the measurements | Decision recorded in [[DECISIONS]] |
+| 5. Schema and tools | The avatar definition format (validated on read) and the scripts for steps 1 to 3 of the rebuild that can be automated | Document at status accepted; one command from `.glb` to reference passes and first traces |
+| 6. Runtime | The component in `frontend/src/`, with i18n for any text, reduced motion, an accessible name or hiding, and the audit tools | One avatar in a real screen, in three languages and both themes |
+| 7. The rest | Zara and Liruf, then the expressions the screens ask for, each approved against its canon | The owner approves each character |
 
-**What the spikes measure**: weight per character (target: under 300 KB loaded, to be confirmed); runtime weight (target: under 15 KB gzipped for option A); frame cost on a mid-range phone with four avatars on screen; no WebGL context used; fidelity (the base render beside the `.glb` render, judged by the owner and by an image difference); and how many hand-art hours each character needs.
+**What the spike measures**: how close the vector neutral is to the render (image difference and the owner's eye); weight per character (provisional target: under 100 KB); runtime weight; frame cost on a mid-range phone with four avatars on screen; hours of hand art per character; and how natural the mouth looks while speaking a test phrase.
 
 ## Risks
 
-- **Faces are painted into a fragmented texture**, so covering the painted mouth and eyes needs drawn patches that match each character's shading. Probably a manual art step per character; to be measured in step 1.
-- **Head turn costs weight**: every extra turn angle is another base image. Fewer angles with 2D tilt and parallax is cheaper but less faithful.
-- **Hair, hats and crests** (Rho's cap, Zara's hair, Dina's crest) may need to move on their own for the head to feel alive; that grows the layer count.
-- **Uncanny or off-model faces** if a decal is out of register with the base: owner review of each character is a gate.
-- **Child safety**: avatars that react to the child must not record or transmit anything; cursor following stays on the device.
-- **AGPL**: no code from the reference repository.
+- **Hand art is unavoidable.** Hidden parts and mouth shapes must be drawn. Auto-tracing alone gives a posterized look that is not faithful.
+- **Soft shading** of the models is the hardest thing to keep in vector; too many gradients and shapes grow the file and slow it down.
+- **Hair, hats and crests** may need to move on their own for the head to feel alive.
+- **Turning the head** in vector means either parallax of layers (cheap, limited angle) or extra drawn views.
+- **Tool dependence** if Rive wins, since its editor is proprietary; **maintenance** if the runtime is ours.
+- **Child safety**: avatars that react to the child record and transmit nothing; cursor following stays on the device.
 
 ## Open questions for the owner
 
 - [ ] Head only, or neck and shoulders too?
-- [ ] Where will avatars appear (a guide beside an exercise, feedback after an answer, a profile picture, a chat)? This sets the sizes and the expressions.
-- [ ] Speech: what drives the mouth, recorded or generated voice, or text only with an animated mouth? Voice raises child-safety and cost questions that are not decided.
-- [ ] Which two characters first (suggestion: Rho and Dina, who are already in a composition).
-- [ ] Is Rive an acceptable dependency if the spike favors it, given its editor is proprietary?
+- [ ] Where will avatars appear (a guide beside an exercise, feedback after an answer, a profile picture, a chat)? This sets sizes and expressions.
+- [ ] What moves the mouth: recorded voice, generated voice, or text only with an animated mouth? Voice raises child-safety and cost questions that are not decided.
+- [ ] Start with Rho and then Dina?
+- [ ] Is a proprietary editor (Rive) acceptable if it wins, or must the whole chain be open?
+- [ ] Is "exact for the neutral face, drawn in canon style and approved by you for the rest" the fidelity you want?
 
 ## Related
 
@@ -122,14 +133,15 @@ Back to [[INDEX]].
 
 ## Update this document when
 
-- The owner answers an open question or changes a goal.
+- The owner answers an open question or changes a decision.
 - A spike produces measurements.
 - A format is chosen.
 
 ## Sources
 
-- [bible-strong-avatar-lab](https://github.com/smontlouis/bible-strong-avatar-lab) (README and license, read 2026-10-09)
-- [dotLottie state machines](https://github.com/lottiefiles/dotlottie-web/wiki/State-Machines) and [dotLottie 2.4 release note](https://lottiefiles.com/blog/working-with-lottie/dotlottie-v2-4-0-state-machine-support)
-- [Rive web runtime](https://rive.app/docs/runtimes/web/) and [rive-wasm](https://github.com/rive-app/rive-wasm)
-- [Lottie file size and raster images](https://lottiefiles.com/blog/working-with-lottie-animations/optimize-lottie-files-for-faster-page-load-speeds.md)
+- [bible-strong-avatar-lab](https://github.com/smontlouis/bible-strong-avatar-lab) (README and package licenses, read 2026-10-09)
+- [rive-wasm](https://github.com/rive-app/rive-wasm), [Rive web runtime](https://rive.app/docs/runtimes/web/), [Rive mesh deformation](https://rive.app/blog/new-features-released-mesh-deformation-and-psd-support)
+- [dotlottie-web](https://github.com/lottiefiles/dotlottie-web), [state machines](https://github.com/lottiefiles/dotlottie-web/wiki/State-Machines), [thorvg](https://github.com/thorvg/thorvg), [lottie-web](https://github.com/airbnb/lottie-web)
+- [VTracer](https://github.com/visioncortex/vtracer), [diffvg](https://people.csail.mit.edu/tzumao/diffvg), [layer-wise image vectorization (LIVE)](https://openaccess.thecvf.com/content/CVPR2022/html/Ma_Towards_Layer-Wise_Image_Vectorization_CVPR_2022_paper.html)
+- [Live2D SDK license](https://www.live2d.com/en/sdk/license/), [pixi-live2d-display](https://github.com/guansss/pixi-live2d-display)
 - [Lip sync mouth shapes in Adobe Character Animator](https://www.adobe.com/learn/adobe-character-animator/web/lip-sync-mouth-shapes)
