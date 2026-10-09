@@ -129,3 +129,32 @@ html:root[data-mode] {
   --chart-4: #4b94ff;
   --chart-5: #05a893;
 }
+
+/*
+ * Sileo toasts. Its own stylesheet is injected after ours, so the state colors
+ * are set on its viewport element, which beats anything it inherits from :root.
+ * Sileo's theme names the toast's text: 'light' is a dark toast (bright state
+ * colors), 'dark' a light toast (deep state colors). The toast is deliberately
+ * the opposite of the page; see ThemedToaster in App.tsx.
+ */
+[data-sileo-viewport][data-theme='light'] {
+  --sileo-state-success: #3ea56b;
+  --sileo-state-error: #fe7f7e;
+  --sileo-state-warning: #ebb806;
+  --sileo-state-info: #6aa8ff;
+  --sileo-state-action: #8a93ff;
+  --sileo-state-loading: #b3b6cb;
+}
+
+[data-sileo-viewport][data-theme='dark'] {
+  --sileo-state-success: #028048;
+  --sileo-state-error: #c4172a;
+  --sileo-state-warning: #856600;
+  --sileo-state-info: #1d68ce;
+  --sileo-state-action: #4438cf;
+  --sileo-state-loading: #595c71;
+}
+
+[data-sileo-viewport] [data-sileo-title] {
+  text-transform: none;
+}

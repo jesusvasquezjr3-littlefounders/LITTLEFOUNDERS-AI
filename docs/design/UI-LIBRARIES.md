@@ -1,6 +1,6 @@
 ---
 title: UI libraries
-status: draft
+status: accepted
 updated: 2026-10-09
 ---
 
@@ -8,7 +8,7 @@ updated: 2026-10-09
 
 > The seven libraries the LittleFounders interface is built with, what each one is for, how it is installed and wired here, and the rules for using it.
 
-> **Status: draft.** The owner decided on 2026-10-09 that these seven libraries are mandatory ([[DECISIONS]] D-007). Which library covers which need, and the usage rules, were written by the agent from each library's documentation and from installing them; the owner has not approved them yet. Items marked **unverified** could not be confirmed.
+> **Status: accepted** (2026-10-09). The owner decided that these seven libraries are mandatory ([[DECISIONS]] D-007) and approved the roles and wiring below. Items marked **unverified** are still open.
 
 ## Role
 
@@ -65,13 +65,13 @@ The CLI rewrites files that are ours. Always check, then fix, before committing:
 `motion/react`: `motion.*`, `AnimatePresence`, `useScroll`, `layout`, `variants` with `stagger`, springs. `MotionConfig reducedMotion="user"` at the root removes transform and layout animation and keeps opacity; use `useReducedMotion()` for custom cases. Motion+ (paid) is not used. Rule: no hand-written CSS keyframes or timers for animation Motion can express.
 
 ### 000h by Cojeev
-Default source for any component that is not a chart, toast, icon morph or loader (172 components; its own chart and toast components are not used because Bklit and Sileo own those). Install with `npx shadcn@latest add @cojeev/<name>`. Variants are props (`<Button variant="accent" size="lg">`). The CTA is `accent`; secondary is `outline`. MIT, keep the notices in `src/lib/cojeev/NOTICES.txt`. Its components bring a lot of CSS and a large icon data chunk (about 354 KB, lazy): tracked in [[PERFORMANCE-AND-SCALING]] terms as T-010. **Unverified:** accessibility of each component; audit on first use.
+Default source for any component that is not a chart, toast, icon morph or loader (172 components; its own chart and toast components are not used because Bklit and Sileo own those). Install with `npx shadcn@latest add @cojeev/<name>`. Variants are props (`<Button variant="accent" size="lg">`). The CTA is `accent`; secondary is `outline`. MIT, keep the notices in `src/lib/cojeev/NOTICES.txt`. Its components bring a lot of CSS and a lazy icon data chunk (about 354 KB), tracked as T-010. **Unverified:** accessibility of each component; audit on first use.
 
 ### Bklit UI
 `npx shadcn@latest add @bklit/<chart>`; depends on `@visx/*` and `@number-flow/react`. Themed by `--chart-*` variables from `lf-theme.css`. SVG `fill` attributes cannot hold `var()` from a stylesheet reliably, so pass colors as the library expects (`<Ring color="var(--primary)" />` works). Candlestick, profit/loss and live-line charts exist; a child-facing product must not show real-money framing ([[CHILD-SAFETY-AND-PRIVACY]]). A chart always has a text alternative, a color-independent encoding and an empty state.
 
 ### Sileo
-`import { sileo, Toaster } from 'sileo'` and `import 'sileo/styles.css'` (confirmed required). `sileo.success|error|warning|info|promise`, options `title`, `description`, `position`, `duration`, `icon`, `fill`, `styles`. `title` and `description` are locale strings; a toast never carries a minor's personal data and never is the only place a message appears. **Unverified:** reduced-motion behavior and screen-reader announcement.
+`import { sileo, Toaster } from 'sileo'` and `import 'sileo/styles.css'` (confirmed required). `sileo.success|error|warning|info|promise`, options `title`, `description`, `position`, `duration`, `icon`, `fill`, `styles`. `title` and `description` are locale strings; a toast never carries a minor's personal data and never is the only place a message appears. Verified from the package: it honors `prefers-reduced-motion` (animation and transition durations go to zero) and announces with `aria-live="polite"`. It depends on its own `motion`; `package.json` carries an `overrides` entry (`sileo.motion = $motion`) so it shares ours instead of bundling a second copy (this cut the entry chunk by 127 KB). Its stylesheet is injected after ours, so the state colors are set on its viewport element in `lf-theme.css`; the toast is drawn as the opposite surface of the page (`ThemedToaster` in `App.tsx`).
 
 ### Morphicons
 `MorphIcon` from `morphicons/react`, icon data from `lucide` (not `lucide-react`): `<MorphIcon icon={dark ? Sun : Moon} reducedMotion="user" />`. Stroke icon sets only; one icon set for the whole product; always `reducedMotion="user"`; icons are `aria-hidden` unless a `label` is given.
@@ -80,7 +80,15 @@ Default source for any component that is not a chart, toast, icon morph or loade
 `<ThinkingOrb state="working" size={64} />`; states `working searching solving listening connecting weaving composing breathing shaping`; sizes 64, 32, 20; props `speed`, `paused`, `theme` (`auto` default, follows the `dark` class; the documentation page says a `dark` boolean, the installed version 0.3.2 has `theme`). MIT. Rule: the surrounding element carries the status text (`role="status"`); `paused` when motion is reduced.
 
 ### Bencho
-48+ interaction blocks (one-time code, slide to confirm, upload dropzone, progress, dock, particles and more). **Licence read on 2026-10-09:** the blocks are MIT; keep the copyright notice with substantial copies; the site, name, mark and the photographs inside some blocks are not covered. A block's source comes from the Code pane on its page (`bencho.dev/blocks/<name>`); the page offers "Join for free" and an account could not be created by an agent, so no block is copied yet. Rule when one is: put it under `src/components/bencho/` with its notice and URL in a header comment, import `motion/react`, take strings from locale files and colors from tokens, add keyboard and reduced-motion behavior, and swap any photograph for our own art. Sounds are off by default.
+48+ interaction blocks (one-time code, slide to confirm, upload dropzone, progress, dock, particles and more).
+
+**Licence** (read on 2026-10-09 at `bencho.dev/license`): the blocks are MIT, free for commercial use, no attribution on the interface; keep the copyright notice (`Copyright (c) 2026 Lorenzo Cabra`) with substantial copies. Not covered: the site, the name and goat mark, and the photographs inside some blocks (swap in our own art). Every dependency keeps its own licence.
+
+**How to get a block's source.** Open `https://bencho.dev/blocks/<name>` (names are in the links on the home page, for example `one-time-code`, `confirm`, `progress`, `upload-dropzone`, `dock`, `particles`). The `<>` tab at the top left of the block's panel is the Code pane, with four collapsible sections: **Install** (the npm packages the block needs, for example `lucide-react`), **Usage**, **Code** (`tsx` and `css` tabs, each with a copy button) and **How it works**; a **Copy prompt** button hands the block to an AI assistant. The pane is readable without an account (verified 2026-10-09 in a Chrome that was not signed in; whether the copy buttons need one was not tested). The right-hand panel has the block's tunable parameters.
+
+**Reading it with the browser tools.** Use the Chrome on the computer the agent is running on, never another connected one: check the machine first (`list_connected_browsers` marks the local one, and PowerShell's `$env:COMPUTERNAME` says which computer this is; the development machine is the Windows MSI laptop, and a Mac is also connected to the account). The owner signs in to Bencho with Google in their own Chrome and has authorised the agent to use that session at Bencho; the agent does not sign in, create accounts or approve sign-in screens itself. The page text tool does not see the Code pane: expand the section and read it from a screenshot or the accessibility tree, or have the owner press the copy button and paste.
+
+**Rules when a block is adopted.** Put it under `src/components/bencho/` with its notice and URL in a header comment; import `motion/react` (blocks use `framer-motion`) and replace `lucide-react` with `lucide` icon data through Morphicons where an icon changes state; take strings from the locale files and colors from the tokens; add keyboard and reduced-motion behavior; swap photographs for our own art. Sounds are off by default. No block is adopted yet; they are brought in one at a time as screens need them (T-009).
 
 ## Which library for which need
 

@@ -3,7 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { MotionConfig } from 'motion/react';
 import { Toaster } from 'sileo';
 import { ThinkingOrb } from 'thinking-orbs';
-import { ThemeProvider } from '@/theme/useTheme';
+import { ThemeProvider, useTheme } from '@/theme/useTheme';
 import { AnalyticsScripts } from '@/lib/analytics';
 import { CookieConsentBanner } from '@/components/CookieConsentBanner';
 import { AppShell } from '@/components/AppShell';
@@ -20,6 +20,13 @@ function PageLoading() {
     <ThinkingOrb state="working" size={64} />
     <span className="sr-only">{label}</span>
   </div>;
+}
+
+/** Toasts follow the visitor's theme (not the operating system's), drawn as the opposite surface so they stand off the page. */
+function ThemedToaster() {
+  const { isDark } = useTheme();
+
+  return <Toaster position="top-center" theme={isDark ? 'dark' : 'light'} />;
 }
 
 /*
@@ -44,7 +51,7 @@ export function App() {
       <ThemeProvider>
         <AnalyticsScripts consentVersion={consentVersion} />
         <CookieConsentBanner onDecision={() => setConsentVersion((v) => v + 1)} />
-        <Toaster position="top-center" />
+        <ThemedToaster />
         <Suspense fallback={<PageLoading />}>
           <Routes>
             <Route element={<AppShell />}>
