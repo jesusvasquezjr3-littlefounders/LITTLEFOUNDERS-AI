@@ -17,5 +17,19 @@
     "es-MX": "Español",
     "en-US": "English",
     "pt-BR": "Português"
+  },
+  "footer": {
+    "about": "Sobre nós",
+    "product": "Produto",
+    "behind": "Nos bastidores",
+    "follow": "Siga-nos",
+    "terms": "Termos e condições",
+    "privacy": "Aviso de privacidade",
+    "social": {
+      "facebook": "Facebook",
+      "instagram": "Instagram",
+      "x": "X",
+      "linkedin": "LinkedIn"
+    }
   }
 }

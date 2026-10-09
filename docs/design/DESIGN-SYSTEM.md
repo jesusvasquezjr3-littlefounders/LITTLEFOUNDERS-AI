@@ -33,6 +33,7 @@ Tells an agent how the product must look and behave so every screen is consisten
 ## Decided
 
 - The evidence behind color, shape, feedback and target sizes is [[RESEARCH-FOUNDATION]] (rule 5 in [[FRONTEND-GUIDE]]).
+- The footer is black in every theme with white text and a white logo (`public/brand/logo-white.png`, made from the color logo by turning every pixel white and keeping its transparency). It has four titled columns (About us, Product, Behind the scenes, Follow us) with no links under them yet, the four social marks with no visible names, and, in small type at the bottom, the terms, the privacy notice, the cookie preferences, the contact address and the copyright. The owner asked for it on 2026-10-09, modeled on Brilliant's.
 - The interface is built with the libraries in [[UI-LIBRARIES]] (D-007 in [[DECISIONS]]). One token file feeds all of them.
 
 ## Current state
