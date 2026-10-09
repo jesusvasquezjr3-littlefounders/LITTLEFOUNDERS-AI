@@ -13,7 +13,14 @@
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
-    "lint:slop": "oxlint -c oxlint.config.ts src scripts vite.config.ts"
+    "lint:slop": "oxlint -c oxlint.config.ts src scripts vite.config.ts",
+    "audit:a11y": "node tools/audit/a11y.mjs",
+    "audit:keyboard": "node tools/audit/keyboard.mjs",
+    "audit:layout": "node tools/audit/layout.mjs",
+    "audit:grid": "node tools/audit/grid.mjs",
+    "audit:scene": "node tools/audit/scene.mjs",
+    "audit:color": "node tools/audit/color.mjs",
+    "audit:shot": "node tools/audit/shot.mjs"
   },
   "dependencies": {
     "@number-flow/react": "^0.6.2",
@@ -48,6 +55,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^4.3.0",
+    "axe-core": "^4.14.0",
     "eslint": "^9.0.0",
     "oxlint": "1.87.0",
     "tailwindcss": "^4.3.3",

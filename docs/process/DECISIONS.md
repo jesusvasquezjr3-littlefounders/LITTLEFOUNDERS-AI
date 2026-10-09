@@ -79,6 +79,12 @@ Date: 2026-10-09. Status: accepted.
 
 Non-negotiable for every screen: (1) all text through i18n in en-US, es-MX and pt-BR, nothing hardcoded; (2) desktop and mobile each optimized, on clear grids; (3) text is never cut or overflowed; (4) the product's own audited icons for features and main actions, libraries for the rest; (5) design from evidence: the literature, graded, in [[RESEARCH-FOUNDATION]]. Rules and how they are checked: [[FRONTEND-GUIDE]].
 
+### D-010: Frontend audit tools in the repository
+
+Date: 2026-10-09. Status: accepted.
+
+The frontend audit scripts (accessibility, keyboard, layout, grid, scene framing, color, screenshots) live in `frontend/tools/audit/` as developer tools, run by hand with `npm run audit:*`. They are not a CI gate and not a test suite, so rule 5 in [[CLAUDE]] (no test suites or gates unless the owner asks) stands for those. Method and thresholds: [[FRONTEND-TOOLKIT]].
+
 ## Related
 
 - [[RESEARCH-FOUNDATION]]

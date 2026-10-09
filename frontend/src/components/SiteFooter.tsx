@@ -34,7 +34,7 @@ export function SiteFooter() {
   return <footer className="bg-black text-white">
     <div className={`${GRID} items-start gap-y-2 py-12 text-center md:py-16 md:text-start`}>
       <div className="col-span-4 flex min-h-12 items-center justify-center md:col-span-8 md:justify-start lg:col-span-3">
-        <a href="/" aria-label={brand} className={`inline-flex items-center ${FOCUS}`}>
+        <a href="/" aria-label={brand} className={`inline-flex min-h-12 items-center ${FOCUS}`}>
           <img src="/brand/logo-white.png" alt={brand} width={560} height={102} className="h-9 w-auto" />
         </a>
       </div>
