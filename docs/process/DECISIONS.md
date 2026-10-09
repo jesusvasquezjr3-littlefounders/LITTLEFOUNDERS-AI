@@ -67,8 +67,15 @@ Date: 2026-10-09. Status: accepted.
 
 The interface is built with seven libraries, non-negotiable: Bklit UI, Motion, Sileo, 000h by Cojeev, Bencho, Morphicons and Thinking Orbs. Where tokens or the stack had to change to fit them, they changed at once: the frontend moved to React 19, Tailwind CSS v4 and shadcn, and the hand-written design system was deleted and replaced. No other component, chart, toast, animation or icon-morph library is added without the owner. Details and rules: [[UI-LIBRARIES]] (accepted, with the per-library roles approved by the owner on 2026-10-09).
 
+### D-008: Writing and design skills
+
+Date: 2026-10-09. Status: accepted.
+
+`humanizer` is the standing standard for every word a person reads (rule 12 in [[CLAUDE]]). `impeccable` and the taste-skill design skills are installed but run only when the owner invokes them. Understand-Anything and os-taxonomy were reviewed and not installed. Details and pinned versions: [[AI-WORKFLOW]].
+
 ## Related
 
+- [[AI-WORKFLOW]]
 - [[UI-LIBRARIES]]
 - [[PRODUCT-REQUIREMENTS]]
 - [[ARCHITECTURE]]

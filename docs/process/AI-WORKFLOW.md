@@ -33,7 +33,10 @@ The operating manual for agents beyond the short rules in [[CLAUDE]]. It sets wh
 
 ## Current state
 
-- Installed skills are in `.claude/skills/`: anti-slop installer, Strix security skills and the security reference. [[CLAUDE]] and [[AGENTS]] are the same file.
+- Installed skills are in `.claude/skills/`: anti-slop installer, Strix security skills and the security reference, and the writing and design skills below. [[CLAUDE]] and [[AGENTS]] are the same file.
+- **Always on, for words a person reads:** `humanizer` (MIT, blader/humanizer, commit `225a6f3`, version 3.1.0). Rule 12 in [[CLAUDE]] makes it the standard for every interface string and every message to a user, in all three languages.
+- **Manual only, used when the owner names them:** `impeccable` (Apache 2.0, pbakaus/impeccable, commit `d631a88`, version 4.5.2), and from taste-skill (MIT, leonxlnx/taste-skill, commit `18dfc92`): `design-taste-frontend`, `redesign-existing-projects`, `high-end-visual-design`, `minimalist-ui`, `industrial-brutalist-ui`, `full-output-enforcement`, `stitch-design-taste`. Each has `disable-model-invocation: true` added to its front matter (the only change to the upstream files). They never override [[UI-LIBRARIES]] or [[DESIGN-SYSTEM]].
+- **How the third-party skills were taken:** only the skill folders; Impeccable's hooks (which run on every edit and stop) and its four subagent definitions were not installed, and the image-generation and GPT-specific taste skills and the v1 skill were left out. Impeccable's launcher (`scripts/impeccable`) downloads its engine binary from the project's GitHub releases on first use and checks it against a published SHA-256; that happens only when the owner invokes it. Understand-Anything (a code knowledge-graph plugin) and os-taxonomy (a children's curriculum dataset, not a skill) were reviewed and deliberately not installed.
 
 ## Related
 

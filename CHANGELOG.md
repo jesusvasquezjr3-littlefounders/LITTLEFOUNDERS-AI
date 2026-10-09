@@ -10,6 +10,7 @@ All notable changes to the repository. Newest first. Updated in the same commit 
 - Security tooling: vendored anti-slop Oxlint rules (`npm run lint:slop`), Strix security skills and references, rules for AI penetration testing ([[ai-pentesting]]).
 - Google Analytics 4, consent-gated, next to Plausible and Umami.
 - Git LFS tracking for the 3D character files.
+- Skills for words and design (D-008): `humanizer` as the always-on standard for user-facing text (new rule 12 in [[CLAUDE]] and [[AGENTS]]), and `impeccable` plus seven taste-skill design skills that run only when the owner invokes them; see [[AI-WORKFLOW]].
 - [[UI-LIBRARIES]]: the seven mandatory UI libraries (Bklit UI, Motion, Sileo, 000h by Cojeev, Bencho, Morphicons, Thinking Orbs), decision D-007 and tasks T-009 to T-011; the Bencho procedure and licence are recorded in it.
 
 ### Changed
