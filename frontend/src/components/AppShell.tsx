@@ -42,9 +42,9 @@ export function AppShell() {
     </header>
     <main id={mainId} tabIndex={-1} className={`${CONTAINER} flex-1 outline-none`}><Outlet /></main>
     <footer className="border-t border-[var(--v-border)]">
-      <div className={`${CONTAINER} flex flex-col gap-3 py-8 text-[length:var(--fs-small)] text-[var(--muted-foreground)]`}>
-        <nav aria-label={copy.siteShell.legal} className="flex flex-wrap items-center gap-x-5 gap-y-2">
-          <Button type="button" variant="ghost" size="sm" className="-ms-4" onClick={openCookiePreferences}>{copy.siteShell.cookies}</Button>
+      <div className={`${CONTAINER} flex flex-col items-center gap-3 py-8 text-center text-[length:var(--fs-small)] font-medium text-[var(--v-ink-soft)] md:items-start md:text-start`}>
+        <nav aria-label={copy.siteShell.legal} className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 md:justify-start">
+          <Button type="button" variant="ghost" size="sm" className="md:-ms-4" onClick={openCookiePreferences}>{copy.siteShell.cookies}</Button>
           <a href={`mailto:${contactEmail}`} className="inline-flex min-h-12 items-center break-all underline underline-offset-4">{contactEmail}</a>
         </nav>
         <p>© {new Date().getFullYear()} {appName}. {copy.siteShell.rights}</p>
