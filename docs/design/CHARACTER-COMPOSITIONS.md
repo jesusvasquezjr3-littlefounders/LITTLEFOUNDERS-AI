@@ -47,6 +47,7 @@ Rho is animated from the shared clip library with rotations only, added on top o
 
 ## Related
 
+- [[CHARACTER-AVATARS]]
 - [[CHARACTER-POSES]]
 - [[LANDING-MESSAGING]]
 - [[FRONTEND-GUIDE]]
