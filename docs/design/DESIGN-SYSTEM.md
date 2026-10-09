@@ -45,6 +45,7 @@ Tells an agent how the product must look and behave so every screen is consisten
 - [[UI-LIBRARIES]]
 - [[RESEARCH-FOUNDATION]]
 - [[FRONTEND-GUIDE]]
+- [[FRONTEND-TOOLKIT]]
 - [[USER-FLOWS]]
 - [[CODE-STYLE-GUIDE]]
 - [[PRODUCT-REQUIREMENTS]]

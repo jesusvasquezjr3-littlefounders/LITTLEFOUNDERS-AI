@@ -54,7 +54,8 @@ How it is built.
 
 - [[SYSTEM-DESIGN]]: The reasoning behind the system: required qualities, capacity assumptions and trade-offs.
 - [[ARCHITECTURE]]: The structure of the system: components, boundaries, dependencies and the stack.
-- [[FRONTEND-GUIDE]]: The rules for building the web client.
+- [[FRONTEND-GUIDE]]: How the web client is built: the stack, the structure, the five non-negotiable rules, the conventions, how a change is checked, and what is still open.
+- [[FRONTEND-TOOLKIT]]: Which skill, library or document to use for each frontend job, the repeating procedures, and how each mechanical check is run.
 - [[BACKEND-GUIDE]]: The rules for building server-side logic.
 - [[API-GUIDE]]: The contract style and rules for every interface between client and server.
 - [[DATABASE-GUIDE]]: Schema conventions, migrations, permissions and data handling for the database.

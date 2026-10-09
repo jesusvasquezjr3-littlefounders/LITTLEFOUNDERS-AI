@@ -32,7 +32,7 @@ Makes generated code indistinguishable from hand-written code and keeps it check
 
 ## Current state
 
-- ESLint with typescript-eslint, plus the vendored anti-slop Oxlint rules (`npm run lint:slop` in `frontend/`). Everything written to the repository is in English. When something is removed, its code, assets, comments and documentation pointers go in the same change.
+- ESLint with typescript-eslint, plus the vendored anti-slop Oxlint rules (`npm run lint:slop` in `frontend/`). TypeScript is strict except `noUncheckedIndexedAccess`, which is off because the libraries' copied code does not satisfy it; that copied code is excluded from ESLint and `lint:slop` ([[FRONTEND-GUIDE]]). Everything written to the repository is in English. When something is removed, its code, assets, comments and documentation pointers go in the same change.
 
 ## Related
 

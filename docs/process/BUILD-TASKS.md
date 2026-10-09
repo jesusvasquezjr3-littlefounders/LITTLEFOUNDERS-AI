@@ -42,6 +42,7 @@ Gives agents and humans one place to see what to do next. Each task is small, ha
 | T-014 | Talk to parents: test the landing words and the age ranges, and collect real quotes (with consent) for the page | open | From the advisor call; see [[LANDING-MESSAGING]]. Nothing is invented in the meantime. |
 | T-015 | Decide what an active user is and break usage down by age segment; decide who each return-visit message goes to, the parent or the child | open | From the same call. Product and analytics, not landing text. |
 | T-016 | Fill the footer: the address of each social profile and of the terms and privacy pages in `frontend/src/lib/footerLinks.ts`, and the links that go under About us, Product and Behind the scenes once their pages exist | open | Until then the marks and legal entries are shown but are not links. The social marks are simple glyphs drawn in `components/icons/social.tsx`; which networks to show is the owner's call. Related: T-003, T-012. |
+| T-017 | Decide whether the frontend audit scripts (axe, keyboard, layout overflow, grid measuring, scene framing, palette contrast) move into the repository as developer tools | open | They are not a gate and not a test suite (rule 5 in [[CLAUDE]] says to add neither unless the owner asks); today each session rebuilds them from the method in [[FRONTEND-TOOLKIT]]. |
 | T-007 | Define the security baseline with the owner and fill [[SECURITY-GUIDE]] and [[CHILD-SAFETY-AND-PRIVACY]] | open |  |
 
 ## Related

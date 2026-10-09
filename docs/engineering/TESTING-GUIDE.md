@@ -33,7 +33,7 @@ All tests of the previous version were deleted. The strategy is designed from ze
 
 ## Current state
 
-- Checks that exist today, run in `frontend/`: `npm run type-check`, `npm run lint`, `npm run build`. There is no test suite.
+- Checks that exist today, run in `frontend/`: `npm run type-check`, `npm run lint`, `npm run build`. There is no test suite. How a frontend change is looked at and measured (axe, keyboard, layout and measuring passes, in light and dark, in three languages, from 320 to 1440 px) is in [[FRONTEND-GUIDE]] and [[FRONTEND-TOOLKIT]]; those scripts are not in the repository.
 
 ## Related
 

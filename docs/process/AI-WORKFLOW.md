@@ -28,7 +28,7 @@ The operating manual for agents beyond the short rules in [[CLAUDE]]. It sets wh
 - [ ] When to use subagents and how to brief them; independent verification.
 - [ ] What agents must never do: invent requirements, push, skip checks, write outside scope.
 - [ ] How uncertainty is raised to the owner.
-- [ ] Installed agent skills and when each applies.
+- [x] Installed agent skills and when each applies: the frontend ones in [[FRONTEND-TOOLKIT]], the versions and licences below.
 - [ ] What belongs in agent memory versus in the repository.
 
 ## Current state

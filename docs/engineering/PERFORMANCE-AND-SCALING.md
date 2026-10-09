@@ -31,7 +31,7 @@ Gives agents numeric targets to meet and a plan for growth, so performance is de
 
 ## Current state
 
-- Cache headers for the frontend are set in `frontend/vercel.json`.
+- Cache headers for the frontend are set in `frontend/vercel.json`. Measured on 2026-10-09: about 289 KB of compressed JavaScript for the landing plus a lazy 77 KB chunk of icon data; React, Motion, the router and i18n are separate files for caching. No budget is set ([[FRONTEND-GUIDE]], open decisions).
 
 ## Related
 

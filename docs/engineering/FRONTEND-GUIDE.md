@@ -1,36 +1,24 @@
 ---
 title: Frontend guide
-status: scaffold
+status: draft
 updated: 2026-10-09
 ---
 
 # Frontend guide
 
-> The rules for building the web client.
+> How the web client is built: the stack, the structure, the five non-negotiable rules, the conventions, how a change is checked, and what is still open.
 
-> **Status: scaffold.** The structure is set; nothing below that is not marked as current state has been decided. Fill it in with the owner, then change the status to `draft` and, once approved, `accepted`.
+> **Status: draft.** The five rules and the library decisions are the owner's and in force ([[DECISIONS]] D-007, D-008, D-009). The stack, structure and conventions below record what is built and how it is done today; the open decisions at the end are marked as such and are not guessed.
 
 ## Role
 
-The owner defines the new frontend rules here. Agents follow them for every change under `frontend/`. Visual rules live in [[DESIGN-SYSTEM]]; language-level rules in [[CODE-STYLE-GUIDE]].
+Agents and humans follow this for every change under `frontend/`. Which skill or library to reach for, and the step-by-step procedures, are in [[FRONTEND-TOOLKIT]]. Visual rules live in [[DESIGN-SYSTEM]]; the library roles and wiring in [[UI-LIBRARIES]]; the evidence behind color, shape and children's ergonomics in [[RESEARCH-FOUNDATION]]; language-level rules in [[CODE-STYLE-GUIDE]].
 
 ## Read this when
 
 - Any change under `frontend/`.
-- Adding a route, state, data call or form.
-
-## To define
-
-- [ ] Folder structure and where each kind of file lives.
-- [ ] Routing and code splitting.
-- [ ] State management and server-state rules.
-- [ ] Data fetching, caching and error handling against the API contract.
-- [ ] Forms and validation at the boundary.
-- [ ] Theming (light and dark).
-- [ ] Accessibility requirements.
-- [ ] Performance budgets and bundle limits.
-- [ ] Client security: XSS, content security policy, token and storage handling.
-- [ ] Consent-gated analytics and 3D asset loading.
+- Adding a page, a section, a component, a string, a token or a dependency.
+- Adding a route, state, data call or form (the open decisions at the end apply first).
 
 ## The five non-negotiable rules
 
@@ -42,24 +30,96 @@ The owner set these on 2026-10-09 (D-009 in [[DECISIONS]]). They apply to every 
 4. **Iconography: our own for what identifies the product.** Icons that represent features, the main actions of the application, navigation and achievements are the product's own, drawn and audited in-house. Utility icons (close, chevrons, menu, theme, status marks) come from the libraries in [[UI-LIBRARIES]]: Lucide icon data through Morphicons, and Cojeev's. An icon never carries a meaning alone: it has an accessible name, and a meaning that matters (right or wrong, a status, a category) also has a word. No other icon set is added. The process for drawing and auditing our own icons (format, grid, review, registry) is not defined yet: T-012, to be settled with the owner at the first feature that needs one.
 5. **Design from evidence.** Design claims about color, shape, gamification, rewards and children's motor ability are used only at the strength the literature gives them: grade A may become a rule, B a default, C a guideline with its caveat, D nothing. The evidence, the grades and what they mean for the current tokens are in [[RESEARCH-FOUNDATION]].
 
-How the rules were last checked (2026-10-09): axe-core and a keyboard pass for accessibility, and a layout pass that opens the page, the preferences sheet and the language menu at 320, 360, 390, 768 and 1440 px in the three languages and flags page-level horizontal scroll, ellipsis, line clamps, clipped text and text that spills out of its box or the viewport. A measuring pass reads the same page at 390, 768, 1024 and 1440 px and reports the left edge of every text block, the gutters and column edges, the space between sections, the characters per line of each text block, and how the text and image columns are proportioned and centered. The scripts are not part of the repository; a change runs the same kind of check before it is called done.
+## Stack and commands
 
-## Decided
+Node 24. Everything below is run from `frontend/`.
 
-- Use the seven libraries in [[UI-LIBRARIES]] before writing any component, animation, chart, toast, icon morph or loader by hand; another library needs the owner (D-007 in [[DECISIONS]]).
-- Reduced motion is honored once at the root (`MotionConfig reducedMotion="user"`) and per component where a library has its own switch.
-- Accessibility floor, met on the landing and kept for every screen: the skip link is the first Tab stop; every interactive target is at least 48 px; focus is always visible; a dialog traps focus and returns it to what opened it; no axe violation in light and dark in en-US, es-MX and pt-BR. How it was checked: [[UI-LIBRARIES]].
-- Folders: `src/components/` (ours), `src/components/ui/` and `src/components/charts/` (copied from registries, not linted, edited only for the patches listed in [[UI-LIBRARIES]]), `src/features/<name>/` (one folder per page or feature), `src/styles/` (Tailwind entry and tokens), `src/i18n/` (copy).
+| Piece | What is used |
+|---|---|
+| UI | React 19, TypeScript 5 in strict mode, React Router 6 |
+| Build | Vite 6; `npm run build` type-checks, builds, then prerenders the SEO shell (`scripts/seo/`) |
+| Styling | Tailwind CSS v4 (`@tailwindcss/vite`), tokens in `src/styles/lf-theme.css` on top of Cojeev's token layer |
+| Components | shadcn registries `@cojeev` and `@bklit`, plus Motion, Sileo, Morphicons and Thinking Orbs: [[UI-LIBRARIES]] |
+| Copy | i18next only chooses and remembers the language; the copy itself is typed JSON per locale |
+| Lint | ESLint (typescript-eslint) and the vendored anti-slop Oxlint rules |
 
-## Current state
+| Command | What it does |
+|---|---|
+| `npm run dev` | Dev server on `http://localhost:5173`. Vite binds the IPv6 loopback: use `localhost`, not `127.0.0.1`. After changing `vite.config.ts` or installing a Tailwind or shadcn piece, stop and start it again. |
+| `npm run type-check` | `tsc --noEmit`. `noUncheckedIndexedAccess` is off because the registries' copied code does not satisfy it |
+| `npm run lint` | ESLint. Registry code is excluded |
+| `npm run lint:slop` | Anti-slop rules on our own TypeScript: parse input at the boundary, no `unknown` parameters, no chained or unjustified type assertions. Registry code is excluded. Older files still have findings (T-001); new code should have none |
+| `npm run build` | The production build, as CI runs it |
 
-- React 19, Vite, TypeScript and Tailwind CSS v4. Locales: en-US, es-MX, pt-BR. Light and dark themes. Plausible, Umami and Google Analytics 4 load only after consent.
+## Where things live
+
+```
+frontend/
+  components.json        shadcn: aliases and the two registries
+  index.html             theme boot script and the boot veil (inline on purpose; read its comments before touching it)
+  public/                brand/ (logos, color and white), landing/ (hero and problem videos and posters),
+                         fonts/ (Plus Jakarta Sans), og/, scenes/ (the 3D scenes, Git LFS: never delete or overwrite)
+  scripts/seo/           the page table (titles, descriptions), prerender, sitemap, llms.txt
+  tools/oxlint/          the vendored anti-slop rules
+  src/
+    main.tsx  App.tsx    entry, providers, routes
+    components/          ours: AppShell, SiteFooter, TopbarControls, CookieConsentBanner, CircleFlag, icons/
+    components/ui/       copied from the registries (Cojeev). Not edited, not linted; see the patch list in UI-LIBRARIES
+    components/charts/   copied from the registries (Bklit). Same rule
+    features/<name>/     one folder per page or feature; landing/ holds the sections and type.ts
+    i18n/                index.ts (language), copy.ts (typed bundles), useCopy.ts (hooks), <locale>/core.json and site.json
+    lib/                 analytics, consent and visitor, boot, footerLinks, utils; cojeev/ and cojeev-motion/ are registry code
+    styles/              app.css (the one entry), lf-fonts.css, lf-theme.css, cojeev/ (registry CSS)
+    theme/               useTheme: light, dark or auto, sets both html.dark and html[data-mode]
+```
+
+- **Naming.** Components are PascalCase files with one main export; folders and non-component files are camelCase or lowercase. A component starts with a comment that says what it is for and which rule it applies.
+- **Copy namespaces.** `core.json` holds the shell (skip link, theme and language controls, footer, brand, contact); `site.json` holds the landing and the cookie choice. A key lives in exactly one namespace; `useCoreCopy()` and `useSiteCopy()` read them, and a missing key is a type error. Add a namespace per feature when a feature needs one.
+- **Styling.** Tailwind classes that read tokens (`text-[var(--v-ink-soft)]`, `bg-[var(--v-beige)]`); no raw hex values in components; `cn()` from `lib/utils` merges classes. Shared layout and type roles live next to the feature that owns them (`features/landing/type.ts`).
+- **Theming.** Light and dark are both always designed. A color is added to `lf-theme.css` for both modes, with its label color chosen by measurement ([[RESEARCH-FOUNDATION]]), never inside a component.
+- **Dependencies.** A new package needs a reason a library from [[UI-LIBRARIES]] cannot give; a new UI library needs the owner.
+
+## Accessibility floor
+
+Met on the landing and kept for every screen: the skip link is the first Tab stop; every interactive target is at least 48 px (76 px where a young child answers or plays, [[RESEARCH-FOUNDATION]]); focus is always visible; a dialog traps focus and returns it to what opened it; text contrast is at least 4.5:1 and component edges 3:1; color is never the only channel; reduced motion is honored once at the root (`MotionConfig reducedMotion="user"`) and per component where a library has its own switch; no axe violation in light and dark in en-US, es-MX and pt-BR.
+
+## Performance today
+
+Measured on 2026-10-09: about 289 KB of JavaScript, compressed, for the landing (React DOM 84, the app 131, Motion 49, i18n 17, router 7, the page 10) plus a lazy 77 KB chunk of icon data. React, Motion, the router and i18n are built into their own files so a deploy that changes only our code does not invalidate them in a returning visitor's cache. No budget is set yet (open decision below); cache headers are in `frontend/vercel.json`.
+
+## Analytics, consent and the 3D scenes
+
+Plausible, Umami and Google Analytics 4 load only after the visitor accepts the optional cookies (`lib/analytics.tsx`, `lib/visitor.ts`, [[OBSERVABILITY]]). The hero and problem scenes are looping videos with a poster that stays for reduced motion and less data (`features/landing/LoopVideo.tsx`); the interactive 3D character files are Git LFS and are not loaded by the landing.
+
+## How a change is checked before it is called done
+
+1. `npm run type-check`, `npm run lint` and `npm run build` pass; new code passes `npm run lint:slop`.
+2. The page is looked at, not only built: light and dark, en-US, es-MX and pt-BR, at 320, 390, 768, 1024 and 1440 px, with the cookie banner and with it dismissed, the preferences sheet and the language menu opened.
+3. Mechanical checks, run the same way each time (method in [[FRONTEND-TOOLKIT]]): axe-core with no violation; a keyboard pass (tab order, focus visible, Escape returns focus); the layout pass (no horizontal scroll, no ellipsis, line clamp or clipped text); the measuring pass when layout changed (left edges, gutters, space between sections, characters per line, image and text centers).
+4. Copy is in all three locale files and passes the humanizer standard.
+5. Documentation is part of the change (rule 11 in [[CLAUDE]]): the affected documents, their `updated` date and [[CHANGELOG]]. The commit stays local; the owner pushes.
+
+## Open decisions
+
+Not decided; do not guess them. Raise each with the owner when a feature needs it.
+
+- [ ] Routing beyond the single `/` route, and code splitting per route.
+- [ ] State management and server-state rules.
+- [ ] Data fetching, caching and error handling against the API contract ([[API-GUIDE]]); depends on the backend.
+- [ ] Forms and validation at the boundary.
+- [ ] Client security: content security policy, token and storage handling ([[SECURITY-GUIDE]]).
+- [ ] Performance budgets and bundle limits ([[PERFORMANCE-AND-SCALING]]).
+- [ ] The product's own icons: format, grid, review, registry (T-012).
+- [ ] Which surfaces are young-child surfaces and the age bands (T-013).
+- [ ] Whether the frontend audit scripts live in the repository as tools (T-017).
 
 ## Related
 
+- [[FRONTEND-TOOLKIT]]
 - [[DESIGN-SYSTEM]]
 - [[UI-LIBRARIES]]
 - [[RESEARCH-FOUNDATION]]
+- [[LANDING-MESSAGING]]
 - [[CODE-STYLE-GUIDE]]
 - [[API-GUIDE]]
 - [[SECURITY-GUIDE]]
@@ -72,5 +132,6 @@ Back to [[INDEX]].
 
 ## Update this document when
 
-- The owner changes a frontend rule.
-- The structure, routing or data layer changes.
+- The owner changes a frontend rule or settles an open decision.
+- The stack, the folder structure, a command or the checking procedure changes.
+- A convention is added or retired.

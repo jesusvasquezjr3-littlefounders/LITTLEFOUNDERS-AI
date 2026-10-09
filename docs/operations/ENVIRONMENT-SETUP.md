@@ -32,7 +32,7 @@ An environment configured badly produces errors that look like product bugs. Thi
 
 ## Current state
 
-- Clone with Git LFS installed. Frontend: `npm install`, `npm run dev`, `npm run type-check && npm run lint && npm run build` in `frontend/`. Database stack from `database/`: `npm run db:sync`, then `db:up`. Enable the documentation check with `git config core.hooksPath .githooks`.
+- Clone with Git LFS installed. Frontend: `npm install`, `npm run dev`, `npm run type-check && npm run lint && npm run build` in `frontend/`. Database stack from `database/`: `npm run db:sync`, then `db:up`. Enable the documentation check with `git config core.hooksPath .githooks`. The frontend dev server listens on `localhost` (the IPv6 loopback, not `127.0.0.1`) and must be restarted after a change to `vite.config.ts` or after installing a Tailwind or shadcn piece; more traps in [[FRONTEND-TOOLKIT]].
 
 ## Related
 

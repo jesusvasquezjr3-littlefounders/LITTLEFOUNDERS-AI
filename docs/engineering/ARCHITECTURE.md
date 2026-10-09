@@ -32,7 +32,7 @@ The map an agent consults before adding code, so each piece goes in the right pl
 
 ## Current state
 
-- Independent packages in one repository: `frontend/` (React 18, Vite, TypeScript), `database/` (pinned self-hosted Supabase and local-stack scripts), `backend/` (empty, reserved), `pulse/` (observability: Plausible CE, ClickHouse, PostgreSQL, Umami, Uptime Kuma).
+- Independent packages in one repository: `frontend/` (React 19, Vite, TypeScript, Tailwind CSS v4), `database/` (pinned self-hosted Supabase and local-stack scripts), `backend/` (empty, reserved), `pulse/` (observability: Plausible CE, ClickHouse, PostgreSQL, Umami, Uptime Kuma).
 
 ## Related
 

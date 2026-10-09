@@ -44,7 +44,7 @@ Names the only building blocks of the interface, so no agent reaches for another
 
 - **Stack:** React 19, Tailwind CSS v4 (`@tailwindcss/vite`), shadcn config in `frontend/components.json` with the registries `@bklit` and `@cojeev`. The old hand-written design system (`src/rebuild/`) is deleted.
 - **One stylesheet entry:** `src/styles/app.css` imports Tailwind, `lf-fonts.css`, Cojeev's CSS and, last, `lf-theme.css`. `main.tsx` imports it and `sileo/styles.css`.
-- **Tokens:** Cojeev's components read `--v-*` variables, shadcn and Bklit read `--primary`, `--background`, `--chart-1..5` and friends. `lf-theme.css` re-points all of them at the LittleFounders palette (indigo primary, orange call to action, sky, gold, mint) in light and dark, and sets 48/56/64/72 px control heights for children. Cojeev's slots keep their names but hold our hues (`--v-pink` is our orange).
+- **Tokens:** Cojeev's components read `--v-*` variables, shadcn and Bklit read `--primary`, `--background`, `--chart-1..5` and friends. `lf-theme.css` re-points all of them at the LittleFounders palette (indigo primary, orange call to action, sky, gold, mint) in light and dark, and sets 48/56/64/76 px control heights for children (76 px is 2 cm, for young-child surfaces). Cojeev's slots keep their names but hold our hues (`--v-pink` is our orange).
 - **Theme switch:** `ThemeProvider` sets both `html.dark` and `html[data-mode]`; the inline boot script in `index.html` does the same before first paint. Cojeev reads `data-mode`, Tailwind's `dark:` and Thinking Orbs read the class.
 - **Typeface:** Plus Jakarta Sans, self-hosted. Cojeev's DM Sans and Bricolage Grotesque (410 KB of inline base64) are not used and are removed.
 - **Vendored code:** what the registries copy into `src/components/ui/`, `src/components/charts/`, `src/lib/cojeev/` and `src/lib/cojeev-motion/` is theirs. It is excluded from ESLint and `lint:slop`, and `noUncheckedIndexedAccess` is off in `tsconfig.json` because their code does not satisfy it. Our own files are linted.
@@ -126,6 +126,7 @@ Re-run this audit when a component is added, using a script like the one describ
 
 - [[DESIGN-SYSTEM]]
 - [[FRONTEND-GUIDE]]
+- [[FRONTEND-TOOLKIT]]
 - [[DECISIONS]]
 - [[BUILD-TASKS]]
 - [[CODE-STYLE-GUIDE]]

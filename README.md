@@ -8,7 +8,7 @@ LittleFounders helps children and teenagers learn about money.
 
 | Piece | State |
 |---|---|
-| `frontend/` | The landing page only (hero and problem sections), with the three locales (`en-US`, `es-MX`, `pt-BR`), light/dark theme, the design tokens and consent-gated Plausible, Umami and Google Analytics 4. Its calls to action do nothing yet. |
+| `frontend/` | The landing page (hero, the problem, the four skills, what stays true, the closing ask) inside a shell with header and black footer, built on React 19, Tailwind CSS v4 and seven UI libraries, with the three locales (`en-US`, `es-MX`, `pt-BR`), light/dark theme, the brand tokens and consent-gated Plausible, Umami and Google Analytics 4. Its calls to action do nothing yet. How to work on it: `docs/engineering/FRONTEND-GUIDE.md` and `FRONTEND-TOOLKIT.md`. |
 | `database/` | Only the pinned Supabase release (`SUPABASE_VERSION`), the Railway images for the database and gateway, and local-stack scripts. There is no schema: `database/migrations/` is empty. |
 | `backend/` | Empty, reserved for the new backend. |
 | `pulse/` | Observability, kept as is: Plausible CE, ClickHouse, PostgreSQL, Umami and Uptime Kuma, each a pinned upstream image. |
