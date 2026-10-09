@@ -28,7 +28,7 @@
   "landingV2": {
     "title": "Let your kids practice money",
     "titleAccent": "before it's real.",
-    "lead": "A playground for ages 6 to 18, with no real money. Money habits, saving, staying out of debt and starting a business.",
+    "lead": "A playground for ages 12 to 18, with no real money. Money habits, saving, staying out of debt and starting a business.",
     "heroParent": "I'm a Parent",
     "heroLearn": "I just want to learn",
     "heroSceneAlt": "Dr. Rho and Zara, two Mentors, with a flame, a book, a light bulb, a star, toy blocks and seeds floating around them.",
@@ -38,7 +38,7 @@
       {
         "step": "Step 1",
         "name": "Money habits",
-        "age": "From age 6",
+        "age": "From age 12",
         "text": "How they see money and what it is for: spending, wanting and choosing."
       },
       {

@@ -28,7 +28,7 @@
   "landingV2": {
     "title": "Deixe seus filhos praticarem com dinheiro",
     "titleAccent": "antes de ser de verdade.",
-    "lead": "Um playground para quem tem de 6 a 18 anos, sem dinheiro de verdade. Hábitos com dinheiro, poupança, evitar dívidas e empreender.",
+    "lead": "Um playground para quem tem de 12 a 18 anos, sem dinheiro de verdade. Hábitos com dinheiro, poupança, evitar dívidas e empreender.",
     "heroParent": "Sou pai ou mãe",
     "heroLearn": "Só quero aprender",
     "heroSceneAlt": "O Dr. Rho e a Zara, dois Mentores, com uma chama, um livro, uma lâmpada, uma estrela, blocos de montar e sementes flutuando ao redor deles.",
@@ -38,7 +38,7 @@
       {
         "step": "Passo 1",
         "name": "Hábitos com dinheiro",
-        "age": "A partir dos 6 anos",
+        "age": "A partir dos 12 anos",
         "text": "Como enxergam o dinheiro e para que ele serve: gastar, querer e escolher."
       },
       {

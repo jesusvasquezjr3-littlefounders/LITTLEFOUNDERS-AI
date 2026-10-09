@@ -20,6 +20,12 @@ Children's data and safety come before every other consideration. This document 
 - Designing the AI tutor or any communication feature.
 - Choosing a third-party processor.
 
+## Inputs from the owner (2026-10-09, not yet confirmed with counsel)
+
+- Educational STEM platforms such as Scratch, Code.org and Khan Academy generally do not let a child under 13 create an account alone: a parent or legal guardian creates it and consents to the handling of the child's data. From 13, most let the teenager manage their own account. The reason given is the United States COPPA law, which sets 13 as the minimum age to collect personal data without parental permission.
+- Mexico: the General Law on the Rights of Girls, Boys and Adolescents (LGDNNA), article 101 Bis 2, gives minors the right to safe access to the internet for education, science and leisure, and expects the State to encourage STEM tools, with accompaniment and supervision by guardians.
+- Decision: the platform is for ages 12 to 18 ([[DECISIONS]] D-013). Under-12 users need a different registration process, to be designed.
+
 ## To define
 
 - [ ] The legal regimes that apply per market (to be confirmed with counsel before production).

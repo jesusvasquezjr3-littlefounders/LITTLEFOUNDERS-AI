@@ -28,7 +28,7 @@
   "landingV2": {
     "title": "Que tus hijos practiquen con el dinero",
     "titleAccent": "antes de que sea real.",
-    "lead": "Un espacio para jugar y aprender de 6 a 18 años, sin dinero real. Hábitos con el dinero, ahorro, evitar deudas y emprender.",
+    "lead": "Un espacio para jugar y aprender de 12 a 18 años, sin dinero real. Hábitos con el dinero, ahorro, evitar deudas y emprender.",
     "heroParent": "Soy Padre",
     "heroLearn": "Solo quiero aprender",
     "heroSceneAlt": "El Dr. Rho y Zara, dos Mentores, con una llama, un libro, una bombilla, una estrella, bloques de juego y semillas flotando a su alrededor.",
@@ -38,7 +38,7 @@
       {
         "step": "Paso 1",
         "name": "Hábitos con el dinero",
-        "age": "Desde los 6 años",
+        "age": "Desde los 12 años",
         "text": "Cómo ven el dinero y para qué sirve: gastar, querer y elegir."
       },
       {

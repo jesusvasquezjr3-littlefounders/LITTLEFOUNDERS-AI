@@ -97,6 +97,12 @@ Date: 2026-10-09. Status: accepted.
 
 Scenes with the characters follow one set of rules (true scale with Dina large, bright light in both modes, no visible edges, no collisions, delivered as video, rendered from the artist sources, at most 30 % of a window's height), written in [[CHARACTER-COMPOSITIONS]], and are rendered with the tools in `frontend/tools/render/`. `three` is a development dependency for those tools only.
 
+### D-013: The platform is for ages 12 to 18
+
+Date: 2026-10-09. Status: accepted.
+
+The owner set the product audience at 12 to 18 years old, because the platforms the product is compared with (Scratch, Code.org, Khan Academy) let teenagers from 13 manage their own account, while younger children need a parent or guardian to create it and consent. The landing says "ages 12 to 18" and the first skill starts at 12. Children under 12 are not served until the owner designs a different registration process, after looking at how existing learning platforms register young users. Legal inputs the owner supplied (not yet confirmed with counsel) are recorded in [[CHILD-SAFETY-AND-PRIVACY]]. Open: 12 is below the age of 13 those inputs name (T-020).
+
 ## Related
 
 - [[RESEARCH-FOUNDATION]]
