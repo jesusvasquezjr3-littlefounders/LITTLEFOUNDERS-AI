@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { sileo } from 'sileo';
 import { Badge } from '@/components/ui/badge';
@@ -37,11 +37,18 @@ export function CookieConsentBanner({ onDecision }: { onDecision?: (granted: boo
   const headingId = useId();
   const [choice, setChoice] = useState<CookieChoice>(getCookieConsent());
   const [preferencesOpen, setPreferencesOpen] = useState(false);
+  const opener = useRef<HTMLElement | null>(null);
+
+  /** Remembers what had focus, so closing the sheet can give it back (there is no Radix trigger to do it). */
+  const openPreferences = () => {
+    opener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    setPreferencesOpen(true);
+  };
 
   useEffect(() => {
     const open = () => {
       setChoice(getCookieConsent());
-      setPreferencesOpen(true);
+      openPreferences();
     };
 
     window.addEventListener(OPEN_PREFERENCES_EVENT, open);
@@ -53,6 +60,8 @@ export function CookieConsentBanner({ onDecision }: { onDecision?: (granted: boo
     setCookieConsent(granted ? 'granted' : 'denied');
     setChoice(granted ? 'granted' : 'denied');
     setPreferencesOpen(false);
+    // The banner is about to leave and may hold focus: hand it to the page so it is not lost.
+    document.querySelector<HTMLElement>('main')?.focus({ preventScroll: true });
     onDecision?.(granted);
     sileo.success({ title: granted ? copy.toastGranted : copy.toastDenied });
   };
@@ -66,7 +75,7 @@ export function CookieConsentBanner({ onDecision }: { onDecision?: (granted: boo
 
   return <>
     <AnimatePresence>
-      {choice === 'unset' && !preferencesOpen ? <motion.section key="banner" aria-labelledby={headingId}
+      {choice === 'unset' ? <motion.section key="banner" aria-labelledby={headingId}
         className="fixed inset-x-0 bottom-0 z-40 rounded-t-[var(--r-sheet)] bg-[var(--v-paper)] px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-[var(--shadow-float)] sm:px-6"
         initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ type: 'spring', stiffness: 380, damping: 36 }}>
         <div className="mx-auto flex w-full max-w-[1120px] flex-wrap items-center gap-4">
@@ -76,14 +85,17 @@ export function CookieConsentBanner({ onDecision }: { onDecision?: (granted: boo
           </div>
           <div className="flex flex-[1_1_auto] flex-wrap gap-3">
             {decisions}
-            <Button type="button" variant="ghost" aria-haspopup="dialog" onClick={() => setPreferencesOpen(true)}>{copy.preferences}</Button>
+            <Button type="button" variant="ghost" aria-haspopup="dialog" onClick={openPreferences}>{copy.preferences}</Button>
           </div>
         </div>
       </motion.section> : null}
     </AnimatePresence>
 
     <Sheet open={preferencesOpen} onOpenChange={setPreferencesOpen}>
-      <SheetContent aria-describedby={undefined}>
+      <SheetContent aria-describedby={undefined} onCloseAutoFocus={(event) => {
+        event.preventDefault();
+        (opener.current?.isConnected ? opener.current : document.querySelector<HTMLElement>('main'))?.focus({ preventScroll: true });
+      }}>
         <SheetHeader className="!flex-col !items-stretch gap-2">
           <SheetTitle>{copy.sheetTitle}</SheetTitle>
           <SheetDescription>{copy.sheetIntro}</SheetDescription>

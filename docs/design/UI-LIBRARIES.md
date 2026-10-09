@@ -90,6 +90,25 @@ Default source for any component that is not a chart, toast, icon morph or loade
 
 **Rules when a block is adopted.** Put it under `src/components/bencho/` with its notice and URL in a header comment; import `motion/react` (blocks use `framer-motion`) and replace `lucide-react` with `lucide` icon data through Morphicons where an icon changes state; take strings from the locale files and colors from the tokens; add keyboard and reduced-motion behavior; swap photographs for our own art. Sounds are off by default. No block is adopted yet; they are brought in one at a time as screens need them (T-009).
 
+## Local patches to copied code
+
+Registry code is not edited, with these exceptions. A patch is marked `LOCAL PATCH` in the file; after an `npx shadcn@latest add` that overwrites the file, check it and re-apply.
+
+| File | Patch | Why |
+|---|---|---|
+| `src/components/ui/scroll-area.tsx` (`ScrollAreaList`) | The viewport gets `role="presentation"` and no `tabIndex` | Cojeev wraps every dropdown menu's items in a scroll viewport that is focusable; axe reports `aria-required-children` (critical) because a `role=menu` may only contain menu items. |
+
+## Accessibility audit (2026-10-09, T-011)
+
+Tools: axe-core 4 (WCAG 2.0 to 2.2 A and AA plus best practices) driven through headless Chrome on the landing in light and dark and in en-US, es-MX and pt-BR, in four states: the page with the cookie banner, the preferences sheet open, the language menu open, and a keyboard-only pass (Tab, Enter, arrows, Escape). Components covered: Button, Sheet, Dropdown menu, Badge, the ring chart's container, Sileo toasts.
+
+- **Passed:** no axe violation on the page or in the open sheet, in any theme or language (this includes text contrast); every interactive element is at least 48 px in both directions; focus is visible (2 px brand outline) on every control; the sheet is labelled, traps focus and closes with Escape; the language menu opens with Enter, moves with the arrows and closes with Escape returning focus to its button.
+- **Fixed in this pass:** the cookie banner came first in the DOM and took the first Tab stop before the skip link (now rendered after the page, still fixed to the bottom); the footer e-mail link and the logo were 19 and 32 px tall (now 48); the scroll wrapper inside menus (patch above); closing the preferences sheet dropped focus to the page body (it now returns to the control that opened it, and to the page after a decision, without scrolling).
+- **Not defects of the page:** with a menu open axe also reports `aria-hidden-focus`, `landmark-one-main`, `page-has-heading-one` and `region`; they appear because Radix hides the rest of the page while a modal menu is open.
+- **Not verified:** a real screen reader (NVDA, VoiceOver); reduced-motion behavior of Cojeev's own animations (Motion's is configured globally, and Sileo's was verified in its source); touch behavior on a phone.
+
+Re-run this audit when a component is added, using a script like the one described here (axe through CDP) before calling the work done.
+
 ## Which library for which need
 
 | Need | Use |

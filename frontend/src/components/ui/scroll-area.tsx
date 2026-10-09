@@ -217,9 +217,9 @@ export function ScrollArea({ className, variant, children, viewportClassName, vi
   </ScrollbarAppearanceContext.Provider>;
 }
 export type ScrollAreaListProps = ScrollAreaProps & { maxHeight?: React.CSSProperties["maxHeight"] };
-/** Internal list scrollport: its owning menu/list retains focus and semantics. */
+/** Internal list scrollport: its owning menu/list retains focus and semantics. LOCAL PATCH (LittleFounders): role="presentation" and no tabIndex so a menu's only children are menu items (axe aria-required-children); see docs/design/UI-LIBRARIES.md. */
 export function ScrollAreaList({ maxHeight = "var(--list-scroll-max-height, min(320px, 60dvh))", className, style, viewportProps, ...props }: ScrollAreaListProps) {
-  return <ScrollArea variant="plain" className={cn("v-list-scroll", className)} style={{ "--h": typeof maxHeight === "number" ? `${maxHeight}px` : maxHeight, ...style } as React.CSSProperties} viewportProps={{ role: undefined, "aria-label": undefined, tabIndex: -1, ...viewportProps }} {...props} />;
+  return <ScrollArea variant="plain" className={cn("v-list-scroll", className)} style={{ "--h": typeof maxHeight === "number" ? `${maxHeight}px` : maxHeight, ...style } as React.CSSProperties} viewportProps={{ role: "presentation", "aria-label": undefined, tabIndex: undefined, ...viewportProps }} {...props} />;
 }
 /** Preserve a consumer's native asChild element while wrapping only its contents. */
 export function scrollAreaListChildren(children: React.ReactNode, asChild?: boolean) {

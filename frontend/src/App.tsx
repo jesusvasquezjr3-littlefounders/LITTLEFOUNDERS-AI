@@ -50,7 +50,6 @@ export function App() {
     <MotionConfig reducedMotion="user">
       <ThemeProvider>
         <AnalyticsScripts consentVersion={consentVersion} />
-        <CookieConsentBanner onDecision={() => setConsentVersion((v) => v + 1)} />
         <ThemedToaster />
         <Suspense fallback={<PageLoading />}>
           <Routes>
@@ -60,6 +59,8 @@ export function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>
+        {/* After the page in the DOM so the skip link stays the first stop; it is fixed to the bottom either way. */}
+        <CookieConsentBanner onDecision={() => setConsentVersion((v) => v + 1)} />
       </ThemeProvider>
     </MotionConfig>
   );

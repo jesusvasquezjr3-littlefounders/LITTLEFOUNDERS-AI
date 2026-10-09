@@ -37,7 +37,8 @@ The owner defines the new frontend rules here. Agents follow them for every chan
 
 - Use the seven libraries in [[UI-LIBRARIES]] before writing any component, animation, chart, toast, icon morph or loader by hand; another library needs the owner (D-007 in [[DECISIONS]]).
 - Reduced motion is honored once at the root (`MotionConfig reducedMotion="user"`) and per component where a library has its own switch.
-- Folders: `src/components/` (ours), `src/components/ui/` and `src/components/charts/` (copied from registries, not edited and not linted), `src/features/<name>/` (one folder per page or feature), `src/styles/` (Tailwind entry and tokens), `src/i18n/` (copy).
+- Accessibility floor, met on the landing and kept for every screen: the skip link is the first Tab stop; every interactive target is at least 48 px; focus is always visible; a dialog traps focus and returns it to what opened it; no axe violation in light and dark in en-US, es-MX and pt-BR. How it was checked: [[UI-LIBRARIES]].
+- Folders: `src/components/` (ours), `src/components/ui/` and `src/components/charts/` (copied from registries, not linted, edited only for the patches listed in [[UI-LIBRARIES]]), `src/features/<name>/` (one folder per page or feature), `src/styles/` (Tailwind entry and tokens), `src/i18n/` (copy).
 
 ## Current state
 

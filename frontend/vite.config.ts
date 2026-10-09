@@ -10,6 +10,22 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Stable libraries get their own files, so a deploy that only changes our code does not invalidate them in a returning visitor's cache.
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined;
+          if (/[\/](react|react-dom|scheduler)[\/]/.test(id)) return 'react';
+          if (/[\/](motion|framer-motion|motion-dom|motion-utils)[\/]/.test(id)) return 'motion';
+          if (/[\/](react-router|react-router-dom|@remix-run)[\/]/.test(id)) return 'router';
+          if (/[\/](i18next|react-i18next|i18next-browser-languagedetector)[\/]/.test(id)) return 'i18n';
+
+          return undefined;
+        },
+      },
+    },
+  },
   server: {
     port: 5173,
   },
