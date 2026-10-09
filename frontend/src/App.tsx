@@ -1,15 +1,31 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { MotionConfig } from 'motion/react';
+import { Toaster } from 'sileo';
+import { ThinkingOrb } from 'thinking-orbs';
 import { ThemeProvider } from '@/theme/useTheme';
 import { AnalyticsScripts } from '@/lib/analytics';
 import { CookieConsentBanner } from '@/components/CookieConsentBanner';
+import { AppShell } from '@/components/AppShell';
+import { useCoreCopy } from '@/i18n/useCopy';
 import { releaseBootVeil } from '@/lib/boot';
-import { SiteLayout } from '@/SiteLayout';
-import { Landing } from '@/Landing';
+
+const Landing = lazy(() => import('@/features/landing/Landing').then((module) => ({ default: module.Landing })));
+
+/** Shown while a page's code loads: a thinking orb, announced as "Loading". */
+function PageLoading() {
+  const label = useCoreCopy().appShell.loading;
+
+  return <div role="status" className="grid min-h-[60dvh] place-items-center">
+    <ThinkingOrb state="working" size={64} />
+    <span className="sr-only">{label}</span>
+  </div>;
+}
 
 /*
  * The whole app: one page, `/`, inside the site shell. Any other URL goes
- * back to it.
+ * back to it. Reduced motion is honored once, here, for every Motion
+ * component below.
  */
 export function App() {
   const [consentVersion, setConsentVersion] = useState(0);
@@ -24,15 +40,20 @@ export function App() {
   }, []);
 
   return (
-    <ThemeProvider>
-      <AnalyticsScripts consentVersion={consentVersion} />
-      <CookieConsentBanner onDecision={() => setConsentVersion((v) => v + 1)} />
-      <Routes>
-        <Route element={<SiteLayout />}>
-          <Route index element={<Landing />} />
-        </Route>
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </ThemeProvider>
+    <MotionConfig reducedMotion="user">
+      <ThemeProvider>
+        <AnalyticsScripts consentVersion={consentVersion} />
+        <CookieConsentBanner onDecision={() => setConsentVersion((v) => v + 1)} />
+        <Toaster position="top-center" />
+        <Suspense fallback={<PageLoading />}>
+          <Routes>
+            <Route element={<AppShell />}>
+              <Route index element={<Landing />} />
+            </Route>
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
+      </ThemeProvider>
+    </MotionConfig>
   );
 }

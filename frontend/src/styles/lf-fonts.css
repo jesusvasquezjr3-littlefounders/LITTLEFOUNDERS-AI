@@ -1,0 +1,14 @@
+/*
+ * The one typeface, self-hosted (public/fonts). Cojeev ships DM Sans and
+ * Bricolage Grotesque as 410 KB of inline base64; neither is used. This file
+ * also owns the cascade layer order Cojeev's components rely on.
+ */
+@layer theme, base, components, utilities, cojeev-states, cojeev-flow, cojeev-morph, cojeev-accessibility;
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url('/fonts/plus-jakarta-sans-latin-v1.woff2') format('woff2');
+}

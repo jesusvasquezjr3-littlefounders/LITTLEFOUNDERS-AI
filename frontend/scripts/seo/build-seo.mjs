@@ -13,7 +13,7 @@
  *    crawler, which are precisely the consumers this exists for.
  * 2. It does not invent copy. Titles and descriptions come from site.mjs; the
  *    body shell is assembled from the SAME i18n JSON the running app renders
- *    (the rebuilt public site's `rebuild-site.json`), so the
+ *    (the public site's `site.json`), so the
  *    prerendered page cannot drift from the page a person sees. Serving
  *    crawlers different content than users is cloaking, and it is penalised.
  *
@@ -361,7 +361,7 @@ export function renderLlmsTxt(locale) {
 
 /** The public site's copy (the page a person sees). */
 export function loadMarketing(locale) {
-  return { ...readJson(join(FRONTEND, `src/i18n/${locale}/rebuild-site.json`)) };
+  return { ...readJson(join(FRONTEND, `src/i18n/${locale}/site.json`)) };
 }
 
 /**

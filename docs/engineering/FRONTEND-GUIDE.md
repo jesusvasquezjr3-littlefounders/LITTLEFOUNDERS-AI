@@ -33,13 +33,20 @@ The owner defines the new frontend rules here. Agents follow them for every chan
 - [ ] Client security: XSS, content security policy, token and storage handling.
 - [ ] Consent-gated analytics and 3D asset loading.
 
+## Decided
+
+- Use the seven libraries in [[UI-LIBRARIES]] before writing any component, animation, chart, toast, icon morph or loader by hand; another library needs the owner (D-007 in [[DECISIONS]]).
+- Reduced motion is honored once at the root (`MotionConfig reducedMotion="user"`) and per component where a library has its own switch.
+- Folders: `src/components/` (ours), `src/components/ui/` and `src/components/charts/` (copied from registries, not edited and not linted), `src/features/<name>/` (one folder per page or feature), `src/styles/` (Tailwind entry and tokens), `src/i18n/` (copy).
+
 ## Current state
 
-- React 18, Vite and TypeScript. Locales: en-US, es-MX, pt-BR. Light and dark themes. Plausible, Umami and Google Analytics 4 load only after consent.
+- React 19, Vite, TypeScript and Tailwind CSS v4. Locales: en-US, es-MX, pt-BR. Light and dark themes. Plausible, Umami and Google Analytics 4 load only after consent.
 
 ## Related
 
 - [[DESIGN-SYSTEM]]
+- [[UI-LIBRARIES]]
 - [[CODE-STYLE-GUIDE]]
 - [[API-GUIDE]]
 - [[SECURITY-GUIDE]]

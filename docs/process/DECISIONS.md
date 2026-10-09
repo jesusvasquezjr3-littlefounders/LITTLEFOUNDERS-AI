@@ -61,8 +61,15 @@ Date: 2026-10-09. Status: accepted.
 
 Documentation lives under `docs/`, is written in English, is interlinked with Obsidian-style wikilinks, and is checked for links and freshness before every commit.
 
+### D-007: Mandatory UI libraries
+
+Date: 2026-10-09. Status: accepted.
+
+The interface is built with seven libraries, non-negotiable: Bklit UI, Motion, Sileo, 000h by Cojeev, Bencho, Morphicons and Thinking Orbs. Where tokens or the stack had to change to fit them, they changed at once: the frontend moved to React 19, Tailwind CSS v4 and shadcn, and the hand-written design system was deleted and replaced. No other component, chart, toast, animation or icon-morph library is added without the owner. Details and rules: [[UI-LIBRARIES]] (draft; the owner has not approved the per-library roles yet).
+
 ## Related
 
+- [[UI-LIBRARIES]]
 - [[PRODUCT-REQUIREMENTS]]
 - [[ARCHITECTURE]]
 - [[SYSTEM-DESIGN]]

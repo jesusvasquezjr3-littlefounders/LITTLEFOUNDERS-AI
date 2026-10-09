@@ -6,6 +6,10 @@ export default defineConfig({
     ".agents/**",
     "dist/**",
     "tools/oxlint/anti-slop/**",
+    "src/components/ui/**",
+    "src/components/charts/**",
+    "src/lib/cojeev/**",
+    "src/lib/cojeev-motion/**",
   ],
   jsPlugins: [
     { name: "anti-slop", specifier: "./tools/oxlint/anti-slop/index.ts" },

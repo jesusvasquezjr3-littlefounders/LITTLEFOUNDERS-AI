@@ -1,7 +1,8 @@
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['dist/', 'tools/'] },
+  // Code copied in from the UI libraries' registries (docs/design/UI-LIBRARIES.md) is theirs, not ours.
+  { ignores: ['dist/', 'tools/', 'src/components/ui/', 'src/components/charts/', 'src/lib/cojeev/', 'src/lib/cojeev-motion/'] },
   ...tseslint.configs.recommended,
   {
     rules: {

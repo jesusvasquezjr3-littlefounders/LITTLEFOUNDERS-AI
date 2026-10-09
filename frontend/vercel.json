@@ -10,7 +10,7 @@
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=2592000" }]
     },
     {
-      "source": "/(rebuild|og)/(.*)",
+      "source": "/(landing|brand|og)/(.*)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }]
     }
   ],

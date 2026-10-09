@@ -30,12 +30,17 @@ Tells an agent how the product must look and behave so every screen is consisten
 - [ ] Illustration, iconography and the use of the 3D characters, including how they are loaded.
 - [ ] Rules for text length and layout across en-US, es-MX and pt-BR.
 
+## Decided
+
+- The interface is built with the libraries in [[UI-LIBRARIES]] (D-007 in [[DECISIONS]]). One token file feeds all of them.
+
 ## Current state
 
-- Tokens and primitives live in `frontend/src/rebuild/design/`. The Mentor character models are tracked with Git LFS in `glb/` (sources) and `frontend/public/scenes/` (optimized scenes).
+- Tokens live in `frontend/src/styles/lf-theme.css` (brand palette in light and dark, control sizes for children) on top of Cojeev's token system; components are in `frontend/src/components/`. Typeface: Plus Jakarta Sans. The Mentor character models are tracked with Git LFS in `glb/` (sources) and `frontend/public/scenes/` (optimized scenes).
 
 ## Related
 
+- [[UI-LIBRARIES]]
 - [[FRONTEND-GUIDE]]
 - [[USER-FLOWS]]
 - [[CODE-STYLE-GUIDE]]

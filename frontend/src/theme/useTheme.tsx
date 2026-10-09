@@ -9,6 +9,7 @@ interface ThemeContextValue {
 }
 
 const STORAGE_KEY = 'lf-theme';
+
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 function systemPrefersDark(): boolean {
@@ -22,6 +23,7 @@ function resolveIsDark(choice: ThemeChoice): boolean {
 
 function initialChoice(): ThemeChoice {
   const stored = localStorage.getItem(STORAGE_KEY);
+
   return stored === 'light' || stored === 'dark' || stored === 'auto' ? stored : 'auto';
 }
 
@@ -55,6 +57,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, choice);
     let transitionTimer: ReturnType<typeof setTimeout> | undefined;
+
     /*
      * FIRST APPLY — no transition.
      *
@@ -73,9 +76,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         // Inject transitioning class to trigger smooth CSS animations
         document.documentElement.classList.add('theme-transitioning');
       }
+
       mounted.current = true;
 
       document.documentElement.classList.toggle('dark', dark);
+      document.documentElement.dataset.mode = dark ? 'dark' : 'light';
       setIsDark(dark);
 
       // Remove after duration matches the CSS (500ms). Tracked + cleared in the
@@ -86,16 +91,19 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         document.documentElement.classList.remove('theme-transitioning');
       }, 500);
     };
+
     apply();
 
     if (choice === 'auto' && typeof window.matchMedia === 'function') {
       const mq = window.matchMedia('(prefers-color-scheme: dark)');
       mq.addEventListener('change', apply);
+
       return () => {
         clearTimeout(transitionTimer);
         mq.removeEventListener('change', apply);
       };
     }
+
     return () => clearTimeout(transitionTimer);
   }, [choice]);
 
@@ -109,7 +117,9 @@ export function StaticThemeProvider({ children, isDark }: { children: ReactNode;
 
 export function useTheme(): ThemeContextValue {
   const ctx = useContext(ThemeContext);
+
   if (!ctx) throw new Error('useTheme must be used within a ThemeProvider');
+
   return ctx;
 }
 
@@ -120,6 +130,8 @@ export function useTheme(): ThemeContextValue {
  */
 export function useIsDarkTheme(): boolean {
   const ctx = useContext(ThemeContext);
+
   if (ctx) return ctx.isDark;
+
   return typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
 }

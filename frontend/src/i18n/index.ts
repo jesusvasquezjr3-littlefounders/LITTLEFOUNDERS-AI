@@ -5,7 +5,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 /*
  * i18next only decides and remembers WHICH language is showing (detected from
  * the browser, persisted on change). The page's own copy is not loaded
- * through it: surfaces import their typed JSON from `./rebuild.ts`.
+ * through it: surfaces import their typed JSON from `./copy.ts`.
  */
 
 export const LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;

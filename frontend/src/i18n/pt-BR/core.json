@@ -1,0 +1,14 @@
+{
+  "appShell": {
+    "skip": "Ir para o conteúdo",
+    "loading": "Carregando"
+  },
+  "siteShell": {
+    "legal": "Legal",
+    "cookies": "Preferências de cookies",
+    "language": "Idioma",
+    "themeLight": "Claro",
+    "themeDark": "Escuro",
+    "rights": "Todos os direitos reservados."
+  }
+}

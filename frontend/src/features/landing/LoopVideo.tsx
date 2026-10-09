@@ -1,0 +1,68 @@
+import { useEffect, useRef, useState } from 'react';
+import { useTheme } from '@/theme/useTheme';
+
+/*
+ * A decorative looping video of the Mentors and their props, rendered from the
+ * real 3D scene (scripts/render-*-video.mjs). A video is the right weight for a
+ * decorative loop: every phone decodes it in hardware, it costs the page no GPU
+ * work of its own, and it needs no JavaScript scene.
+ *
+ *  - Two colour modes, each its own file, drawn on the page's own background.
+ *  - One H.264 MP4: every browser and phone decodes it in hardware.
+ *  - The poster paints at once, and stays when the visitor asks for reduced
+ *    motion or for less data, or when the browser refuses to autoplay.
+ *  - It pauses while off screen, so it never decodes unseen frames.
+ *  - Muted, hidden from assistive technology, never a sound.
+ */
+
+/** True when the visitor asked for reduced motion or less data: show the poster only. */
+function useStillOnly() {
+  const [still, setStill] = useState(() => {
+    if (typeof window.matchMedia !== 'function') return false;
+    const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches || window.matchMedia('(prefers-reduced-data: reduce)').matches || connection?.saveData === true;
+  });
+
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return;
+    const list = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setStill(list.matches);
+    list.addEventListener('change', update);
+
+    return () => list.removeEventListener('change', update);
+  }, []);
+
+  return still;
+}
+
+export function LoopVideo({ name, className }: { name: 'hero' | 'problem'; className?: string }) {
+  const { isDark } = useTheme();
+  const mode = isDark ? 'dark' : 'light';
+  const still = useStillOnly();
+  const video = useRef<HTMLVideoElement>(null);
+  const base = `/landing/${name}`;
+  const poster = `${base}/${name}-${mode}-poster.webp`;
+
+  useEffect(() => {
+    const element = video.current;
+
+    if (!element || typeof IntersectionObserver === 'undefined') return;
+
+    const watch = new IntersectionObserver(([entry]) => {
+      if (entry?.isIntersecting) void element.play().catch(() => {});
+      else element.pause();
+    }, { threshold: 0.05 });
+
+    watch.observe(element);
+
+    return () => watch.disconnect();
+  }, [mode, still]);
+
+  if (still) return <img className={className} src={poster} alt="" width={1000} height={800} decoding="async" />;
+
+  return <video key={mode} ref={video} className={className} poster={poster} width={1000} height={800} autoPlay muted loop playsInline preload="auto"
+    aria-hidden="true" disablePictureInPicture>
+    <source src={`${base}/${name}-${mode}.mp4`} type="video/mp4" />
+  </video>;
+}

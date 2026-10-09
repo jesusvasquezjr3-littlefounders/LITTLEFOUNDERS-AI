@@ -62,7 +62,7 @@ export const SITE = {
   twitter: null, // No verified account yet — an invented @handle is worse than none.
   /*
    * Browser chrome and the web app manifest, in the rebuilt tokens: every
-   * value is a colour in frontend/src/rebuild/design/tokens.css.
+   * value is a colour in frontend/src/styles/lf-theme.css.
    */
   themeColor: '#5c55fd', // --primary
   manifestBackground: '#0b0d1b', // --base (dark), the splash behind the icon

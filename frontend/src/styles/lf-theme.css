@@ -1,0 +1,131 @@
+/*
+ * LittleFounders brand tokens for the UI libraries.
+ *
+ * Cojeev's components, shadcn and Bklit all read one set of CSS variables
+ * (`--v-*`, `--primary`, `--chart-*`). This file re-points them at the
+ * LittleFounders palette in light and dark, and is imported last so it wins.
+ * Cojeev's accent slots keep their library names but hold our hues:
+ * `--v-pink` is our orange (the call-to-action color), `--v-blue` our sky,
+ * `--v-yellow` our reward gold, `--v-olive` our mint.
+ * Colors are the old design system's, measured for contrast there.
+ */
+:root {
+  --font-display: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-text: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+
+  --v-canvas: #f4f5fd;
+  --v-paper: #ffffff;
+  --v-beige: #eaecf6;
+  --v-beige-2: #f0f2fb;
+  --v-cream-pill: #ffffff;
+  --v-ink: #11132a;
+  --v-ink-soft: #3d4057;
+  --v-on-ink: #ffffff;
+  --v-on-accent: #11132a;
+  --v-text: #11132a;
+  --v-text-2: #4a4d63;
+  --v-text-3: #595c71;
+  --v-border: #d5d8e7;
+  --v-edge: #83869a;
+  --v-brand: #4438cf;
+  --v-scrim: rgba(17, 19, 42, 0.5);
+
+  --v-pink: #eb7301;
+  --v-pink-deep: #d16800;
+  --v-pink-soft: #feece2;
+  --v-blue: #4b94ff;
+  --v-blue-deep: #3476d4;
+  --v-blue-soft: #e8f1fe;
+  --v-yellow: #ebb806;
+  --v-yellow-deep: #d4a506;
+  --v-yellow-soft: #ffefc9;
+  --v-olive: #05a893;
+  --v-olive-deep: #018675;
+  --v-olive-soft: #c7fef1;
+  --v-olive-ink: #07796a;
+  --v-accent-ink: #ab5202;
+  --v-danger: #db1b2b;
+  --v-danger-fill: #c4172a;
+  --v-danger-ink: #ac001a;
+  --v-danger-soft: #ffebe9;
+
+
+  /* Touch targets for children: 48 px is the floor, 56 px the default. */
+  --ctl-sm: 48px;
+  --ctl-md: 56px;
+  --ctl-lg: 64px;
+  --ctl-xl: 72px;
+}
+
+:root[data-mode='dark'] {
+  --v-canvas: #0b0d1b;
+  --v-paper: #131627;
+  --v-beige: #1c1f32;
+  --v-beige-2: #131627;
+  --v-cream-pill: #131627;
+  --v-ink: #f5f6fe;
+  --v-ink-soft: #c5c8dc;
+  --v-on-ink: #0b0d1b;
+  --v-on-accent: #11132a;
+  --v-text: #f5f6fe;
+  --v-text-2: #b3b6cb;
+  --v-text-3: #9b9eb4;
+  --v-border: #2c3046;
+  --v-edge: #7a7d92;
+  --v-brand: #7a84ff;
+  --v-scrim: rgba(0, 0, 0, 0.66);
+
+  --v-pink: #eb7301;
+  --v-pink-deep: #d16800;
+  --v-pink-soft: #451d00;
+  --v-blue: #4b94ff;
+  --v-blue-deep: #3476d4;
+  --v-blue-soft: #10294e;
+  --v-yellow: #ebb806;
+  --v-yellow-deep: #d4a506;
+  --v-yellow-soft: #362801;
+  --v-olive: #05a893;
+  --v-olive-deep: #018675;
+  --v-olive-soft: #01322b;
+  --v-olive-ink: #3fd1bd;
+  --v-accent-ink: #ffa45c;
+  --v-danger-ink: #fe7f7e;
+  --v-danger-soft: #491816;
+
+  --v-structure: #060713;
+  --card: var(--v-paper);
+  --popover: var(--v-paper);
+}
+
+/* Cojeev paints the default button with its accent in dark; ours stays primary in both modes. */
+:root[data-mode='dark'] .v-btn[data-slot]:not(.-accent):not(.-secondary):not(.-ghost):not(.-outline):not(.-danger):not(:disabled):not([aria-disabled='true']) {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+/* Text-size use of the brand indigo: the stronger step in light, the lighter in dark, both at AA. */
+:root { --primary-ink: #5850f8; }
+:root[data-mode='dark'] { --primary-ink: #7a84ff; }
+
+/*
+ * The semantic roles shadcn, Cojeev and Bklit read. The registry installs
+ * rewrite a ":root, :root[data-mode]" block in app.css with their own values
+ * after this file is imported, so these selectors are one step more specific
+ * to keep the brand values winning however many times a component is added.
+ */
+html:root,
+html:root[data-mode] {
+  --primary: #5c55fd;
+  --primary-foreground: #ffffff;
+
+  /* Bklit charts: series colors follow the brand palette in both modes. */
+  --chart-background: var(--v-canvas);
+  --chart-foreground: var(--v-text);
+  --chart-foreground-muted: var(--v-text-2);
+  --chart-label: var(--v-text-2);
+  --chart-1: #5c55fd;
+  --chart-2: #eb7301;
+  --chart-3: #ebb806;
+  --chart-4: #4b94ff;
+  --chart-5: #05a893;
+}

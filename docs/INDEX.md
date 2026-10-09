@@ -44,6 +44,7 @@ What is built, for whom.
 How it looks and behaves.
 
 - [[DESIGN-SYSTEM]]: The visual and interaction language: tokens, components, patterns and the rules for using them.
+- [[UI-LIBRARIES]]: The seven mandatory UI libraries, how they are wired here and the rules for using them.
 
 ## Engineering
 
