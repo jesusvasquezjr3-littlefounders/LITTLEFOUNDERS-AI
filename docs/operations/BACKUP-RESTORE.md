@@ -1,3 +1,9 @@
+---
+title: Backups and restore
+status: draft
+updated: 2026-10-09
+---
+
 # Backups and restore
 
 Production's Postgres (Vault) and Pulse's analytics database are dumped daily, encrypted on the runner, and stored on Depot's Railway volume.
@@ -6,7 +12,6 @@ Production's Postgres (Vault) and Pulse's analytics database are dumped daily, e
 |---|---|---|---|
 | Vault | `vault-backup.yml` | 08:00 daily | `/data/backups/vault-<UTC timestamp>.dump.lfbk` (+ `.manifest.json`) on the `filebase` service |
 | Pulse | `pulse-backup.yml` | 08:30 daily | `pulse-<UTC timestamp>.dump.lfbk` (+ manifest), same place |
-| Before an auto-applied migration | `database-cd.yml`, `tutor-deploy.yml` (`step: migrate`) | per run | a full `pg_dump -Fc`, same place |
 
 Backups older than 30 days are pruned. The volume is a separate disk from `db`'s, but it is still one volume: it is the single point of failure for backups.
 
@@ -44,3 +49,13 @@ pg_restore -d <scratch> --exit-on-error restore.dump
 The Railway CLI does not return remote exit codes: check file sizes, not `$?`. To make the restored database production's, stop the services that write, rename the failed database aside (`ALTER DATABASE postgres RENAME TO postgres_failed_<date>`), rename the restored one to `postgres`, and restart Supabase's services. That swap has not been rehearsed against Railway's Supabase stack; rehearse it on a copy before relying on it. A restore loses every write since the backup was taken.
 
 Re-drill a restore after any material schema change.
+
+## Related
+
+- [[INFRASTRUCTURE]]
+- [[DATABASE-GUIDE]]
+- [[INCIDENT-RESPONSE]]
+- [[SECURITY-GUIDE]]
+- [[CI-CD-AND-VERSION-CONTROL]]
+
+Back to [[INDEX]].

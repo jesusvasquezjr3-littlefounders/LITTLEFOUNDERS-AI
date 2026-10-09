@@ -36,9 +36,9 @@ A push to `main` is a deploy. `frontend-ci.yml` and `frontend-cd.yml` build the 
 
 Repo secrets: `RAILWAY_TOKEN`, `RAILWAY_SSH_PRIVATE_KEY`, `BACKUP_ENCRYPTION_KEY`, `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`.
 
-## Working rules
+## Working rules and documentation
 
-See `CLAUDE.md` (the same file as `AGENTS.md`).
+See [[CLAUDE]] (the same file as [[AGENTS]]). All project documentation starts at [[INDEX]]; run `git config core.hooksPath .githooks` once per clone to enable the documentation check.
 
 ## License
 
