@@ -26,6 +26,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
+      # The optimized 3D scenes are Git LFS files; the multi-hundred-MB sources in glb/ are not needed.
+      - run: git lfs pull --include='frontend/public/scenes/**'
       - uses: actions/setup-node@v4
         with:
           node-version: 24

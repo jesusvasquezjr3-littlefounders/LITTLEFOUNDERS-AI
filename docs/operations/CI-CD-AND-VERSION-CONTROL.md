@@ -33,7 +33,7 @@ Defines the path from a commit to production and the gates on it. Agents follow 
 
 ## Current state
 
-- Work happens on `main`; commits are local and the owner decides when to push. A push to `main` deploys the frontend to Vercel. Workflows: `frontend-ci`, `frontend-cd`, `pulse-ci`, `pulse-cd`, `pulse-backup`, `pulse-dependabot-automerge`, `vault-backup`, `docs-ci`. The GitHub ruleset on `main` requires a check whose workflow no longer exists.
+- Work happens on `main`; commits are local and the owner decides when to push. A push to `main` deploys the frontend to Vercel. Workflows: `frontend-ci`, `frontend-cd`, `pulse-ci`, `pulse-cd`, `pulse-backup`, `pulse-dependabot-automerge`, `vault-backup`, `docs-ci`. The GitHub ruleset on `main` requires a check whose workflow no longer exists. The deploy fetches only `frontend/public/scenes/**` from Git LFS.
 
 ## Related
 

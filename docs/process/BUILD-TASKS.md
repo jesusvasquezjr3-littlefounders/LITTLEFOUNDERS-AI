@@ -35,7 +35,6 @@ Gives agents and humans one place to see what to do next. Each task is small, ha
 | T-005 | Fix the GitHub ruleset on `main` that requires a check which no longer exists | open |  |
 | T-006 | Wire the landing calls to action once the first feature exists | open | They render and do nothing. |
 | T-007 | Define the security baseline with the owner and fill [[SECURITY-GUIDE]] and [[CHILD-SAFETY-AND-PRIVACY]] | open |  |
-| T-008 | Remove stale triggers from `frontend-ci.yml` (branch `littlefounders_v2`, paths `database/types/**` and `coursegen/**`) | open | They point at code that no longer exists. |
 
 ## Related
 

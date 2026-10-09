@@ -13,4 +13,5 @@ All notable changes to the repository. Newest first. Updated in the same commit 
 
 ### Changed
 
+- `frontend-ci.yml` no longer triggers on the removed branch and paths. `frontend-cd.yml` now fetches the LFS 3D scenes (about 6 MB) before building, so a deploy does not ship pointer files.
 - The product was restarted from zero (2026-10-09). Only the landing page, the 3D characters, the pinned Supabase setup and Pulse remain; see [[DECISIONS]].

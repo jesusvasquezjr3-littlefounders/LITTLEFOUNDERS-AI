@@ -2,18 +2,14 @@ name: frontend CI
 
 on:
   push:
-    branches: [main, littlefounders_v2]
+    branches: [main]
     paths:
       - 'frontend/**'
-      - 'database/types/**'
-      - 'coursegen/src/contentGates/**'
       - '.github/workflows/frontend-ci.yml'
   pull_request:
     types: [opened, synchronize, reopened, labeled]
     paths:
       - 'frontend/**'
-      - 'database/types/**'
-      - 'coursegen/src/contentGates/**'
       - '.github/workflows/frontend-ci.yml'
 concurrency:
   group: frontend-ci-${{ github.event_name == 'pull_request' && github.head_ref || github.sha }}
