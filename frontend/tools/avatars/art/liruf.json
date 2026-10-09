@@ -1,0 +1,190 @@
+{
+  "axis": 676,
+  "tolerance": 3.6,
+  "crop": [
+    30,
+    40,
+    1340,
+    1460
+  ],
+  "segment": {
+    "regions": 14,
+    "merge": 21,
+    "min_area": 150
+  },
+  "layers": [
+    {
+      "name": "lower-face",
+      "kind": "path",
+      "d": "M70 700 C60 1000 200 1400 676 1445 C1150 1400 1290 1000 1280 700 Z",
+      "fill": "#b1db87"
+    },
+    {
+      "name": "jaw",
+      "pieces": [
+        1,
+        15,
+        21
+      ],
+      "close": 30,
+      "symmetrize": "left",
+      "fill": "#b1db87"
+    },
+    {
+      "name": "head",
+      "pieces": [
+        0,
+        12,
+        6,
+        7,
+        28,
+        31,
+        10,
+        14,
+        29,
+        32,
+        34
+      ],
+      "close": 30,
+      "symmetrize": "left",
+      "fill": "#587d5d"
+    },
+    {
+      "name": "eye-white-l",
+      "kind": "ellipse",
+      "cx": 372,
+      "cy": 392,
+      "rx": 150,
+      "ry": 190,
+      "angle": -8,
+      "fill": "#f9f9f9",
+      "outline": "#1d1d18",
+      "outline_width": 8
+    },
+    {
+      "name": "eye-white-r",
+      "mirror_of": "eye-white-l"
+    },
+    {
+      "name": "eye-lid-l",
+      "pieces": [
+        25,
+        24
+      ],
+      "close": 10,
+      "fill": "#211a17"
+    },
+    {
+      "name": "eye-lid-r",
+      "mirror_of": "eye-lid-l"
+    },
+    {
+      "name": "pupil-l",
+      "pieces": [
+        9
+      ],
+      "kind": "ellipse",
+      "fill": "#0c0d0e"
+    },
+    {
+      "name": "pupil-r",
+      "mirror_of": "pupil-l"
+    },
+    {
+      "name": "pupil-glow-l",
+      "kind": "path",
+      "d": "M330 470 C350 520 400 520 430 470 C410 505 355 505 330 470 Z",
+      "fill": "#c93a3a",
+      "opacity": 0.8
+    },
+    {
+      "name": "pupil-glow-r",
+      "mirror_of": "pupil-glow-l"
+    },
+    {
+      "name": "glint-l",
+      "pieces": [
+        20
+      ],
+      "kind": "ellipse",
+      "fill": "#ffffff"
+    },
+    {
+      "name": "glint-r",
+      "mirror_of": "glint-l"
+    },
+    {
+      "name": "snout",
+      "kind": "path",
+      "d": "M330 520 C380 430 520 385 676 385 C832 385 972 430 1022 520 C1080 700 1100 900 1070 1075 L282 1075 C252 900 272 700 330 520 Z",
+      "fill": "#587d5d"
+    },
+    {
+      "name": "snout-top",
+      "pieces": [
+        6
+      ],
+      "close": 20,
+      "symmetrize": "left",
+      "fill": "#6d936c"
+    },
+    {
+      "name": "snout-ridge",
+      "pieces": [
+        7,
+        28,
+        31
+      ],
+      "close": 20,
+      "symmetrize": "left",
+      "fill": "#98c282"
+    },
+    {
+      "name": "mouth",
+      "kind": "path",
+      "d": "M392 1070 C450 1092 560 1088 676 1088 C792 1088 902 1092 960 1070 C990 1160 944 1256 862 1306 C800 1336 552 1336 490 1306 C408 1256 362 1160 392 1070 Z",
+      "fill": "#e64b51"
+    },
+    {
+      "name": "mouth-outline",
+      "kind": "path",
+      "d": "M392 1070 C450 1092 560 1088 676 1088 C792 1088 902 1092 960 1070 C990 1160 944 1256 862 1306 C800 1336 552 1336 490 1306 C408 1256 362 1160 392 1070 Z",
+      "stroke": "#510d12",
+      "width": 14
+    },
+    {
+      "name": "fang-upper-l",
+      "kind": "path",
+      "d": "M488 1090 L574 1090 L531 1172 Z",
+      "fill": "#f6f4f4",
+      "round": 14
+    },
+    {
+      "name": "fang-upper-r",
+      "mirror_of": "fang-upper-l"
+    },
+    {
+      "name": "fang-lower-l",
+      "kind": "path",
+      "d": "M590 1326 L650 1326 L620 1274 Z",
+      "fill": "#f6f4f4",
+      "round": 12
+    },
+    {
+      "name": "fang-lower-r",
+      "mirror_of": "fang-lower-l"
+    },
+    {
+      "name": "nostril-l",
+      "pieces": [
+        10
+      ],
+      "kind": "ellipse",
+      "fill": "#354030"
+    },
+    {
+      "name": "nostril-r",
+      "mirror_of": "nostril-l"
+    }
+  ]
+}

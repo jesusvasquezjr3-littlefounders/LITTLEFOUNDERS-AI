@@ -1,0 +1,265 @@
+{
+  "axis": 803,
+  "tolerance": 3.4,
+  "crop": [
+    20,
+    30,
+    1590,
+    1530
+  ],
+  "segment": {
+    "regions": 14,
+    "merge": 21,
+    "min_area": 150
+  },
+  "layers": [
+    {
+      "name": "head-base",
+      "close": 50,
+      "fill": "#3a1a0b",
+      "all": true,
+      "clip": [
+        [
+          0,
+          0
+        ],
+        [
+          1509,
+          0
+        ],
+        [
+          1509,
+          1435
+        ],
+        [
+          0,
+          1435
+        ]
+      ]
+    },
+    {
+      "name": "head-skin",
+      "pieces": [
+        0,
+        5,
+        6,
+        9,
+        12,
+        14,
+        17,
+        21,
+        24,
+        29,
+        31,
+        36,
+        37,
+        35,
+        39
+      ],
+      "close": 40,
+      "symmetrize": "left",
+      "fill": "#f9a079",
+      "clip": [
+        [
+          0,
+          0
+        ],
+        [
+          1509,
+          0
+        ],
+        [
+          1509,
+          1440
+        ],
+        [
+          0,
+          1440
+        ]
+      ]
+    },
+    {
+      "name": "cheek-l",
+      "kind": "circle",
+      "cx": 400,
+      "cy": 1130,
+      "r": 150,
+      "fill": {
+        "radial": [
+          "#ee8a68",
+          "#ee8a68",
+          0
+        ]
+      },
+      "opacity": 0.75
+    },
+    {
+      "name": "cheek-r",
+      "mirror_of": "cheek-l"
+    },
+    {
+      "name": "ear-inner-l",
+      "pieces": [
+        22
+      ],
+      "close": 14,
+      "fill": "#d9825f"
+    },
+    {
+      "name": "ear-inner-r",
+      "mirror_of": "ear-inner-l"
+    },
+    {
+      "name": "hair-side-l",
+      "pieces": [
+        7
+      ],
+      "close": 30,
+      "fill": "#3a1a0a"
+    },
+    {
+      "name": "hair-side-r",
+      "mirror_of": "hair-side-l"
+    },
+    {
+      "name": "hair-fringe",
+      "pieces": [
+        8,
+        13
+      ],
+      "close": 24,
+      "fill": "#3d1b0b"
+    },
+    {
+      "name": "cap",
+      "pieces": [
+        1,
+        2,
+        10
+      ],
+      "close": 18,
+      "fill": "#5b1411"
+    },
+    {
+      "name": "cap-brim",
+      "pieces": [
+        10
+      ],
+      "close": 18,
+      "fill": "#4d160e",
+      "opacity": 0.9
+    },
+    {
+      "name": "nose",
+      "pieces": [
+        9
+      ],
+      "kind": "ellipse",
+      "fill": {
+        "linear": [
+          "#fcae88",
+          "#ee8a6b",
+          80
+        ]
+      },
+      "opacity": 1
+    },
+    {
+      "name": "brow-l",
+      "pieces": [
+        16,
+        38
+      ],
+      "close": 12,
+      "fill": "#3c1b0b"
+    },
+    {
+      "name": "brow-r",
+      "mirror_of": "brow-l"
+    },
+    {
+      "name": "eye-white-l",
+      "pieces": [
+        19
+      ],
+      "kind": "ellipse",
+      "fill": "#fbfbf8"
+    },
+    {
+      "name": "eye-white-r",
+      "mirror_of": "eye-white-l"
+    },
+    {
+      "name": "iris-l",
+      "pieces": [
+        27
+      ],
+      "kind": "ellipse",
+      "fill": "#17607a"
+    },
+    {
+      "name": "iris-r",
+      "mirror_of": "iris-l"
+    },
+    {
+      "name": "pupil-l",
+      "pieces": [
+        32
+      ],
+      "kind": "ellipse",
+      "fill": "#050607"
+    },
+    {
+      "name": "pupil-r",
+      "mirror_of": "pupil-l"
+    },
+    {
+      "name": "glint-l",
+      "kind": "circle",
+      "cx": 612,
+      "cy": 1018,
+      "r": 11,
+      "fill": "#ffffff"
+    },
+    {
+      "name": "glint-small-l",
+      "kind": "circle",
+      "cx": 566,
+      "cy": 1062,
+      "r": 6,
+      "fill": "#cfe9f2"
+    },
+    {
+      "name": "glint-r",
+      "mirror_of": "glint-l"
+    },
+    {
+      "name": "glint-small-r",
+      "mirror_of": "glint-small-l"
+    },
+    {
+      "name": "glasses",
+      "kind": "ring",
+      "piece": 4,
+      "fill": "#0e0f10",
+      "thickness": 1.25
+    },
+    {
+      "name": "glasses-bridge",
+      "kind": "path",
+      "d": "M690 990 Q803 925 916 990",
+      "stroke": "#0e0f10",
+      "width": 24
+    },
+    {
+      "name": "mustache",
+      "pieces": [
+        3,
+        26,
+        34
+      ],
+      "close": 22,
+      "fill": "#391a0a"
+    }
+  ]
+}

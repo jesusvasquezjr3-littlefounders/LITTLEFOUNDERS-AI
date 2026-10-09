@@ -14,6 +14,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const args = parseArgs();
 const characters = typeof args.character === 'string' ? args.character.split(',') : ['Rho', 'Zara', 'Liruf', 'Dina'];
 const height = Number(args.height ?? 640);
+const svgName = typeof args.svg === 'string' ? args.svg : 'avatar-full.svg';
 const base = resolve(here, '../../audit-out/avatars');
 const browser = await launch();
 
@@ -21,13 +22,13 @@ try {
   for (const character of characters) {
     const folder = join(base, character.toLowerCase());
 
-    if (!existsSync(join(folder, 'vector.svg'))) { console.log(`${character}: no vector.svg yet`); continue; }
+    if (!existsSync(join(folder, svgName))) { console.log(`${character}: no ' + svgName + ' yet`); continue; }
 
     const url = (name) => pathToFileURL(join(folder, name)).href;
     const cell = (label, src, bg) => `<figure style="margin:0;background:${bg};padding:12px"><img src="${src}" style="height:${height}px;display:block"><figcaption style="font:14px sans-serif;color:#555;padding-top:6px">${label}</figcaption></figure>`;
 
     mkdirSync(folder, { recursive: true });
-    writeFileSync(join(folder, 'compare.html'), `<!doctype html><body style="margin:0;display:flex;gap:8px;background:#fff">${cell('reference (albedo)', url('ref-albedo.png'), '#f4f5fd')}${cell('smooth vector', url('vector.svg'), '#f4f5fd')}${cell('smooth vector on dark', url('vector.svg'), '#0b0d1b')}</body>`);
+    writeFileSync(join(folder, 'compare.html'), `<!doctype html><body style="margin:0;display:flex;gap:8px;background:#fff">${cell('reference (albedo)', url('ref-albedo.png'), '#f4f5fd')}${cell('smooth vector', url(svgName), '#f4f5fd')}${cell('smooth vector on dark', url(svgName), '#0b0d1b')}</body>`);
 
     const page = await browser.newPage({ width: 2400, height: height + 80, url: pathToFileURL(join(folder, 'compare.html')).href, settle: 1500 });
     const width = await page.ev('Math.ceil(document.body.scrollWidth)');

@@ -1,0 +1,220 @@
+{
+  "axis": 795,
+  "tolerance": 3.4,
+  "crop": [
+    220,
+    60,
+    1370,
+    1240
+  ],
+  "segment": {
+    "regions": 14,
+    "merge": 21,
+    "min_area": 150
+  },
+  "layers": [
+    {
+      "name": "hair",
+      "all": true,
+      "close": 30,
+      "fill": {
+        "linear": [
+          "#42251c",
+          "#2a1612",
+          90
+        ]
+      },
+      "arch": {
+        "bottom": 1190,
+        "rise": 55,
+        "half": 600,
+        "power": 1.6
+      }
+    },
+    {
+      "name": "neck",
+      "kind": "path",
+      "d": "M738 900 L738 1060 C738 1090 852 1090 852 1060 L852 900 Z",
+      "fill": "#f9b390"
+    },
+    {
+      "name": "neck-shadow",
+      "kind": "path",
+      "d": "M738 930 C760 975 830 975 852 930 L852 900 L738 900 Z",
+      "fill": "#eea585",
+      "opacity": 0.7
+    },
+    {
+      "name": "face",
+      "select": {
+        "near": "#fcc0a0",
+        "dist": 60,
+        "bbox": [
+          500,
+          380,
+          1150,
+          925
+        ]
+      },
+      "close": 26,
+      "fill": "#fcc5a3"
+    },
+    {
+      "name": "ear-l",
+      "kind": "path",
+      "d": "M520 640 C470 640 455 720 500 770 C520 790 540 780 540 760 Z",
+      "fill": "#f8b794"
+    },
+    {
+      "name": "ear-r",
+      "mirror_of": "ear-l"
+    },
+    {
+      "name": "cheek-l",
+      "kind": "circle",
+      "cx": 590,
+      "cy": 715,
+      "r": 95,
+      "fill": {
+        "radial": [
+          "#f39a86",
+          "#f39a86",
+          0
+        ]
+      },
+      "opacity": 0.6
+    },
+    {
+      "name": "cheek-r",
+      "mirror_of": "cheek-l"
+    },
+    {
+      "name": "eye-white-l",
+      "kind": "circle",
+      "cx": 645,
+      "cy": 636,
+      "r": 62,
+      "fill": "#fbfaf8"
+    },
+    {
+      "name": "eye-white-r",
+      "mirror_of": "eye-white-l"
+    },
+    {
+      "name": "iris-l",
+      "kind": "circle",
+      "cx": 653,
+      "cy": 634,
+      "r": 47,
+      "fill": {
+        "radial": [
+          "#b5651f",
+          "#5b2c10",
+          1
+        ]
+      }
+    },
+    {
+      "name": "iris-r",
+      "mirror_of": "iris-l"
+    },
+    {
+      "name": "pupil-l",
+      "kind": "circle",
+      "cx": 655,
+      "cy": 638,
+      "r": 21,
+      "fill": "#1a0f0b"
+    },
+    {
+      "name": "pupil-r",
+      "mirror_of": "pupil-l"
+    },
+    {
+      "name": "glint-l",
+      "kind": "circle",
+      "cx": 631,
+      "cy": 612,
+      "r": 9,
+      "fill": "#ffffff"
+    },
+    {
+      "name": "glint-small-l",
+      "kind": "circle",
+      "cx": 668,
+      "cy": 642,
+      "r": 4.5,
+      "fill": "#ffffff"
+    },
+    {
+      "name": "glint-r",
+      "mirror_of": "glint-l"
+    },
+    {
+      "name": "glint-small-r",
+      "mirror_of": "glint-small-l"
+    },
+    {
+      "name": "lash-l",
+      "kind": "path",
+      "d": "M552 614 C578 586 622 570 664 573 C696 576 712 592 718 610",
+      "stroke": "#150d0b",
+      "width": 17
+    },
+    {
+      "name": "lash-wing-l",
+      "kind": "path",
+      "d": "M556 616 C566 630 574 636 582 640",
+      "stroke": "#150d0b",
+      "width": 10
+    },
+    {
+      "name": "lash-r",
+      "mirror_of": "lash-l"
+    },
+    {
+      "name": "lash-wing-r",
+      "mirror_of": "lash-wing-l"
+    },
+    {
+      "name": "brow-l",
+      "kind": "path",
+      "d": "M548 538 C576 508 642 492 712 516 C650 508 590 526 553 550 Z",
+      "fill": "#1e1412"
+    },
+    {
+      "name": "brow-r",
+      "mirror_of": "brow-l"
+    },
+    {
+      "name": "nostril-l",
+      "kind": "path",
+      "d": "M772 748 Q780 755 788 748",
+      "stroke": "#e69a82",
+      "width": 5
+    },
+    {
+      "name": "nostril-r",
+      "mirror_of": "nostril-l"
+    },
+    {
+      "name": "mouth",
+      "kind": "path",
+      "d": "M690 778 C730 802 770 808 795 808 C820 808 860 802 900 780 C888 830 850 862 795 874 C742 862 704 830 690 778 Z",
+      "fill": "#a52424"
+    },
+    {
+      "name": "tongue",
+      "kind": "path",
+      "d": "M736 830 C762 818 828 818 854 830 C846 856 822 870 795 874 C768 870 744 856 736 830 Z",
+      "fill": "#f0a3a0"
+    },
+    {
+      "name": "teeth",
+      "kind": "path",
+      "d": "M702 784 C745 803 780 807 795 807 C810 807 845 803 888 784",
+      "stroke": "#fdf7f3",
+      "width": 15
+    }
+  ]
+}

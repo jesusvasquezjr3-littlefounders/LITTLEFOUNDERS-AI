@@ -6,7 +6,7 @@ All notable changes to the repository. Newest first. Updated in the same commit 
 
 ### Added
 
-- Avatar tools in `frontend/tools/avatars/` (reference renders of the four heads, a vectorizer that builds the head from few curves, true ellipses and ring lenses, with a Bezier fitter, and a comparison image) and the results, in [[CHARACTER-AVATARS]]: the four heads as clean layered SVG of 30 to 53 KB, faithful by eye, with Dina's glow still to fix, before any part separation.
+- Avatar tools in `frontend/tools/avatars/` (reference renders of the four heads, a numbered piece map, a Bezier fitter, art specs per character and a builder that writes layered named SVG) and the first clean drawings of Rho, Zara, Liruf and Dina in `frontend/tools/avatars/out/`, 5 to 11 KB each, in [[CHARACTER-AVATARS]]. Not yet reviewed by the owner.
 - [[CHARACTER-AVATARS]] (draft): a researched plan for light 2D vector heads of the four characters inside the platform: the owner's decisions (no 3D, no mouth cards), how to rebuild a head faithfully from the models, licenses checked, format candidates, spikes, risks, open questions. Nothing built (T-022).
 - `email-server/` restored from the archive tag (D-014): the outgoing mail service (Express API and Haraka relay to Amazon SES), its CI and gated CD workflows, and its local `.env` from the saved copy. Comments pointing at removed code were corrected; the `email_logs` migration and the email templates are not restored (T-021).
 - Documentation system under `docs/` with an index ([[INDEX]]), scaffolds for product, design, engineering, security, operations and process documents, a decision log, and `scripts/check-docs.mjs` run as a pre-commit hook and in CI.

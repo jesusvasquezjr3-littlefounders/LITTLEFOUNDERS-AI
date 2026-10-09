@@ -111,13 +111,18 @@ Each step ends with something the owner can see and accept or stop.
 
 ## Progress
 
-**Steps 1 and 2 are done for all four characters, in a third version (2026-10-09).** `npm run avatars:reference` renders each head from the source model, cut at the neck (Dina by her bones, Zara's hair to her shoulders), flat and unlit, on a transparent background. `python tools/avatars/vectorize.py <Character>` builds the vector the way an illustrator would, with few nodes: color regions, each drawn as a handful of fitted Bezier curves (`tools/avatars/bezier.py`), true ellipses where a shape is one (eyes, pupils, nostrils, blush), a perfect ring for each lens of glasses, flat or gradient fills, soft shading of the big regions as blurred layers, and a pointed hem for Zara's hair. `npm run avatars:compare` puts reference and vector side by side. Earlier approaches (a 16-color VTracer trace, then a per-region gradient fit with polygon smoothing) were faithful but heavier and rougher and were replaced.
+**First clean versions of all four heads exist (2026-10-09).** After the owner judged the automatic traces too rough (bad cuts at the neck and chin, noise, stray glows), the method changed from tracing to building each head as an illustrator would, with the machine doing the measuring:
 
-Sizes and node counts of this version: Rho about 53 KB and 1,240 nodes, Zara 53 KB and 1,276, Liruf 30 KB and 671, Dina 34 KB and 773 (one picture each, no parts yet; the previous version was 92 to 155 KB).
+1. `npm run avatars:reference` renders each head from the source model, flat and unlit (Dina by her bones, the others cut at the neck).
+2. `python tools/avatars/segment.py <Character>` splits that render into numbered color pieces and draws a numbered map to look at.
+3. A hand-written art spec per character (`tools/avatars/art/<character>.json`) names the parts of the face and says how each is made: from numbered pieces (closed, smoothed and fitted with a few Bezier curves, `tools/avatars/bezier.py`), as a true ellipse or circle, as the ring of a lens, or as a path measured on a gridded zoom of the reference. Parts that mirror each other are drawn once and reflected, so the face is exactly symmetric. Damage is repaired in the spec: clean chin and neck, no collar scraps, a pointed hem for Zara's hair, clean fangs and mouth for Liruf, a measured face for Zara and Dina, no glows.
+4. `python tools/avatars/parts.py <Character>` builds a layered SVG, each part a named group ready to animate, and writes it to `tools/avatars/out/<character>.svg` (tracked). `npm run avatars:compare` lays it over the reference to judge it.
 
-By eye: Rho (two true circle lenses), Liruf and Zara (tapered hem) look clean and close to the reference. Open flaws: Dina's soft forehead glow is still a hard-edged disc with bands, because the glow comes out as its own color region instead of a blurred layer on one base color; Zara's hair shows a few light specks; Rho loses the soft pink of nose and cheeks.
+Results: Rho 11 KB with about 260 nodes, Zara 5 KB and 90 nodes, Liruf 7 KB and 150 nodes, Dina 5 KB and 70 nodes (before: 92 to 155 KB and 700 to 1,300 nodes). Rho's lenses are true circles; Dina's glow is a single radial gradient, not bands. Earlier approaches (a posterized VTracer trace, then an automatic vectorizer) were dropped.
 
-Next (needs the owner's approval of the look): fix Dina's glow, then separate the animated parts (eyes, brows, mouth, mustache, glasses, ears, hair or cap) and rebuild each as clean shapes with the hidden parts drawn, and then the rig and the format spike.
+Open flaws to review with the owner: Rho's nose and the soft pink of cheeks are only suggested and his silhouette is mirrored from the left side; Zara's ears are placeholders and her hair is cut at the shoulders with pointed ends (the owner approved the cut, not yet this drawing); Liruf's jaw is wider than the original and his eyes are redrawn as clean ovals; Dina's eyes are redrawn and her chin has a light rim added. Fidelity is checkable for the neutral face only; nothing is separated into animation rigs yet beyond the named layers.
+
+Next: the owner reviews the four drawings (open `tools/avatars/out/*.svg` in a browser); then the expressions and the speaking mouth (a set of mouth shapes drawn as paths that morph, eyelids, gaze) and the rig, starting with Rho; then the format spike.
 
 ## Questions that were open and are now answered
 
