@@ -1,10 +1,7 @@
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  // `public/basis/` holds the minified Basis Universal transcoder copied out of
-  // `three` at build time (scripts/copy-3d-decoders.mjs) — vendor output we do
-  // not author and cannot meaningfully lint.
-  { ignores: ['dist/', 'public/basis/'] },
+  { ignores: ['dist/'] },
   ...tseslint.configs.recommended,
   {
     rules: {

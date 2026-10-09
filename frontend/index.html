@@ -10,9 +10,8 @@
       stylesheet that declares them (rebuild/design/system.css) arrives with
       the bundle, which would otherwise start both downloads late. `crossorigin`
       is required even same-origin: fonts are fetched in CORS mode, and
-      without it the preload is discarded and fetched a second time. The
-      all UI glyphs are authored SVGs from the approved asset manifest.
-      No route loads an external icon font.
+      without it the preload is discarded and fetched a second time. All UI
+      glyphs are authored SVGs; nothing loads an external icon font.
     -->
     <link rel="preload" as="font" type="font/woff2" href="/fonts/plus-jakarta-sans-latin-v1.woff2" crossorigin />
 
@@ -38,12 +37,9 @@
          bytes landed, with no entrance at all.
 
       WHAT IT IS: an
-      opaque ground in the token --base, nothing on it, and one dissolve. The
-      legacy veil it replaces was a glass surface (an 18 px backdrop blur, a
-      breathing radial-gradient bloom, an off-token 560 ms curve). The design
-      system forbids glass and gradients and carrying the legacy look
-      over, and keeps idle motion for three things, none of them a
-      loading screen. The ground alone hides the shell: it is opaque.
+      opaque ground in the token --base, nothing on it, and one dissolve. No
+      glass, no gradient, no idle motion. The ground alone hides the shell:
+      it is opaque.
 
       MOTION. One screen replacing another is --dur-transition
       (380 ms): the veil leaves on the exit easing and the app arrives on the
@@ -105,7 +101,7 @@
         display: none;
         inset: 0;
         background-color: var(--lf-boot-ground);
-        /* Never a click trap, armed or stuck (synthetic-click hit-testing, README invariants). */
+        /* Never a click trap, armed or stuck. */
         pointer-events: none;
       }
 

@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react';
-import type { AgeBand, Locale } from './copyBudget';
+import type { Locale } from './copyBudget';
 
 /*
  * Overlay infrastructure. Every overlay renders into its own host appended to <body>, so it is
@@ -11,7 +11,7 @@ import type { AgeBand, Locale } from './copyBudget';
  */
 
 export type RebuildTheme = 'light' | 'dark';
-export interface RebuildEnvironment { theme: RebuildTheme; locale: Locale; ageBand?: AgeBand }
+export interface RebuildEnvironment { theme: RebuildTheme; locale: Locale }
 
 /** Theme, language and age band of the surface, so overlay hosts outside the surface's DOM still use its tokens. */
 export const RebuildEnvironmentContext = createContext<RebuildEnvironment>({ theme: 'light', locale: 'en-US' });
@@ -44,8 +44,7 @@ export function useLayerHost(active: boolean, options: { live?: boolean; layer?:
     if (!host) return;
     host.dataset.theme = environment.theme;
     host.lang = environment.locale;
-    if (environment.ageBand) host.dataset.ageBand = environment.ageBand; else delete host.dataset.ageBand;
-  }, [host, environment.theme, environment.locale, environment.ageBand]);
+  }, [host, environment.theme, environment.locale]);
   return host;
 }
 
@@ -102,11 +101,6 @@ export function useLayer(active: boolean, host: HTMLElement | null, modal: boole
   }, [active, host, modal]);
 }
 
-/** For tests and the gallery: how many layers are open, and whether the top one is modal. */
-export function layerStackSnapshot() {
-  return { depth: stack.length, topModal: stack[stack.length - 1]?.modal ?? false };
-}
-
 /* ---------------------------------------------------------------------------
  * Scroll lock that never moves the page.
  * ------------------------------------------------------------------------- */
@@ -143,12 +137,6 @@ const TABBABLE = [
   'a[href]', 'area[href]', 'button:not(:disabled)', 'input:not(:disabled):not([type="hidden"])', 'select:not(:disabled)',
   'textarea:not(:disabled)', 'iframe', 'audio[controls]', 'video[controls]', '[contenteditable]:not([contenteditable="false"])', '[tabindex]',
 ].join(',');
-
-/** The z-index slot a floating layer opened from `trigger` belongs to: its enclosing overlay's, else the page's. */
-export function layerOf(trigger: Element | null): LayerKind {
-  const layer = (trigger?.closest('.lf-layer-root') as HTMLElement | null)?.dataset.layer;
-  return layer === 'sheet' || layer === 'scrim' || layer === 'toast' ? layer : 'nav';
-}
 
 /** Keyboard-reachable elements in DOM order (one stop per radio group, the checked one when there is one). */
 export function tabbables(container: HTMLElement): HTMLElement[] {
@@ -221,21 +209,5 @@ export function useFocusTrap(active: boolean, container: RefObject<HTMLElement>,
       const current = document.activeElement;
       if (returnTo && returnTo.isConnected && (!current || current === document.body || root.contains(current))) focusElement(returnTo);
     };
-  }, [active]);
-}
-
-/** Opens after a tap on the trigger, closes on a pointer press anywhere outside both. */
-export function useOutsidePress(active: boolean, refs: readonly RefObject<HTMLElement | null>[], onOutside: () => void, extra?: () => (HTMLElement | null)[]) {
-  const callback = useRef(onOutside);
-  callback.current = onOutside;
-  useEffect(() => {
-    if (!active) return;
-    const onPointerDown = (event: PointerEvent | MouseEvent) => {
-      const target = event.target as Node | null;
-      const inside = [...refs.map((ref) => ref.current), ...(extra?.() ?? [])].some((element) => element && target && element.contains(target));
-      if (!inside) callback.current();
-    };
-    document.addEventListener('pointerdown', onPointerDown, true);
-    return () => document.removeEventListener('pointerdown', onPointerDown, true);
   }, [active]);
 }

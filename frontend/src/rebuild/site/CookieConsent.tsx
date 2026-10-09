@@ -1,23 +1,20 @@
 import { useId } from 'react';
 import { createPortal } from 'react-dom';
-import { Button, ButtonLink, Chip, InlineNotice, Sheet } from '../design/controls';
+import { Button } from '../design/buttons';
+import { Chip, InlineNotice } from '../design/display';
+import { Sheet } from '../design/overlays';
 import { useLayerHost } from '../design/layers';
 import type { Locale } from '../design/copyBudget';
-import { follow, siteCopy, type Navigate } from './blocks';
+import { siteCopy } from './blocks';
 import '../design/tokens.css';
 import '../design/system.css';
 
 /*
- * The cookie choice, rebuilt. Privacy-preserving by default:
+ * The cookie choice. Privacy-preserving by default:
  * nothing optional runs until the visitor accepts, rejecting is as easy and as
  * prominent as accepting (two equal buttons, neither pre-selected), and a
  * choice can be changed at any time from the site footer's "Cookie
- * preferences" (and from the Privacy Notice).
- *
- * It is the public visitor's choice only. A child's behavioural data is
- * governed by the verified guardian's consent and a teen's by their own
- * analytics choice (rebuild/privacy); this banner is never shown to a signed-in
- * account (the bridge decides that, as the legacy banner did).
+ * preferences".
  *
  * What it controls is what the product actually does (lib/visitor): one
  * decision covers both optional kinds (where a visit came from, and visit
@@ -33,16 +30,15 @@ import '../design/system.css';
 
 export type CookieChoice = 'granted' | 'denied' | 'unset';
 
-export function CookieConsent({ locale, bannerVisible, choice, preferencesOpen, onOpenPreferences, onClosePreferences, onDecide, onNavigate }: {
+export function CookieConsent({ locale, bannerVisible, choice, preferencesOpen, onOpenPreferences, onClosePreferences, onDecide }: {
   locale: Locale;
-  /** The banner: a visitor who has not chosen yet, on a public page. */
+  /** The banner: a visitor who has not chosen yet. */
   bannerVisible: boolean;
   choice: CookieChoice;
   preferencesOpen: boolean;
   onOpenPreferences: () => void;
   onClosePreferences: () => void;
   onDecide: (granted: boolean) => void;
-  onNavigate?: Navigate;
 }) {
   const copy = siteCopy(locale).cookies;
   const host = useLayerHost(bannerVisible && !preferencesOpen, { layer: 'nav' });
@@ -91,7 +87,6 @@ export function CookieConsent({ locale, bannerVisible, choice, preferencesOpen, 
           </li>
         </ul>
         <p data-copy-role="body">{copy.together}</p>
-        <ButtonLink size="sm" href="/legal/privacy" onClick={follow('/legal/privacy', onNavigate, onClosePreferences)}>{copy.privacyLink}</ButtonLink>
       </div>
     </Sheet>
   </>;

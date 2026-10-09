@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useRebuildEnvironment } from '../../design/controls';
+import { useRebuildEnvironment } from '../../design/layers';
 
 /*
  * The hero's picture: a short looping video of the Mentors and their orbiting

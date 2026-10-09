@@ -1,4 +1,4 @@
-import { forwardRef, type AnchorHTMLAttributes, type AnimationEvent, type ButtonHTMLAttributes, type MouseEvent, type ReactNode } from 'react';
+import { forwardRef, type AnimationEvent, type ButtonHTMLAttributes, type MouseEvent } from 'react';
 import { Glyph, type GlyphName } from './glyphs';
 import { useIdleMotion, useOneShot, withPressFeedback } from './motion';
 
@@ -61,29 +61,4 @@ export const IconButton = forwardRef<HTMLButtonElement, Omit<ButtonHTMLAttribute
 }>(function IconButton({ glyph, label, variant = 'secondary', className, onPointerDown, ...props }, ref) {
   return <button {...props} onPointerDown={withPressFeedback(onPointerDown)} ref={ref} type={props.type ?? 'button'} className={`lf-icon-button lf-icon-button--${variant}${className ? ` ${className}` : ''}`}
     aria-label={label} title={label} data-copy-role="action"><Glyph name={glyph} /></button>;
-});
-
-/** A wrapping row of buttons: they grow to share the line and wrap before any label is squeezed. */
-export function ButtonGroup({ label, children }: { label?: string; children: ReactNode }) {
-  return <div className="lf-button-group" role={label ? 'group' : undefined} aria-label={label}>{children}</div>;
-}
-
-/**
- * A navigation link that looks like a button (the marketing header's "Log in"
- * and "Start free"). It is a real link: it goes somewhere, it does not act.
- */
-export const ButtonLink = forwardRef<HTMLAnchorElement, AnchorHTMLAttributes<HTMLAnchorElement> & { href: string; variant?: ButtonVariant; size?: ButtonSize }>(
-  function ButtonLink({ children, variant = 'secondary', size = 'md', className, ...props }, ref) {
-    const classes = ['lf-button', `lf-button--${variant}`, 'lf-button-link'];
-    if (size !== 'md') classes.push(`lf-button--${size}`);
-    if (className) classes.push(className);
-    return <a {...props} ref={ref} className={classes.join(' ')} data-copy-role="action">{children}</a>;
-  });
-
-/**
- * A whole card or row that is one action (a pocket, a quick action, a card strip). The tile it wraps owns its look; this owns
- * what every press needs: a real button, keyboard focus, the press feedback and the disabled state.
- */
-export const TileButton = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement>>(function TileButton({ className, onPointerDown, type = 'button', ...props }, ref) {
-  return <button ref={ref} type={type} className={`lf-tile-button${className ? ` ${className}` : ''}`} onPointerDown={withPressFeedback(onPointerDown)} {...props} />;
 });

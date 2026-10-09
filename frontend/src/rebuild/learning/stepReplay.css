@@ -1,8 +1,0 @@
-.lf-step-replay { display: grid; gap: var(--spacing-2); inline-size: 100%; }
-.lf-step-replay-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
-.lf-step-replay-actions .lf-button { flex: 1 1 0; }
-/* The scrub is the shared slider; vertical page scrolling still wins over a stray touch on it. */
-.lf-step-replay-scrub input { touch-action: pan-y; }
-@container app (max-width: 399px) {
-  .lf-step-replay-actions .lf-button:nth-child(2) { order: -1; flex-basis: 100%; }
-}

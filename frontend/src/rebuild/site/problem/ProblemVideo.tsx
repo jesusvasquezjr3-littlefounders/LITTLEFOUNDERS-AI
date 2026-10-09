@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useRebuildEnvironment } from '../../design/controls';
+import { useRebuildEnvironment } from '../../design/layers';
 import { useStillOnly } from '../hero/HeroVideo';
 
 /*

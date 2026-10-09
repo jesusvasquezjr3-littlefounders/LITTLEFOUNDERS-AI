@@ -28,10 +28,8 @@
 .lf-rebuild .lf-theme-toggle { overflow: hidden; }
 .lf-rebuild .lf-theme-toggle-icon { position: absolute; inset: 0; display: grid; place-items: center; }
 .lf-rebuild .lf-theme-toggle-icon .lf-system-glyph { inline-size: var(--spacing-5); block-size: var(--spacing-5); }
-.lf-rebuild .lf-theme-toggle[data-dark='false'] .lf-theme-toggle-sun,
-.lf-rebuild .lf-theme-toggle[data-dark='true'] .lf-theme-toggle-moon { opacity: 0; rotate: 90deg; scale: 0.5; }
-.lf-rebuild .lf-theme-toggle[data-dark='false'] .lf-theme-toggle-moon,
-.lf-rebuild .lf-theme-toggle[data-dark='true'] .lf-theme-toggle-sun { opacity: 1; rotate: 0deg; scale: 1; }
+.lf-rebuild .lf-theme-toggle[data-dark='false'] .lf-theme-toggle-sun, .lf-rebuild .lf-theme-toggle[data-dark='true'] .lf-theme-toggle-moon { opacity: 0; rotate: 90deg; scale: 0.5; }
+.lf-rebuild .lf-theme-toggle[data-dark='false'] .lf-theme-toggle-moon, .lf-rebuild .lf-theme-toggle[data-dark='true'] .lf-theme-toggle-sun { opacity: 1; rotate: 0deg; scale: 1; }
 @media (prefers-reduced-motion: no-preference) {
   .lf-rebuild .lf-topbar-round { transition: background-color var(--dur-micro) var(--ease-standard), transform var(--dur-instant) var(--ease-standard); }
   .lf-rebuild .lf-topbar-round:active { transform: scale(0.94); }
@@ -75,7 +73,7 @@
 .lf-rebuild .lf-language-option:is(:hover, :focus-visible)::after { opacity: 1; }
 @media (prefers-reduced-motion: no-preference) {
   .lf-rebuild .lf-language-list { animation: lf-language-in var(--dur-component) var(--ease-enter); }
-  .lf-rebuild :is(.lf-shell-rail, .lf-sheet, .lf-auth-column) .lf-language-list { animation: none; }
+  .lf-rebuild :is(.lf-sheet) .lf-language-list { animation: none; }
   .lf-rebuild .lf-language-option::after { transition: opacity var(--dur-micro) var(--ease-standard); }
 }
 @keyframes lf-language-in { from { opacity: 0; translate: 0 calc(var(--spacing-2) * -1); } }
@@ -85,24 +83,21 @@
 }
 
 /* With no page links the header is brand, round controls and one ghost link: the action is always visible, on phones too. */
-.lf-rebuild .lf-site-header .lf-site-actions { display: flex; align-items: center; flex: none; margin-inline-start: 0; }
 
 /* One row at every width: the brand yields before the controls wrap. */
 .lf-rebuild .lf-site-header-inner { flex-wrap: nowrap; }
 .lf-rebuild .lf-site-header-inner > .lf-brand-mark { min-inline-size: 0; flex: 0 1 auto; }
 @container app (max-width: 479px) {
-  .lf-rebuild .lf-site-header .lf-site-actions .lf-button { padding-inline: var(--spacing-3); }
   .lf-rebuild .lf-topbar-controls { gap: var(--spacing-1); }
 }
 .lf-rebuild .lf-language-list { box-shadow: var(--elevation-float), 0 0 0 1px var(--sunken); }
 
 /*
- * Where there is no room to drop a menu below the control (the application's
- * bottom-anchored rail, the preferences sheet, the sign-in column), the three
- * flags open in place as a row, and their names show above them.
+ * Where there is no room to drop a menu below the control (inside a sheet),
+ * the three flags open in place as a row, and their names show above them.
  */
-.lf-rebuild :is(.lf-shell-rail, .lf-sheet, .lf-auth-column) .lf-language-menu { display: flex; flex-direction: row-reverse; align-items: center; gap: var(--spacing-2); }
-.lf-rebuild :is(.lf-shell-rail, .lf-sheet, .lf-auth-column) .lf-language-list {
+.lf-rebuild :is(.lf-sheet) .lf-language-menu { display: flex; flex-direction: row-reverse; align-items: center; gap: var(--spacing-2); }
+.lf-rebuild :is(.lf-sheet) .lf-language-list {
   position: static;
   display: flex;
   gap: var(--spacing-2);
@@ -110,7 +105,7 @@
   background: transparent;
   box-shadow: none;
 }
-.lf-rebuild :is(.lf-shell-rail, .lf-sheet, .lf-auth-column) .lf-language-option::after {
+.lf-rebuild :is(.lf-sheet) .lf-language-option::after {
   inset-block-start: auto;
   inset-block-end: calc(100% + var(--spacing-2));
   inset-inline-end: auto;

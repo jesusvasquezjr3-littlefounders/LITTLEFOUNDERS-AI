@@ -25,7 +25,7 @@
  * the cost of a missed ping is a slower crawl, and the cost of a failed deploy
  * is the site not shipping at all.
  *
- * Run: npm run seo:indexnow            (add --dry-run to print and send nothing)
+ * Run: node scripts/seo/indexnow.mjs   (add --dry-run to print and send nothing)
  */
 
 import { writeFileSync, mkdirSync } from 'node:fs';

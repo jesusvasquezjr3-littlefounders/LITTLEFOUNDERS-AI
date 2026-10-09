@@ -10,19 +10,11 @@
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=2592000" }]
     },
     {
-      "source": "/basis/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=2592000" }]
-    },
-    {
-      "source": "/(lottie|sounds|scenes|course-badges|marketing|og)/(.*)",
+      "source": "/(rebuild|og)/(.*)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }]
     }
   ],
   "rewrites": [
-    {
-      "source": "/badge/:token",
-      "destination": "/api/badge/:token"
-    },
     {
       "source": "/(.*)",
       "destination": "/app-shell.html"

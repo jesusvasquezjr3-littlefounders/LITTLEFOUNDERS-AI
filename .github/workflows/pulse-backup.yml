@@ -21,10 +21,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      # The dump is encrypted on the runner before it is
-      # stored anywhere, with the tested backup tool (AES-256-GCM, a
-      # manifest with the key fingerprint, the plaintext deleted). The full
-      # checkout also carries scripts/ops-heartbeat.sh.
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
@@ -141,21 +137,6 @@ jobs:
               n=$((n + 1)); sleep 20
             done
           done
-
-      # Leave the run in Core's audit trail (scripts/ops-heartbeat.sh);
-      # ops-job-watch.yml notifies a human when this job goes quiet.
-      - name: Record the heartbeat
-        if: success()
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: bash scripts/ops-heartbeat.sh pulse_backup true "${{ steps.dump.outputs.bytes }}"
-
-      - name: Record the failed run
-        if: failure()
-        continue-on-error: true
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: bash scripts/ops-heartbeat.sh pulse_backup false
 
       - name: Remove the backup key and any local dump
         if: always()

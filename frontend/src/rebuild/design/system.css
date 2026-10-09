@@ -26,15 +26,12 @@ body { margin: 0; }
   letter-spacing: .008em;
   container: app / inline-size;
 }
-/* OD-28 (V-04): dark mode keeps a soft control shadow (the generated --elevation-control value), as well as its surface step. */
+/* Dark mode keeps a soft control shadow (the generated --elevation-control value), as well as its surface step. */
 .lf-rebuild[data-theme='dark'] { color-scheme: dark; --shadow-control: 0 1px 3px rgb(6 7 19 / .56); }
 .lf-rebuild *, .lf-rebuild *::before, .lf-rebuild *::after { box-sizing: border-box; }
 /*
- * The element baseline. The legacy global sheet and
- * its Tailwind preflight no longer load, so the reset
- * every rebuilt surface was built on in the real app lives here, scoped to the
- * design-system root at zero specificity: any component rule wins over it, and
- * the preview entry and the real app now share one baseline.
+ * The element baseline: the reset lives here, scoped to the design-system
+ * root at zero specificity, so any component rule wins over it.
  */
 :where(.lf-rebuild), :where(.lf-rebuild) *, :where(.lf-rebuild) ::before, :where(.lf-rebuild) ::after { border-width: 0; border-style: solid; border-color: currentColor; }
 :where(.lf-rebuild) :where(h3, h4, h5, h6) { margin: 0; font-size: inherit; font-weight: inherit; }
@@ -83,66 +80,11 @@ body { margin: 0; }
 .lf-button--accent { background: var(--accent); color: var(--on-accent); box-shadow: none; }
 .lf-button--success { background: var(--success); color: var(--on-success); box-shadow: none; }
 .lf-button:disabled { color: var(--content-disabled); background: var(--sunken); box-shadow: none; cursor: default; }
-.lf-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-3); }
-.lf-actions > * { flex: 1 1 auto; }
-.lf-preview-settings label { font-weight: 800; }
-.lf-preview-settings select {
-  min-inline-size: 0;
-  inline-size: 100%;
-  min-block-size: var(--target-base);
-  padding: var(--spacing-4) var(--spacing-5);
-  background: var(--sunken);
-  color: var(--content);
-  border: 0;
-  border-radius: var(--rounded-md);
-}
-.lf-preview {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: center;
-  gap: var(--spacing-6);
-  padding: var(--spacing-6);
-  min-block-size: 100dvh;
-}
-.lf-preview-content { display: flex; flex-direction: column; gap: var(--spacing-6); inline-size: 100%; max-inline-size: 640px; margin-inline: auto; }
-.lf-preview-content > * { min-inline-size: 0; }
-.lf-preview--home .lf-preview-content > p:first-child { color: var(--content-muted); }
-.lf-preview--practice { background: var(--primary); color: var(--on-primary); }
-.lf-preview--practice :is(button, input):focus-visible { outline-color: var(--on-primary); }
-.lf-preview--practice .lf-preview-content > .lf-button:first-child, .lf-preview--controls .lf-preview-content > .lf-button:first-child { align-self: flex-start; }
-.lf-choices, .lf-form { display: grid; gap: var(--spacing-4); }
-.lf-choice {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-3);
-  min-block-size: var(--target-lg);
-  padding: var(--spacing-4) var(--spacing-5);
-  border: 0;
-  border-radius: var(--rounded-md);
-  background: color-mix(in srgb, var(--on-primary) 14%, transparent);
-  color: var(--on-primary);
-  text-align: start;
-  font-weight: 800 !important;
-  font-size: 1.125rem !important;
-  line-height: 1.3 !important;
-  cursor: pointer;
-}
-.lf-choice[aria-pressed='true'] { outline: 3px solid var(--on-primary); outline-offset: 3px; }
-.lf-choice:disabled { cursor: default; }
-.lf-choice-marker { flex-shrink: 0; }
 /* A persistent live region; the verdict is the shared Banner inside it. */
-.lf-feedback { display: grid; }
 .lf-system-glyph { inline-size: 24px; block-size: 24px; flex-shrink: 0; }
-.lf-preview-settings { display: flex; flex-wrap: wrap; gap: var(--spacing-6); padding: var(--spacing-6); }
-.lf-preview-settings label { display: grid; flex: 1 1 auto; gap: var(--spacing-2); }
-@container app (min-width: 640px) {
-  .lf-preview h1 { font-size: 2rem; }
-  .lf-preview { padding: var(--spacing-16); }
-}
 /* Press motion communicates acknowledgement; never celebrates a routine action. */
 @media (prefers-reduced-motion: no-preference) {
-  .lf-button:not(:disabled):active, .lf-choice:not(:disabled):active { transform: scale(.97); transition-duration: var(--dur-instant); }
+  .lf-button:not(:disabled):active { transform: scale(.97); transition-duration: var(--dur-instant); }
 }
 @media (prefers-reduced-motion: reduce) {
   .lf-button { transition: none; }

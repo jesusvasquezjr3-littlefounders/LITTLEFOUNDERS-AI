@@ -1,18 +1,18 @@
-# ── Dependencies & build output ─────────────────────────────
+# Dependencies and build output
 node_modules/
 dist/
 dist-ssr/
 coverage/
 *.tsbuildinfo
 *.local
+.lane-cache/
 
-# ── Logs ────────────────────────────────────────────────────
+# Logs
 logs/
 *.log
 npm-debug.log*
 
-# ── Environment & secrets ───────────────────────────────────
-# Never commit secrets. Only .example files are tracked.
+# Environment and secrets: only .env.example files are tracked
 .env
 .env.*
 *.env
@@ -20,98 +20,54 @@ npm-debug.log*
 !*.env.example
 *.pem
 *.p12
+.vercel
 
-# ── Editors & OS ────────────────────────────────────────────
+# Editors and OS
 .vscode/*
 !.vscode/extensions.json
 .idea/
 .cursor/
 .DS_Store
+Thumbs.db
 
-# ── AI-agent local config (never commit — may hold tokens) ──
-# .claude/ itself is handled below, under "AI agent workspaces" — a directory-
-# level ignore here would shadow that block's scoped !-negations (a parent
-# dir excluded at one rule can never be re-included by a later, more specific
-# rule; git won't even descend to evaluate it).
+# AI agent workspaces and local config (never commit: may hold tokens)
+.claude/
+.agents/
+.codex/
 .mcp.json
 .opencode/
 
-# ── Supabase upstream clone (pinned via database/SUPABASE_VERSION,
-#    materialized by database/scripts/sync-supabase.sh — never tracked) ──
+# Supabase upstream clone, pinned by database/SUPABASE_VERSION and
+# materialized by database/scripts/sync-supabase.sh
 database/supabase/
 
-# ── Databases (local snapshots) ─────────────────────────────
+# Database dumps hold personal data
+/database/backups/
+*.dump
+*.dump.lfbk
+
+# Local snapshots and generated reports
 *.db
 *.db.wal
 *.sqlite
-!database/migrations/*.sql
-
-# ── Local verification evidence. The sprint records (tracked) cite these
-#    artifact paths, but the directory also holds per-run Chrome profiles
-#    that reach tens of GB — keep it local. ──
 audit-results/
+output/
 
-# ── tesseract.js language-data cache (downloaded at runtime) ──
-*.traineddata
-
-# ── Forge (coursegen) generation run artifacts —
-#    checkpoints/ledgers/rubrics, never tracked (COURSE_ENGINE.md §4) ──
-coursegen/runs/
-
-# ── Echo (audiogen) character voice reference samples — large binary audio,
-#    never tracked. Trimmed/registration output also stays local-only. ──
-audiogen/src/samples/
-.vercel
-.env*
-# Re-assert the .env.example allow AFTER the broad `.env*` above — later
-# patterns win, so without this every service's placeholder .env.example
-# (which §1.10 REQUIRES to be tracked) silently falls out of git. This bit
-# pulse/.env.example on 2026-07-21; the earlier 8 were only grandfathered in.
-!.env.example
-!*.env.example
-
-# AI agent workspaces
-.agents/
-.codex/
-
-# .claude/ is local AI-agent config (settings, most skills) — untracked by
-# default. Exception: skills the team has explicitly opted to version (see
-# TEAM_PROTOCOL.md "Rules"). Each tracked skill needs its own !-negation
-# below, one directory level at a time — gitignore won't re-include a file
-# whose parent dir is still excluded.
-.claude/*
-!.claude/skills/
-.claude/skills/*
-!.claude/skills/caveman/
-!.claude/skills/financial-lesson-authoring/
-!.claude/skills/course-authoring/
-
-# Production database dumps (PII + credential hashes — never commit)
-/database/backups/
-
-# Artist source exports for the Tutor 3D scene (~156 MB of uncompressed .glb).
-# Only the OPTIMIZED output is published, via Depot. Source files belong in the
-# team asset store, never in git.
+# 3D character sources and optimized scenes: local only for now
 /glb/
+frontend/public/scenes/
 
-# Generated deliverables. The PDF is rendered from the published Artifact
-# (scratchpad/oracle.html) on demand; committing a 1 MB binary that is
-# regenerated on every edit buys nothing and bloats the history forever.
-/LittleFounders-*.pdf
-
-# Generated QA-audit PDF exports
-/output/
-
-# Per-worktree Vite/test caches for parallel lane checkouts
-.lane-cache/
-
-# Intermediate author batches; complete-source is the reviewable curriculum.
-/coursegen/curriculum-production/*/integration-draft/
-/coursegen/curriculum-production/*/authoring/*/draft-plans/
-/coursegen/curriculum-production/*/authoring/*/draft-output/
-/coursegen/curriculum-production/*/authoring/foundations/plans/
-/coursegen/curriculum-production/*/authoring/foundations/emitted/
-
-# Python bytecode (database/scripts verifiers import a shared helper, lf_pg_replay.py)
+# Python bytecode
 __pycache__/
 *.pyc
+
+# Local-only leftovers of the removed services, kept on disk until the owner decides
+/coursegen/
+/audiogen/
+/backend/
+/oracle/
+/picturegen/
+/filebase/
+/parent-id-check/
+/email-server/
+/dataintel/

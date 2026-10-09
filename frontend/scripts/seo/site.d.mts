@@ -1,6 +1,6 @@
 /*
- * Types for the parts of site.mjs the application imports (app-shell/siteTitles.ts
- * reads the public pages' titles from here). The build scripts use the plain module.
+ * Types for the parts of site.mjs the application imports (the page title is
+ * read from here). The build scripts use the plain module.
  */
 export interface PageMeta { title: string; description: string; h1: string }
 export interface SitePage {

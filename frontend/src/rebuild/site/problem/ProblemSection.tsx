@@ -1,6 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { Art } from '../../design/controls';
-import { SEED_ASSET_ID } from '../../design/display';
+import { Art, SEED_ASSET_ID } from '../../design/display';
 import type { Locale } from '../../design/copyBudget';
 import { ProblemVideo } from './ProblemVideo';
 import { siteCopy } from '../blocks';

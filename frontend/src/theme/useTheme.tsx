@@ -26,10 +26,9 @@ function initialChoice(): ThemeChoice {
 }
 
 /*
- * Mounted once at the app root so the `dark` class on <html> stays correct on
- * every route — some pages (auth) deliberately render no ThemeToggle, so
- * applying the theme can't be conditional on one being on screen. ThemeToggle
- * instances elsewhere just read/write this shared state.
+ * Mounted once at the app root so the `dark` class on <html> stays correct
+ * whether or not a ThemeToggle is on screen. ThemeToggle instances just
+ * read/write this shared state.
  *
  * It is NOT what makes the theme right on the FIRST paint, and the comment
  * that used to claim so here was wrong for as long as it stood: an effect runs

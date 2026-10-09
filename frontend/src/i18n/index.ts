@@ -3,64 +3,32 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
 /*
- * Locale resources are fragmented per route area:
- * <locale>/common.json    — spread at the root: the not-found fallback, the
- *                           theme labels and the legacy 2D characters' greeting
- * <locale>/tutor.json    — the Mentor stage's scene and microphone strings
- * The legacy namespaces no screen reads any more (errors, auth, dashboard,
- * profile, learn, admin, onboarding, placement) left with the legacy UI;
- * marketing (the badge page's copy) left with its rebuild.
- * New UI never adds a namespace here.
- *
- * The REBUILT UI's copy is deliberately not loaded here: it is one
- * `<locale>/rebuild-<namespace>.json` per area (core, site, learn,
- * mentor, profile, staff), imported as typed JSON by the surface that
- * owns it, or merged by `./rebuild.ts` (REBUILD_NAMESPACES). A rebuilt string
- * missing from its namespace is then a type error, never a raw key on screen.
+ * i18next only decides and remembers WHICH language is showing (detected from
+ * the browser, persisted on change). The page's own copy is not loaded
+ * through it: surfaces import their typed JSON from `./rebuild.ts`.
  */
-import enCommon from './en-US/common.json';
-import enTutor from './en-US/tutor.json';
-import esCommon from './es-MX/common.json';
-import esTutor from './es-MX/tutor.json';
-import ptCommon from './pt-BR/common.json';
-import ptTutor from './pt-BR/tutor.json';
 
 export const LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;
 export type Locale = (typeof LOCALES)[number];
 
-/** i18next's own `language`/`resolvedLanguage` are plain `string` — this is the narrowing gate. */
-export function isLocale(value: string): value is Locale {
-  return (LOCALES as readonly string[]).includes(value);
-}
-
 const resources = {
-  'en-US': { translation: { ...enCommon, tutor: enTutor } },
-  'es-MX': { translation: { ...esCommon, tutor: esTutor } },
-  'pt-BR': { translation: { ...ptCommon, tutor: ptTutor } },
+  'en-US': { translation: {} },
+  'es-MX': { translation: {} },
+  'pt-BR': { translation: {} },
 };
 
 /**
- * Keep `<html lang>` on the language the learner is actually reading.
+ * Keep `<html lang>` on the language the visitor is actually reading.
  *
- * `index.html` ships `lang="en"` and nothing ever changed it, so every Spanish
- * and Portuguese screen in the product declared itself English. That is not a
- * cosmetic attribute:
- *
- * - A SCREEN READER picks its voice and its pronunciation rules from it. A
- *   child using VoiceOver on the Spanish Tutor heard Spanish read aloud by an
- *   English synthesiser — which is the owner's own rule, "SIEMPRE se debe
- *   hablar en el idioma que tiene configurado el usuario", broken on the one
- *   surface where speech IS the product.
- * - Hyphenation, `:lang()` selectors, quote marks, spell-check and the
- *   browser's own translate prompt all key off it.
+ * `index.html` ships `lang="en"`. A screen reader picks its voice and
+ * pronunciation rules from this attribute, and hyphenation, `:lang()`
+ * selectors, quote marks, spell-check and the browser's translate prompt all
+ * key off it.
  *
  * Attached to the instance rather than to a React effect on purpose: the
- * attribute must be right for the FIRST paint and for any consumer that never
- * mounts a component (the marketing shell, a crawler, an error boundary), and
- * i18next resolves the detected language during `init`, before React exists.
- *
- * `i18n.language` can carry a region i18next resolved but we do not ship
- * (`es`, `pt-PT`), so the tag written is the supported locale actually in use.
+ * attribute must be right for the FIRST paint. `i18n.language` can carry a
+ * region i18next resolved but we do not ship (`es`, `pt-PT`), so the tag
+ * written is the supported locale actually in use.
  */
 function publishDocumentLanguage(lng: string | undefined): void {
   if (typeof document === 'undefined') return;
@@ -79,18 +47,6 @@ void i18n
     fallbackLng: 'en-US',
     supportedLngs: [...LOCALES],
     interpolation: { escapeValue: false },
-    /*
-     * The event this emits signals a key that only exists at runtime: under a
-     * dynamic segment only the static namespace can be checked, and the leaf
-     * keys below it cannot. One such call site once shipped a key that did not
-     * exist and rendered as itself, in Spanish, across the top of the
-     * web-analytics chart.
-     *
-     * Costs nothing in production: i18next emits an event and carries on
-     * rendering exactly as before. It is a signal, not a behaviour change.
-     */
-    saveMissing: true,
-    missingKeyNoValueFallbackToKey: false,
   });
 
 publishDocumentLanguage(i18n.language);

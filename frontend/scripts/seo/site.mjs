@@ -66,7 +66,7 @@ export const SITE = {
    */
   themeColor: '#5c55fd', // --primary
   manifestBackground: '#0b0d1b', // --base (dark), the splash behind the icon
-  /** The structured-data logo: the brand mark's 512 px raster (scripts/seo/render-icons.mjs, manifest `brand.mark`). */
+  /** The structured-data logo: the brand mark's 512 px raster. */
   logoPath: '/icon-512.png',
 
   /*
@@ -146,7 +146,7 @@ export const CARD_KICKER = {
  * really does change.
  *
  * So: bump the date when the page's CONTENT changes for a reader. Not when the
- * build runs, not when a title is reworded. Six pages, changed rarely — a hand
+ * build runs, not when a title is reworded. One page, changed rarely — a hand
  * date that is right beats an automatic one that is wrong.
  */
 export const PAGES = [
@@ -179,53 +179,6 @@ export const PAGES = [
       },
     },
   },
-  {
-    // /badge/:token — one row per share (0072/0073), never a fixed page, so
-    // there is nothing here for build-seo.mjs to prerender per-badge. This
-    // entry exists only to (a) satisfy assertRoutesAgree's app/site
-    // agreement check against src/lib/analytics.tsx's MARKETING_PREFIXES,
-    // and (b) provide a safe generic fallback if the bare, tokenless
-    // /badge path is ever hit directly. The REAL per-share title/description
-    // /image an unfurler sees comes from frontend/api/badge/[token].ts at
-    // request time, not from this file.
-    path: '/badge',
-    index: false, // Personal share link — never sitemapped, never search-indexed.
-    lastmod: '2026-09-07',
-    priority: '0.1',
-    changefreq: 'monthly',
-    agentSummary: null,
-    meta: {
-      'en-US': { title: 'Achievement badge | LittleFounders', description: 'A LittleFounders learner just earned an achievement badge.', h1: 'Achievement badge' },
-      'es-MX': { title: 'Insignia de logro | LittleFounders', description: 'Un alumno de LittleFounders acaba de ganar una insignia de logro.', h1: 'Insignia de logro' },
-      'pt-BR': { title: 'Selo de conquista | LittleFounders', description: 'Um aluno da LittleFounders acabou de conquistar um selo.', h1: 'Selo de conquista' },
-    },
-  },
-  {
-    path: '/legal/terms',
-    index: true,
-    lastmod: '2026-08-11',
-    priority: '0.3',
-    changefreq: 'yearly',
-    agentSummary: 'Terms and conditions of use.',
-    meta: {
-      'en-US': { title: 'Terms & Conditions | LittleFounders', description: 'The terms that govern the use of LittleFounders: who may open an account, how family and child accounts work, and the rules that apply to everyone using it.', h1: 'Terms & Conditions' },
-      'es-MX': { title: 'Términos y Condiciones | LittleFounders', description: 'Los términos que rigen el uso de LittleFounders: quién puede abrir una cuenta, cómo funcionan las cuentas familiares e infantiles, y las reglas que aplican a todos.', h1: 'Términos y Condiciones' },
-      'pt-BR': { title: 'Termos e Condições | LittleFounders', description: 'Os termos que regem o uso do LittleFounders: quem pode abrir uma conta, como funcionam as contas familiares e infantis, e as regras que valem para todos.', h1: 'Termos e Condições' },
-    },
-  },
-  {
-    path: '/legal/privacy',
-    index: true,
-    lastmod: '2026-08-11',
-    priority: '0.3',
-    changefreq: 'yearly',
-    agentSummary: 'Privacy notice, including how children’s data is handled.',
-    meta: {
-      'en-US': { title: 'Privacy Notice | LittleFounders', description: 'What we collect, what we never collect, and how children’s data is protected.', h1: 'Privacy Notice' },
-      'es-MX': { title: 'Aviso de Privacidad | LittleFounders', description: 'Qué recopilamos, qué nunca recopilamos y cómo se protegen los datos de menores.', h1: 'Aviso de Privacidad' },
-      'pt-BR': { title: 'Aviso de Privacidade | LittleFounders', description: 'O que coletamos, o que nunca coletamos e como os dados de menores são protegidos.', h1: 'Aviso de Privacidade' },
-    },
-  },
 ];
 
 /*
@@ -234,8 +187,7 @@ export const PAGES = [
  * AI crawlers are ALLOWED, deliberately and by owner decision (2026-08-27).
  * The usual reason to block them is to protect proprietary content from
  * training. That calculation does not apply here: the marketing site holds no
- * proprietary content, the lessons sit behind authentication where no crawler
- * reaches them, and being the answer when someone asks an assistant how to
+ * proprietary content, and being the answer when someone asks an assistant how to
  * teach their child about money is worth more to a company nobody has heard of
  * than the theoretical cost of the pages being read.
  *
@@ -263,38 +215,6 @@ export const AI_CRAWLERS = [
   'cohere-ai',
   'Diffbot',
   'omgili',
-];
-
-/**
- * Paths no crawler should fetch at all.
- *
- * Deliberately short. `Disallow` stops a fetch but does NOT stop indexing of a
- * URL somebody links to — a disallowed page can still appear in results as a
- * bare title, and because the crawler may not fetch it, it can never see a
- * `noindex` telling it otherwise. So this list holds only what must never be
- * REQUESTED; everything that merely should not RANK is handled with a
- * `noindex` tag on a page crawlers are free to read (see NOINDEX_PREFIXES).
- */
-export const DISALLOWED_PREFIXES = ['/admin', '/dev/', '/auth/'];
-
-/**
- * Fetchable, but must never rank.
- *
- * These are served by the SPA fallback, which build-seo.mjs marks `noindex` by
- * default — so this list is documentation and a test fixture rather than a
- * second mechanism. Anything not deliberately given a page above stays out of
- * the index by construction, which is the safe direction to fail in.
- */
-export const NOINDEX_PREFIXES = [
-  '/signup',
-  '/login',
-  '/reset-password',
-  '/verify-parent',
-  '/onboarding',
-  '/learn',
-  '/tutor',
-  '/profile',
-  '/@',
 ];
 
 /** Absolute URL for a site-relative path, without a double slash or a trailing one. */
