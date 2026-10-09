@@ -10,16 +10,15 @@
 // encoder the landing videos used), and the source models in glb/ at the repository root (the artist sources,
 // full quality, because this is a static render; the runtime copies in public/scenes/ are for the Tutor only).
 // No dev server is needed: this script serves the scene page, three.js and the models itself.
-import { createServer } from 'node:http';
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
-import { dirname, extname, join, normalize, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { launch, parseArgs, sleep } from '../audit/lib.mjs';
+import { startServer } from './serve.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const frontend = resolve(here, '../..');
-const repo = resolve(frontend, '..');
 const args = parseArgs();
 const MODES = typeof args.mode === 'string' ? [args.mode] : ['light', 'dark'];
 const FPS = 24;
@@ -32,27 +31,8 @@ const outDir = join(frontend, 'public/landing/signin');
 const scratch = join(frontend, 'audit-out/signin-render');
 const stills = args.still === undefined ? null : String(args.still === true ? 0 : args.still).split(',').map(Number);
 
-const ROOTS = [
-  ['/three/', join(frontend, 'node_modules/three/')],
-  ['/glb/', join(repo, 'glb/')],
-  ['/clips/', join(frontend, 'public/scenes/')],
-  ['/', here + '/'],
-];
-const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.glb': 'model/gltf-binary' };
-
-const server = createServer((request, response) => {
-  const path = decodeURIComponent(new URL(request.url, 'http://x').pathname);
-  const root = ROOTS.find(([prefix]) => path.startsWith(prefix));
-  const file = root && normalize(join(root[1], path.slice(root[0].length)));
-
-  if (!file || !file.startsWith(normalize(root[1])) || !existsSync(file) || !statSync(file).isFile()) { response.writeHead(404).end(); return; }
-
-  response.writeHead(200, { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream' }).end(readFileSync(file));
-});
-
-await new Promise((done) => server.listen(0, '127.0.0.1', done));
-
-const origin = `http://127.0.0.1:${server.address().port}`;
+const server = await startServer(here);
+const origin = server.origin;
 
 mkdirSync(scratch, { recursive: true });
 mkdirSync(outDir, { recursive: true });

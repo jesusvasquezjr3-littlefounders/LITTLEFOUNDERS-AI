@@ -6,6 +6,7 @@ All notable changes to the repository. Newest first. Updated in the same commit 
 
 ### Added
 
+- Avatar tools in `frontend/tools/avatars/` (reference renders of the four heads, a flat vector trace and a comparison image) and the first results, in [[CHARACTER-AVATARS]]: the four heads traced to layered SVG, faithful by eye, before any part separation.
 - [[CHARACTER-AVATARS]] (draft): a researched plan for light 2D vector heads of the four characters inside the platform: the owner's decisions (no 3D, no mouth cards), how to rebuild a head faithfully from the models, licenses checked, format candidates, spikes, risks, open questions. Nothing built (T-022).
 - `email-server/` restored from the archive tag (D-014): the outgoing mail service (Express API and Haraka relay to Amazon SES), its CI and gated CD workflows, and its local `.env` from the saved copy. Comments pointing at removed code were corrected; the `email_logs` migration and the email templates are not restored (T-021).
 - Documentation system under `docs/` with an index ([[INDEX]]), scaffolds for product, design, engineering, security, operations and process documents, a decision log, and `scripts/check-docs.mjs` run as a pre-commit hook and in CI.

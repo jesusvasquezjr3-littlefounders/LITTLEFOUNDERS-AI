@@ -27,6 +27,7 @@ The characters exist as 3D models, used for marketing compositions ([[CHARACTER-
 4. The format may be Lottie, Rive, SVG or similar, as long as it is 2D.
 5. Prefer licenses without strings: try the reference (bible-strong-avatar-lab) or another alternative.
 6. Avatars do not replace marketing compositions or the `.glb` files.
+7. Answers of the same day: head only; used as a **floating avatar** (in the style of the guide mascot on Brilliant) inside the platform; the voice is **generated**; all **four** characters (Rho, Dina, Liruf, Zara); the fidelity is whatever the recreation allows at its maximum; if it works, a full catalog of expressions follows. A flatter character is accepted (textures are not kept) as long as it **looks** like the original. Work is supervised step by step, with as much automation as possible and as little hand work as possible.
 
 Added by this plan from the project rules, to be confirmed: every avatar is decorative or has a text equivalent and honors reduced motion ([[FRONTEND-GUIDE]]); no camera, microphone or face tracking of the child, only the cursor ([[CHILD-SAFETY-AND-PRIVACY]]); small weight and low CPU ([[PERFORMANCE-AND-SCALING]]).
 
@@ -108,14 +109,20 @@ Each step ends with something the owner can see and accept or stop.
 - **Tool dependence** if Rive wins, since its editor is proprietary; **maintenance** if the runtime is ours.
 - **Child safety**: avatars that react to the child record and transmit nothing; cursor following stays on the device.
 
-## Open questions for the owner
+## Progress
 
-- [ ] Head only, or neck and shoulders too?
-- [ ] Where will avatars appear (a guide beside an exercise, feedback after an answer, a profile picture, a chat)? This sets sizes and expressions.
-- [ ] What moves the mouth: recorded voice, generated voice, or text only with an animated mouth? Voice raises child-safety and cost questions that are not decided.
-- [ ] Start with Rho and then Dina?
-- [ ] Is a proprietary editor (Rive) acceptable if it wins, or must the whole chain be open?
-- [ ] Is "exact for the neutral face, drawn in canon style and approved by you for the rest" the fidelity you want?
+**Steps 1 and 2 are done for all four characters (2026-10-09).** `npm run avatars:reference` renders each head from the source model, cut at the neck (Dina by her bones, Zara's hair kept to her shoulders), flat and unlit, on a transparent background. `python tools/avatars/trace.py <Character>` flattens that render to 16 colors and traces it with VTracer into a layered SVG; `npm run avatars:compare` puts reference, trace and trace on dark side by side. First results: Rho 273 KB and 269 paths, Zara 198 KB and 268, Liruf 327 KB and 397, Dina 285 KB and 290. By eye the traces are faithful for all four; the weight is far above the budget because they are single pictures with no parts yet. Known flaws to fix: Dina's smooth glow turns into visible bands (more colors or a fitted gradient), Zara's hair has a ragged lower edge where it is cut, and Rho's collar shows at the bottom.
+
+Next (needs the owner's approval of the look): separate the animated parts (eyes, brows, mouth, mustache, glasses, ears, hair or cap) from the traced head and rebuild each as clean shapes with the hidden parts drawn; then the rig and the format spike.
+
+## Questions that were open and are now answered
+
+- [x] Head only.
+- [x] A floating avatar inside the platform.
+- [x] Generated voice. Open: the voice provider, cost and child-safety rules for generated speech are not decided.
+- [x] All four characters.
+- [x] Whatever allows the recreation with the highest fidelity.
+- [x] Accepted; if it works, a full catalog of expressions follows.
 
 ## Related
 

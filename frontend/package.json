@@ -21,7 +21,9 @@
     "audit:scene": "node tools/audit/scene.mjs",
     "audit:color": "node tools/audit/color.mjs",
     "audit:shot": "node tools/audit/shot.mjs",
-    "render:signin": "node tools/render/render-signin.mjs"
+    "render:signin": "node tools/render/render-signin.mjs",
+    "avatars:reference": "node tools/avatars/reference.mjs",
+    "avatars:compare": "node tools/avatars/compare.mjs"
   },
   "dependencies": {
     "@number-flow/react": "^0.6.2",

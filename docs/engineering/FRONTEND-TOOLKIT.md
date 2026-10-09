@@ -133,6 +133,10 @@ Typical use: `npm run audit:layout -- --matrix`, `npm run audit:a11y -- --matrix
 
 For a scene with the characters (hero, problem, the sign-in window). `npm run render:signin` renders the window's scene to `public/landing/signin/` as an MP4 and a WebP poster for each color mode; `--still 0,3,6` writes PNGs to `audit-out/` to look at first; `--mode` and `--frames` narrow a run. Chrome and Blender are required (`BLENDER` and `CHROME_PATH` name them if they are elsewhere), and the artist models come from `glb/`. Method, rules and the scenes that exist: [[CHARACTER-COMPOSITIONS]]. Like the audit tools it is run by hand and is not a gate.
 
+## 7. The avatar tools
+
+For the 2D vector heads of the characters ([[CHARACTER-AVATARS]]), in `frontend/tools/avatars/`, run by hand: `npm run avatars:reference` renders each head from the source model in `glb/` (flat and lit passes) into `audit-out/avatars/<character>/`; `python tools/avatars/trace.py <Character>` flattens and traces it into `trace.svg` (needs `pip install vtracer opencv-python-headless numpy`); `npm run avatars:compare` writes a side-by-side image to look at. They share the static server in `tools/render/serve.mjs` and need Chrome.
+
 ## Related
 
 - [[FRONTEND-GUIDE]]
