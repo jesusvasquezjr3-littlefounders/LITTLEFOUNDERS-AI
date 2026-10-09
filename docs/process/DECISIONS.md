@@ -103,6 +103,12 @@ Date: 2026-10-09. Status: accepted.
 
 The owner set the product audience at 12 to 18 years old, final: 12 is the youngest age served, not 13. The platforms the product is compared with (Scratch, Code.org, Khan Academy) let teenagers from 13 manage their own account and require a parent or guardian for younger children, so the sign-up of 12-year-olds is a design item (T-020), not a reason to move the line. The landing says "ages 12 to 18" and the first skill starts at 12. Children under 12 are not served until the owner designs a different registration process, after looking at how existing learning platforms register young users. Legal inputs the owner supplied (not yet confirmed with counsel) are recorded in [[CHILD-SAFETY-AND-PRIVACY]].
 
+### D-014: The mail service is restored
+
+Date: 2026-10-09. Status: accepted.
+
+The previous version's mail service (`email-server/`, called Courier: an Express HTTP API and a Haraka SMTP relay to Amazon SES) is restored from the archive tag because it was working in production, and rebuilding it would cost time in tests and in environment variables, locally and in production. It exceeds the "restart from zero" rule on purpose, as the Supabase and Pulse setups did. What came back is the service, its two workflows and the local `.env` (from the saved copy; not tracked). What did not: the `email_logs` migration (the database has no schema, so history is kept in memory until it is recreated), the authentication email templates and their translated texts (T-021), and anything that called the service. Comments that pointed at removed code were corrected.
+
 ## Related
 
 - [[RESEARCH-FOUNDATION]]

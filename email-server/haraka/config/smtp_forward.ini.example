@@ -1,0 +1,21 @@
+; TEMPLATE ONLY. The real config/smtp_forward.ini is RENDERED AT BOOT by
+; src/index.ts from environment variables (see email-server/.env.example) and is
+; git-ignored because it holds the Amazon SES SMTP credentials. Never hand-edit
+; or commit the rendered file. This .example documents the shape it takes.
+
+; Amazon SES SMTP smarthost. Every relaying (internal) message is forwarded here
+; instead of delivered direct-to-MX — Railway blocks outbound port 25 and SES
+; owns the warm IP reputation that keeps auth mail out of spam (DEPLOYMENT.md).
+host=email-smtp.<region>.amazonaws.com
+port=587
+enable_tls=true
+
+; SMTP AUTH to SES. These are region-scoped SES *SMTP* credentials
+; (Account -> SMTP settings), NOT the AWS console login or AWS access keys.
+auth_type=plain
+auth_user=__SES_SMTP_USER__
+auth_pass=__SES_SMTP_PASS__
+
+; Deliver outbound (relaying) mail via this smarthost. Registers the
+; queue_outbound hook — see node_modules/Haraka/config/smtp_forward.ini.
+enable_outbound=true

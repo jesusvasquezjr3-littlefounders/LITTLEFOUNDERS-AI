@@ -11,10 +11,11 @@ LittleFounders helps children and teenagers learn about money.
 | `frontend/` | The landing page (hero, the problem, the four skills, what stays true, the closing ask) inside a shell with header and black footer, built on React 19, Tailwind CSS v4 and seven UI libraries, with the three locales (`en-US`, `es-MX`, `pt-BR`), light/dark theme, the brand tokens and consent-gated Plausible, Umami and Google Analytics 4. Its calls to action do nothing yet. How to work on it: `docs/engineering/FRONTEND-GUIDE.md` and `FRONTEND-TOOLKIT.md`. |
 | `database/` | Only the pinned Supabase release (`SUPABASE_VERSION`), the Railway images for the database and gateway, and local-stack scripts. There is no schema: `database/migrations/` is empty. |
 | `backend/` | Empty, reserved for the new backend. |
+| `email-server/` | Courier, the outgoing mail service, restored from the previous version because it worked in production (D-014): a small HTTP API plus a Haraka SMTP relay to Amazon SES. It sends the authentication mail Supabase hands it over SMTP. Templates for that mail are not restored yet (T-021). |
 | `pulse/` | Observability, kept as is: Plausible CE, ClickHouse, PostgreSQL, Umami and Uptime Kuma, each a pinned upstream image. |
 | 3D characters | Four Mentor models: `glb/` holds the sources and `frontend/public/scenes/` the optimized scenes, both tracked with Git LFS (about 180 MB). Install Git LFS before cloning. |
 
-Nothing else exists: no API, no accounts, no lessons, no tutor, no media services. The previous version's services (Core, Oracle, Forge, Echo, Prism, Depot, Courier, Guardian, Data Intel) may still be running in production; they have no code in this repo.
+Nothing else exists: no API, no accounts, no lessons, no tutor, no media services. The previous version's other services (Core, Oracle, Forge, Echo, Prism, Depot, Guardian, Data Intel) may still be running in production; they have no code in this repo.
 
 ## Run it
 
@@ -25,6 +26,8 @@ npm install
 npm run dev          # http://localhost:5173
 npm run type-check && npm run lint && npm run build
 ```
+
+Mail service, from `email-server/`: `npm ci`, `npm run dev` (port 4005, engine `noop` unless `EMAIL_ENGINE=haraka`), then the same three checks. It reads `email-server/.env` (not tracked; `.env.example` lists every variable).
 
 Database stack (Docker Desktop must be running), from `database/`: `npm run db:sync` fetches the pinned Supabase release, then `db:up`, `db:down`, `db:nuke`, `db:reset`, `db:status`. `db:nuke` deletes all local volumes.
 

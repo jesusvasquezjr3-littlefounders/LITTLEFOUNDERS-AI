@@ -32,7 +32,7 @@ The map an agent consults before adding code, so each piece goes in the right pl
 
 ## Current state
 
-- Independent packages in one repository: `frontend/` (React 19, Vite, TypeScript, Tailwind CSS v4), `database/` (pinned self-hosted Supabase and local-stack scripts), `backend/` (empty, reserved), `pulse/` (observability: Plausible CE, ClickHouse, PostgreSQL, Umami, Uptime Kuma).
+- Independent packages in one repository: `frontend/` (React 19, Vite, TypeScript, Tailwind CSS v4), `database/` (pinned self-hosted Supabase and local-stack scripts), `backend/` (empty, reserved), `pulse/` (observability: Plausible CE, ClickHouse, PostgreSQL, Umami, Uptime Kuma), `email-server/` (Courier, outgoing mail: an Express HTTP API with a Haraka SMTP relay to Amazon SES; Supabase's authentication service submits its mail to it over SMTP, and other services call its HTTP API with a service key).
 
 ## Related
 

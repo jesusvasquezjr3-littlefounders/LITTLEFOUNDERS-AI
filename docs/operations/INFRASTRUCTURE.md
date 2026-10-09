@@ -31,6 +31,7 @@ The inventory of hosting and third-party services, so no environment, account or
 
 ## Current state
 
+- The mail service (`email-server/`) runs on Railway as one service with a gated deploy: the workflow `email-server-cd` does nothing until the repository variable `EMAIL_SERVER_LIVE` is `true`, and the service needs the Amazon SES credentials and its internal key (variable names in `email-server/.env.example`).
 - The frontend is deployed to Vercel from `main`. The database and gateway images and Pulse run on Railway. A `filebase` (Depot) volume service remains in production and holds encrypted backups, with no code in this repository.
 
 ## Related

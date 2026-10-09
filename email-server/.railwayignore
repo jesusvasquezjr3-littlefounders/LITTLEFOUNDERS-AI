@@ -1,0 +1,20 @@
+# Deployment isolation + upload hygiene for `railway up email-server --path-as-root`.
+# See backend/.railwayignore for the rationale.
+node_modules/
+dist/
+coverage/
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+
+# Haraka runtime artifacts + rendered-at-boot config (SES secrets). Generated on
+# the container at boot by src/services/haraka.ts — must never be uploaded. The
+# static haraka/ config + plugins ARE uploaded (only these generated files are not).
+haraka/config/me
+haraka/config/smtp_forward.ini
+haraka/config/tls_key.pem
+haraka/config/tls_cert.pem
+haraka/queue/
+haraka/*.pid

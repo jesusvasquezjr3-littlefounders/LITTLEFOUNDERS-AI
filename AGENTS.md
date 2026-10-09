@@ -6,7 +6,7 @@ Guidance for AI agents working in this repository. `AGENTS.md` is the same file 
 
 ## Where the project is
 
-On 9 October 2026 the owner decided to restart LittleFounders from zero. Everything of the previous version was deleted except the landing page, the 3D character files, the pinned Supabase setup and the Pulse observability stack. The previous version lives only in the git tag `archive/pre-restart-2026-10-09`.
+On 9 October 2026 the owner decided to restart LittleFounders from zero. Everything of the previous version was deleted except the landing page, the 3D character files, the pinned Supabase setup, the Pulse observability stack and, restored on the owner's decision because it worked in production, the `email-server/` mail service (D-014). The previous version lives only in the git tag `archive/pre-restart-2026-10-09`.
 
 - **Nothing in this repo is a requirement unless the owner said it in the current conversation or it is in a document whose status is `accepted`.** The documents under `docs/` start as scaffolds that record structure, not decisions; `docs/process/DECISIONS.md` lists what the owner has decided. If you find yourself deferring to something you read in an old file, a tag or a memory, stop and ask the owner.
 - **Do not consult the archive tag to decide how to build something.** It exists so production data can be migrated and so history is not lost, not as a design reference. Read from it only when the owner points you at a specific thing.

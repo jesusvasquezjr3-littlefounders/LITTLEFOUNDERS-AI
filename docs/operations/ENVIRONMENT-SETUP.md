@@ -32,7 +32,7 @@ An environment configured badly produces errors that look like product bugs. Thi
 
 ## Current state
 
-- Clone with Git LFS installed. Frontend: `npm install`, `npm run dev`, `npm run type-check && npm run lint && npm run build` in `frontend/`. Database stack from `database/`: `npm run db:sync`, then `db:up`. Enable the documentation check with `git config core.hooksPath .githooks`. The frontend dev server listens on `localhost` (the IPv6 loopback, not `127.0.0.1`) and must be restarted after a change to `vite.config.ts` or after installing a Tailwind or shadcn piece; more traps in [[FRONTEND-TOOLKIT]]. The frontend audit tools (`npm run audit:*`) need Chrome and the dev server running; set `CHROME_PATH` if Chrome is not in its usual place.
+- Clone with Git LFS installed. Frontend: `npm install`, `npm run dev`, `npm run type-check && npm run lint && npm run build` in `frontend/`. Database stack from `database/`: `npm run db:sync`, then `db:up`. Enable the documentation check with `git config core.hooksPath .githooks`. The frontend dev server listens on `localhost` (the IPv6 loopback, not `127.0.0.1`) and must be restarted after a change to `vite.config.ts` or after installing a Tailwind or shadcn piece; more traps in [[FRONTEND-TOOLKIT]]. The mail service reads `email-server/.env` (ignored by git; the list of variables is `email-server/.env.example`). With `EMAIL_ENGINE=noop` it sends nothing; with `haraka` it relays through Amazon SES. The frontend audit tools (`npm run audit:*`) need Chrome and the dev server running; set `CHROME_PATH` if Chrome is not in its usual place.
 
 ## Related
 
