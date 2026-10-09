@@ -139,24 +139,10 @@
       "fill": "#587d5d"
     },
     {
-      "name": "snout-top",
-      "pieces": [
-        11
-      ],
-      "close": 20,
-      "symmetrize": "left",
-      "fill": "#6d936c",
-      "sigma": 10
-    },
-    {
-      "name": "snout-ridge",
-      "pieces": [
-        10
-      ],
-      "close": 20,
-      "symmetrize": "left",
-      "fill": "#98c282",
-      "sigma": 10
+      "name": "snout-light",
+      "kind": "path",
+      "d": "M236 585 C300 482 440 440 577 440 C714 440 854 482 918 585 C846 520 710 486 577 486 C444 486 308 520 236 585 Z",
+      "fill": "#6a906a"
     },
     {
       "name": "mouth",
