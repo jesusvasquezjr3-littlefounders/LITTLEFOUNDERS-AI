@@ -16,6 +16,8 @@ All notable changes to the repository. Newest first. Updated in the same commit 
 - Skills for words and design (D-008): `humanizer` as the always-on standard for user-facing text (new rule 12 in [[CLAUDE]] and [[AGENTS]]), and `impeccable` plus seven taste-skill design skills that run only when the owner invokes them; see [[AI-WORKFLOW]].
 - [[UI-LIBRARIES]]: the seven mandatory UI libraries (Bklit UI, Motion, Sileo, 000h by Cojeev, Bencho, Morphicons, Thinking Orbs), decision D-007 and tasks T-009 to T-011; the Bencho procedure and licence are recorded in it.
 
+- [[CHARACTER-POSES]]: what exists for Liruf, Dina, Zara and Rho after the restart, and the previous version's 100 named poses recovered from the archive tag as a draft to review (T-018). No character code was brought back.
+
 ### Changed
 
 - The frontend moved to React 19, Tailwind CSS v4 and shadcn. The hand-written design system (`src/rebuild/`) and its asset manifest were deleted; the landing, shell, cookie choice, theme toggle and language menu were rebuilt on the libraries, with brand tokens in `src/styles/lf-theme.css`. The "ten seeds" row became a Bklit ring chart. Public assets moved from `/rebuild/...` to `/landing/` and `/brand/`; copy files from `rebuild-*.json` to `core.json` and `site.json`.

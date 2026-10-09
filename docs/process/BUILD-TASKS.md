@@ -42,6 +42,7 @@ Gives agents and humans one place to see what to do next. Each task is small, ha
 | T-014 | Talk to parents: test the landing words and the age ranges, and collect real quotes (with consent) for the page | open | From the advisor call; see [[LANDING-MESSAGING]]. Nothing is invented in the meantime. |
 | T-015 | Decide what an active user is and break usage down by age segment; decide who each return-visit message goes to, the parent or the child | open | From the same call. Product and analytics, not landing text. |
 | T-016 | Fill the footer: the address of each social profile and of the terms and privacy pages in `frontend/src/lib/footerLinks.ts`, and the links that go under About us, Product and Behind the scenes once their pages exist | open | Until then the marks and legal entries are shown but are not links. The social marks are simple glyphs drawn in `components/icons/social.tsx`; which networks to show is the owner's call. Related: T-003, T-012. |
+| T-018 | Review the character pose catalog with the owner and decide the role of Liruf, Dina, Zara and Rho in marketing, UI and UX | open | Starting list and open questions are in [[CHARACTER-POSES]] (status draft). No character code returns from the archive until this is decided and a screen needs it. |
 | T-007 | Define the security baseline with the owner and fill [[SECURITY-GUIDE]] and [[CHILD-SAFETY-AND-PRIVACY]] | open |  |
 
 ## Related
