@@ -1,7 +1,7 @@
 ---
 title: Glossary
 status: scaffold
-updated: 2026-10-09
+updated: 2026-10-10
 ---
 
 # Glossary
@@ -27,8 +27,15 @@ Language models drift between synonyms. A fixed vocabulary keeps table names, id
 - [ ] The translation of each term in en-US, es-MX and pt-BR.
 - [ ] Terms that must never appear in child-facing copy.
 
+## Terms decided
+
+| Term (en-US) | es-MX | pt-BR | Meaning |
+|---|---|---|---|
+| Seeds | Semillas | to confirm with the owner ("Sementes" is the direct translation) | The official currency of LittleFounders ([[DECISIONS]] D-024). It never represents real money. How it is earned and used is not designed yet. |
+
 ## Related
 
+- [[DECISIONS]]
 - [[PRODUCT-REQUIREMENTS]]
 - [[DATABASE-GUIDE]]
 - [[CODE-STYLE-GUIDE]]

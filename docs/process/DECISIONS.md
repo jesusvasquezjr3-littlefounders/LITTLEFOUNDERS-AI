@@ -101,7 +101,7 @@ Scenes with the characters follow one set of rules (true scale with Dina large, 
 
 Date: 2026-10-09. Status: accepted.
 
-The owner set the product audience at 12 to 18 years old, final: 12 is the youngest age served, not 13. The platforms the product is compared with (Scratch, Code.org, Khan Academy) let teenagers from 13 manage their own account and require a parent or guardian for younger children, so the sign-up of 12-year-olds is a design item (T-020), not a reason to move the line. The landing says "ages 12 to 18" and the first skill starts at 12. Children under 12 are not served until the owner designs a different registration process, after looking at how existing learning platforms register young users. Legal inputs the owner supplied (not yet confirmed with counsel) are recorded in [[CHILD-SAFETY-AND-PRIVACY]].
+The owner set the product audience at 12 to 18 years old, final: 12 is the youngest age served, not 13. The platforms the product is compared with (Scratch, Code.org, Khan Academy) let teenagers from 13 manage their own account and require a parent or guardian for younger children, so the sign-up of 12-year-olds is a design item (T-020), not a reason to move the line. The landing says "ages 12 to 18" and the first skill starts at 12. How sign-up handles age is in D-025. Children under 12 are not served until the owner designs a different registration process, after looking at how existing learning platforms register young users. Legal inputs the owner supplied (not yet confirmed with counsel) are recorded in [[CHILD-SAFETY-AND-PRIVACY]].
 
 ### D-014: The mail service is restored
 
@@ -127,9 +127,65 @@ Date: 2026-10-10. Status: accepted.
 
 Inside the platform, a wait is shown in a window like the sign-in window (Cojeev's Dialog surface, the product's tokens; no glass, no percentage): a bar that fills from empty to 80 % in two seconds and holds, a character running on the bar's leading edge, and one word under it in bold capitals. The four characters run it. The runner is an AVIF sprite sheet per character and per color mode (8 files, 26 to 52 KB each), not 24 baked animations, because the word, the window and the colors are live. The owner chose the format after seeing the measurements and approved the four previews. Details, the measurements and the references: [[FRONTEND-GUIDE]], "The loading window".
 
+### D-018: The reference mapping is the input for product decisions
+
+Date: 2026-10-10. Status: accepted.
+
+The owner mapped six learning products (Mimo, Brilliant, Duolingo, Finanz, GoHenry, Astra AI) in the private repository `LittleFounders-AI/reference-mapping-for-littlefounders` and the first product decisions (D-019 to D-026) come from reading it in full. It is a reference, not a specification: its evidence is uneven (the two finance products were mapped from public pages only), so a pattern taken from it is named with the product it came from, and nothing time-based or server-side in it is treated as a known rule.
+
+### D-019: A mistake is never punished
+
+Date: 2026-10-10. Status: accepted.
+
+A wrong answer is treated as part of learning, in words and in mechanics. The reference for the tone is Brilliant ("If you're not making mistakes, you're not learning"). No mechanic limits learning because of mistakes: no lives, hearts, energy or waiting time, and nothing is sold or earned back to keep learning after an error.
+
+### D-020: One primary button per screen
+
+Date: 2026-10-10. Status: accepted.
+
+Every screen has a single primary button, and it stays disabled until the person has given an answer.
+
+### D-021: Value before data
+
+Date: 2026-10-10. Status: accepted.
+
+Choosing to join shows the whole onboarding before any account is asked for. The experience is immersive and low in cognitive load, and a person sees the value within the first 5 to 10 seconds of using the platform. Registration is never presented as a requirement: it is the way to keep progress permanently and to reach advanced functions.
+
+### D-022: Rewards arrive one idea per screen
+
+Date: 2026-10-10. Status: accepted.
+
+After a lesson, each reward has its own screen, in order: lesson completed, then streak, then goal, then league. What each of those is (rules, numbers, and what a league shows about other people) is designed with its feature.
+
+### D-023: No commercial pressure, and a free layer for everything
+
+Date: 2026-10-10. Status: accepted.
+
+Every product of the platform is available for free through a free layer. Advanced functions (the AI, advanced family functions) will sit behind a paywall, and the paywall is built only once the product is declared ready in its first version. Nothing pressures a person to pay: no countdowns, no repeated offers, no offer placed in the way of learning.
+
+### D-024: The currency is Seeds
+
+Date: 2026-10-10. Status: accepted.
+
+The official currency of LittleFounders is Seeds ("Semillas" in Spanish). How Seeds are earned and used is designed with the features that need them; they never represent real money (rule 8 in [[CLAUDE]]). The term is in [[GLOSSARY]].
+
+### D-025: Self-declared permission at sign-up
+
+Date: 2026-10-10. Status: accepted.
+
+The product is aimed first at people aged 12 and over (D-013). So that a younger person who signs up meets no friction, the age step uses a self-declared checkbox like Astra AI's ("I confirm I have my parent's or guardian's permission") instead of a verified parental-consent process. This answers the sign-up part of T-020. Open with the owner: the age below which the checkbox appears, and whether it also admits children under 12, whom D-013 does not serve. To confirm with counsel before production: a self-declared checkbox is not verifiable parental consent, which some regimes require for the youngest users ([[CHILD-SAFETY-AND-PRIVACY]]).
+
+### D-026: Finance content comes later
+
+Date: 2026-10-10. Status: accepted.
+
+No finance content is written yet. It is made later, as the functionality is developed one feature at a time.
+
 ## Related
 
 - [[RESEARCH-FOUNDATION]]
+- [[GLOSSARY]]
+- [[CHILD-SAFETY-AND-PRIVACY]]
 - [[UI-LIBRARIES]]
 - [[PRODUCT-REQUIREMENTS]]
 - [[ARCHITECTURE]]

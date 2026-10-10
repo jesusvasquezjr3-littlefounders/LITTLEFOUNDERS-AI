@@ -1,7 +1,7 @@
 ---
 title: Product requirements
 status: scaffold
-updated: 2026-10-09
+updated: 2026-10-10
 ---
 
 # Product requirements
@@ -33,6 +33,7 @@ Agents and humans read this to know what to build and, just as important, what n
 ## Current state
 
 - The product was restarted from zero on 2026-10-09. Only the landing page (hero and problem sections) exists; its calls to action do nothing yet.
+- The owner set the first product principles on 2026-10-10 after the reference mapping was read: mistakes are never punished, one primary button per screen, value before data, rewards one idea per screen, no commercial pressure and a free layer for everything, Seeds as the currency, self-declared permission at sign-up, and finance content later. They are recorded one by one in [[DECISIONS]] (D-018 to D-026). No feature is defined yet.
 
 ## Related
 
