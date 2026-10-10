@@ -52,6 +52,8 @@ export interface AvatarProps {
   gaze?: Gaze;
   /** Reacts to the pointer resting on it and to taps; on by default. */
   interactive?: boolean;
+  /** Numbers of the rig set by hand over everything else (the development page's sliders). */
+  overrides?: Partial<Frame>;
   label?: string;
   className?: string;
 }
@@ -103,6 +105,7 @@ interface Control {
   speech: Speech | null;
   gestures: Playing[];
   hover: boolean;
+  overrides: Partial<Frame>;
   kick: (() => void) | null;
 }
 
@@ -159,13 +162,14 @@ function poseAt(events: VisemeEvent[], at: number): MouthPose {
   return ahead < 0.05 ? mix(current, VISEMES[next.viseme], (1 - ahead / 0.05) * 0.6) : current;
 }
 
-export const Avatar = forwardRef<AvatarHandle, AvatarProps>(function Avatar({ character, expression = 'neutral', gaze = 'cursor', interactive = true, label, className }, ref) {
+export const Avatar = forwardRef<AvatarHandle, AvatarProps>(function Avatar({ character, expression = 'neutral', gaze = 'cursor', interactive = true, overrides, label, className }, ref) {
   const host = useRef<HTMLDivElement>(null);
   const [loaded, setLoaded] = useState<Loaded | null>(null);
-  const control = useRef<Control>({ expression, gaze, speech: null, gestures: [], hover: false, kick: null });
+  const control = useRef<Control>({ expression, gaze, speech: null, gestures: [], hover: false, overrides: {}, kick: null });
 
   control.current.expression = expression;
   control.current.gaze = gaze;
+  control.current.overrides = overrides ?? {};
 
   useEffect(() => {
     let live = true;
@@ -409,6 +413,8 @@ export const Avatar = forwardRef<AvatarHandle, AvatarProps>(function Avatar({ ch
       out.tilt = state.tilt + add.tilt;
       out.lift = state.lift + add.lift;
 
+      for (const key of KEYS) out[key] = control.current.overrides[key] ?? out[key];
+
       rig.apply(out);
 
       const stillSettling = KEYS.some((key) => !COMPUTED.has(key) && Math.abs(state[key] - target[key]) > 0.002);
@@ -442,7 +448,7 @@ export const Avatar = forwardRef<AvatarHandle, AvatarProps>(function Avatar({ ch
   }, [loaded, interactive]);
 
   // a new expression wakes the loop, which stops by itself when motion is reduced and nothing is changing
-  useEffect(() => { control.current.kick?.(); }, [expression, gaze]);
+  useEffect(() => { control.current.kick?.(); }, [expression, gaze, overrides]);
 
   const ratio = loaded ? loaded.spec.viewBox[2] / loaded.spec.viewBox[3] : 1;
   const a11y = label ? { role: 'img' as const, 'aria-label': label } : { 'aria-hidden': true as const };
