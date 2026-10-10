@@ -136,11 +136,7 @@
    "hair",
    "hair-light",
    "hair-light-l",
-   "hair-light-r",
-   "sideburn-l",
-   "sideburn-r",
-   "sideburn-light-l",
-   "sideburn-light-r"
+   "hair-light-r"
   ]
  },
  "body": [
@@ -166,5 +162,29 @@
   ]
  },
  "gain": 1.1,
- "expressionScale": 0.85
+ "expressionScale": 0.85,
+ "strands": [
+  {
+   "parts": [
+    "sideburn-l",
+    "sideburn-light-l"
+   ],
+   "root": [
+    512,
+    490
+   ],
+   "side": -1
+  },
+  {
+   "parts": [
+    "sideburn-r",
+    "sideburn-light-r"
+   ],
+   "root": [
+    1104,
+    490
+   ],
+   "side": 1
+  }
+ ]
 }

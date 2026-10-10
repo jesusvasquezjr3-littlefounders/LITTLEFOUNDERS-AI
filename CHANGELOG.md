@@ -6,6 +6,7 @@ All notable changes to the repository. Newest first. Updated in the same commit 
 
 ### Added
 
+- Hanging-hair behavior in the avatar rig (`strands`): Zara's sideburns are pinned at the hairline and sway like hair instead of floating like earrings; a finer jaw and a chin edge for Zara.
 - Zara's jaw redrawn symmetric with a narrower chin, her neck and chest as one continuous skin tone, and sideburns at her temples.
 - Zara's eyes redrawn to match the original (rounder white, larger iris kept inside the eye, a thick tapered liner with a wing); `clip_ellipse` for art specs.
 - Avatars: Zara's expressions rebuilt to be clean and gentle (per-character `expressionScale`, softer mouth), Liruf redrawn without outlines and given eyelids so he is expressive, faithful and in the same style as the others. Rho and Dina approved.

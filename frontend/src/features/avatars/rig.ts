@@ -61,6 +61,8 @@ export interface RigSpec {
     follow?: { part: string; open: number; smile: number; stretch: number }[];
   };
   cheeks: string[];
+  /** Hair that hangs from a root on the face (sideburns): it is pinned there, hangs down as the head tilts, and sways a little when it turns or nods. */
+  strands?: { parts: string[]; root: [number, number]; side: -1 | 1 }[];
   head: { pivot: [number, number]; parts: string[] };
   body: string[];
 }
@@ -351,6 +353,19 @@ export class AvatarRig {
       this.add(part, `translate(0 ${(-up * unit * 0.8).toFixed(2)})`);
       this.add(part, this.scaleAbout(part, 1 + up * 0.14 + frame.cheek * 0.08, 1 + up * 0.14 + frame.cheek * 0.08));
       this.element(part)?.setAttribute('opacity', Math.max(0, Math.min(1, 0.75 + frame.cheek * 0.5 + up * 0.25)).toFixed(2));
+    }
+
+    // hanging hair: pinned at its root, it keeps hanging down while the head tilts and swings forward and back when it nods or turns
+    const hang = (frame.tilt + frame.nod * 3 + frame.turn * 3 - frame.lift * 4) * 0.6;
+
+    for (const strand of spec.strands ?? []) {
+      const [rx, ry] = strand.root;
+      const sway = -hang * 0.85 + frame.turn * strand.side * 2.5 + frame.nod * 2 * strand.side;
+
+      for (const part of strand.parts) {
+        this.add(part, shift(0.3));
+        this.add(part, `rotate(${sway.toFixed(2)} ${rx} ${ry}) translate(${rx} ${ry}) scale(1 ${(1 + frame.nod * 0.04 - frame.lift * 0.03).toFixed(3)}) translate(${-rx} ${-ry})`);
+      }
     }
 
     // breathing: the body rises and falls a hair
