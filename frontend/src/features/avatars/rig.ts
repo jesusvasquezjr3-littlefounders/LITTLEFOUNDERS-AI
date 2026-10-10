@@ -32,6 +32,8 @@ export interface RigEye {
 export interface RigSpec {
   prefix: string;
   viewBox: [number, number, number, number];
+  /** The face the character wears when it is just being itself, under every expression (a gentle smile). */
+  baseline?: Partial<Frame>;
   /** Scales every unit-based motion (turns, brow lifts, bounces): faces that take up less of the drawing need more. */
   gain?: number;
   eyes: RigEye[];
@@ -118,7 +120,7 @@ export const NEUTRAL_FRAME: Frame = {
 };
 
 /** Parallax in avatar units for a turn of 1; scaled to the avatar's width. */
-const PARALLAX = 0.03;
+const PARALLAX = 0.02;
 
 interface PathEdit {
   node: SVGPathElement;
@@ -247,8 +249,8 @@ export class AvatarRig {
 
     this.pieces.clear();
 
-    const turnX = frame.turn + frame.lookX * 0.55;
-    const shift = (depth: number): string => `translate(${(turnX * depth * unit).toFixed(2)} ${(frame.lookY * depth * unit * 0.6).toFixed(2)})`;
+    // only an expression or a gesture turns the head; where the eyes look moves the iris inside the eye and nothing else
+    const shift = (depth: number): string => `translate(${(frame.turn * depth * unit).toFixed(2)} 0)`;
 
     // the face features slide with the turn, by depth; the hair and crest slide the other way and swing behind
     for (const group of spec.face) for (const part of group.parts) this.add(part, shift(group.depth));
@@ -265,9 +267,11 @@ export class AvatarRig {
       const [cx, cy] = eye.center;
       const blink = eye.side < 0 ? frame.blinkL : frame.blinkR;
       const wide = eye.side < 0 ? frame.eyeOpenL : frame.eyeOpenR;
-      const open = Math.max(0.04, wide * (1 - blink * 0.96));
-      const grow = wide > 1 ? 1 + (wide - 1) * 0.28 : 1;
-      const slant = (-eye.side * frame.eyeTilt * 11).toFixed(2);
+      // a squint narrows the eye only part of the way, so the eye never collapses into a slit unless it blinks
+      const lid = wide < 1 ? 1 - (1 - wide) * 0.55 : wide;
+      const open = Math.max(0.04, lid * (1 - blink * 0.96));
+      const grow = wide > 1 ? 1 + (wide - 1) * 0.22 : 1;
+      const slant = (-eye.side * frame.eyeTilt * 7).toFixed(2);
       const squash = `translate(${cx} ${cy}) rotate(${slant}) scale(${grow.toFixed(3)} ${(open * grow).toFixed(3)}) translate(${-cx} ${-cy})`;
 
       for (const part of eye.parts) {
@@ -337,9 +341,9 @@ export class AvatarRig {
 
     const ox = spec.viewBox[0] + spec.viewBox[2] / 2;
     const oy = spec.viewBox[1] + spec.viewBox[3];
-    const roll = frame.tilt + frame.nod * 3 + frame.turn * 3 - frame.lift * 4;
+    const roll = (frame.tilt + frame.nod * 3 + frame.turn * 3 - frame.lift * 4) * 0.6;
     const dip = frame.nod * unit * 0.9 - frame.bounce * unit * 1.8 + frame.lift * unit * 0.5;
-    const grow = 1 + frame.lean * 0.07 + frame.bounce * 0.01;
+    const grow = 1 + frame.lean * 0.04 + frame.bounce * 0.01;
 
     this.root.setAttribute('transform', `translate(${ox} ${oy}) scale(${grow.toFixed(3)}) translate(${-ox} ${-oy}) rotate(${roll.toFixed(2)} ${px} ${py}) translate(0 ${dip.toFixed(2)})`);
   }

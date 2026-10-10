@@ -216,37 +216,37 @@
       "kind": "ellipse",
       "cx": 334,
       "cy": 378,
-      "rx": 84,
-      "ry": 92,
+      "rx": 88,
+      "ry": 96,
       "angle": -8,
       "fill": {
         "gradient": {
           "type": "radial",
-          "cx": 340,
-          "cy": 430,
-          "r": 120,
+          "cx": 334,
+          "cy": 400,
+          "r": 100,
           "stops": [
             [
               0,
-              "#ff7a5c"
+              "#ff9a8a"
             ],
             [
-              0.4,
-              "#c9372f"
+              0.5,
+              "#e2424a"
             ],
             [
-              0.8,
-              "#7a1818"
+              0.85,
+              "#a31f2a"
             ],
             [
               1,
-              "#3a0a0a"
+              "#5c0f16"
             ]
           ]
         }
       },
-      "outline": "#2a0707",
-      "outline_width": 5
+      "outline": "#1d1d18",
+      "outline_width": 6
     },
     {
       "name": "iris-r",
@@ -255,10 +255,10 @@
     {
       "name": "pupil-l",
       "kind": "ellipse",
-      "cx": 336,
-      "cy": 366,
-      "rx": 52,
-      "ry": 60,
+      "cx": 338,
+      "cy": 372,
+      "rx": 66,
+      "ry": 74,
       "angle": -8,
       "fill": "#0c0d0e"
     },
@@ -267,23 +267,25 @@
       "mirror_of": "pupil-l"
     },
     {
-      "name": "pupil-glow-l",
-      "kind": "path",
-      "d": "M300 440 C318 478 366 480 392 438 C372 468 322 468 300 440 Z",
-      "fill": "#c93a3a",
-      "opacity": 0.85
-    },
-    {
-      "name": "pupil-glow-r",
-      "mirror_of": "pupil-glow-l"
-    },
-    {
       "name": "glint-l",
       "kind": "circle",
-      "cx": 336,
-      "cy": 342,
-      "r": 31,
+      "cx": 358,
+      "cy": 338,
+      "r": 30,
       "fill": "#ffffff"
+    },
+    {
+      "name": "glint-small-l",
+      "kind": "circle",
+      "cx": 312,
+      "cy": 418,
+      "r": 12,
+      "fill": "#ffffff",
+      "opacity": 0.9
+    },
+    {
+      "name": "glint-small-r",
+      "mirror_of": "glint-small-l"
     },
     {
       "name": "glint-r",
@@ -375,36 +377,31 @@
       "name": "mouth",
       "kind": "path",
       "d": "M330 930 C400 950 500 946 577 946 C654 946 754 950 824 930 C852 1005 812 1095 742 1128 C692 1152 462 1152 412 1128 C342 1095 302 1005 330 930 Z",
-      "fill": "#e64b51"
+      "fill": "#e9646c"
+    },
+    {
+      "name": "mouth-tongue",
+      "kind": "path",
+      "d": "M452 1096 C492 1056 662 1056 702 1096 C682 1140 482 1140 452 1096 Z",
+      "fill": "#f28c92"
     },
     {
       "name": "mouth-outline",
       "kind": "path",
       "d": "M330 930 C400 950 500 946 577 946 C654 946 754 950 824 930 C852 1005 812 1095 742 1128 C692 1152 462 1152 412 1128 C342 1095 302 1005 330 930 Z",
-      "stroke": "#510d12",
-      "width": 14
+      "stroke": "#7a2a30",
+      "width": 9
     },
     {
       "name": "fang-upper-l",
       "kind": "path",
-      "d": "M408 950 L494 950 L452 1034 Z",
+      "d": "M420 954 L486 954 L453 1010 Z",
       "fill": "#f6f4f4",
       "round": 14
     },
     {
       "name": "fang-upper-r",
       "mirror_of": "fang-upper-l"
-    },
-    {
-      "name": "fang-lower-l",
-      "kind": "path",
-      "d": "M480 1118 L540 1118 L510 1066 Z",
-      "fill": "#f6f4f4",
-      "round": 12
-    },
-    {
-      "name": "fang-lower-r",
-      "mirror_of": "fang-lower-l"
     },
     {
       "name": "nostril-l",
@@ -419,17 +416,6 @@
     {
       "name": "nostril-r",
       "mirror_of": "nostril-l"
-    },
-    {
-      "name": "brow-l",
-      "kind": "path",
-      "d": "M196 150 Q312 96 430 158",
-      "stroke": "#3b5a43",
-      "width": 24
-    },
-    {
-      "name": "brow-r",
-      "mirror_of": "brow-l"
     },
     {
       "name": "snout-wrinkle-l",
@@ -451,14 +437,14 @@
           "eye-white-l",
           "iris-l",
           "pupil-l",
-          "pupil-glow-l",
-          "glint-l"
+          "glint-l",
+          "glint-small-l"
         ],
         "gaze": [
           "iris-l",
           "pupil-l",
-          "pupil-glow-l",
-          "glint-l"
+          "glint-l",
+          "glint-small-l"
         ],
         "center": [
           315,
@@ -476,14 +462,14 @@
           "eye-white-r",
           "iris-r",
           "pupil-r",
-          "pupil-glow-r",
-          "glint-r"
+          "glint-r",
+          "glint-small-r"
         ],
         "gaze": [
           "iris-r",
           "pupil-r",
-          "pupil-glow-r",
-          "glint-r"
+          "glint-r",
+          "glint-small-r"
         ],
         "center": [
           839,
@@ -497,24 +483,7 @@
         ]
       }
     ],
-    "brows": [
-      {
-        "part": "brow-l",
-        "center": [
-          313,
-          128
-        ],
-        "side": -1
-      },
-      {
-        "part": "brow-r",
-        "center": [
-          841,
-          128
-        ],
-        "side": 1
-      }
-    ],
+    "brows": [],
     "face": [
       {
         "parts": [
@@ -522,17 +491,9 @@
           "mouth-outline",
           "fang-upper-l",
           "fang-upper-r",
-          "fang-lower-l",
-          "fang-lower-r"
+          "mouth-tongue"
         ],
         "depth": 1.15
-      },
-      {
-        "parts": [
-          "brow-l",
-          "brow-r"
-        ],
-        "depth": 0.9
       },
       {
         "parts": [
@@ -549,11 +510,10 @@
     "mouth": {
       "parts": [
         "mouth",
+        "mouth-tongue",
         "mouth-outline",
         "fang-upper-l",
-        "fang-upper-r",
-        "fang-lower-l",
-        "fang-lower-r"
+        "fang-upper-r"
       ],
       "anchor": [
         577,
@@ -596,6 +556,11 @@
         577,
         520
       ]
-    }
+    },
+    "baseline": {
+      "smile": 0.5,
+      "cheek": 0.2
+    },
+    "gain": 0.8
   }
 }

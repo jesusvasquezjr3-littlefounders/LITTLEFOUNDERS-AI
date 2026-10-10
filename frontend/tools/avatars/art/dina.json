@@ -279,11 +279,13 @@
       "kind": "path",
       "fill": "#e9654f",
       "opacity": 0.92,
-      "d": "M30 800 C60 770 150 780 175 830 C190 880 150 925 100 925 C50 925 15 870 30 800 Z"
+      "d": "M30 800 C60 770 150 780 175 830 C190 880 150 925 100 925 C50 925 15 870 30 800 Z",
+      "clip_to": "head"
     },
     {
       "name": "cheek-r",
-      "mirror_of": "cheek-l"
+      "mirror_of": "cheek-l",
+      "clip_to": "head"
     },
     {
       "name": "nostril-l",

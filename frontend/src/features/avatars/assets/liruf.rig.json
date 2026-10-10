@@ -12,14 +12,14 @@
     "eye-white-l",
     "iris-l",
     "pupil-l",
-    "pupil-glow-l",
-    "glint-l"
+    "glint-l",
+    "glint-small-l"
    ],
    "gaze": [
     "iris-l",
     "pupil-l",
-    "pupil-glow-l",
-    "glint-l"
+    "glint-l",
+    "glint-small-l"
    ],
    "center": [
     315,
@@ -37,14 +37,14 @@
     "eye-white-r",
     "iris-r",
     "pupil-r",
-    "pupil-glow-r",
-    "glint-r"
+    "glint-r",
+    "glint-small-r"
    ],
    "gaze": [
     "iris-r",
     "pupil-r",
-    "pupil-glow-r",
-    "glint-r"
+    "glint-r",
+    "glint-small-r"
    ],
    "center": [
     839,
@@ -58,24 +58,7 @@
    ]
   }
  ],
- "brows": [
-  {
-   "part": "brow-l",
-   "center": [
-    313,
-    128
-   ],
-   "side": -1
-  },
-  {
-   "part": "brow-r",
-   "center": [
-    841,
-    128
-   ],
-   "side": 1
-  }
- ],
+ "brows": [],
  "face": [
   {
    "parts": [
@@ -83,17 +66,9 @@
     "mouth-outline",
     "fang-upper-l",
     "fang-upper-r",
-    "fang-lower-l",
-    "fang-lower-r"
+    "mouth-tongue"
    ],
    "depth": 1.15
-  },
-  {
-   "parts": [
-    "brow-l",
-    "brow-r"
-   ],
-   "depth": 0.9
   },
   {
    "parts": [
@@ -110,11 +85,10 @@
  "mouth": {
   "parts": [
    "mouth",
+   "mouth-tongue",
    "mouth-outline",
    "fang-upper-l",
-   "fang-upper-r",
-   "fang-lower-l",
-   "fang-lower-r"
+   "fang-upper-r"
   ],
   "anchor": [
    577,
@@ -157,5 +131,10 @@
    577,
    520
   ]
- }
+ },
+ "baseline": {
+  "smile": 0.5,
+  "cheek": 0.2
+ },
+ "gain": 0.8
 }

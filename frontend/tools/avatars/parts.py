@@ -234,16 +234,18 @@ def add(name, markup, bbox=None):
     named[name] = markup
     if BLUR.get(name):
         markup = f'<g filter="url(#{blur_filter(BLUR[name])})">{markup}</g>'
-    clip = CLIPS.get(name)
-    if clip:
-        cid = f"clip-{name}"
-        defs.append(f'<clipPath id="{cid}"><use href="#p-{clip}"/></clipPath>')
-        markup = f'<g clip-path="url(#{cid})">{markup}</g>'
     if name in MIRRORED:
         # a mirrored part is drawn once; the mirror references the art, not the group, so the rig can move each side alone
-        body.append(f'<g id="{name}"><g id="{name}-art">{markup}</g></g>')
+        group = f'<g id="{name}"><g id="{name}-art">{markup}</g></g>'
     else:
-        body.append(f'<g id="{name}">{markup}</g>')
+        group = f'<g id="{name}">{markup}</g>'
+    clip = CLIPS.get(name)
+    if clip:
+        # the clip sits OUTSIDE the group the rig moves, so a blush that slides with a turn can never leave the face
+        cid = f"clip-{name}"
+        defs.append(f'<clipPath id="{cid}"><use href="#p-{clip}"/></clipPath>')
+        group = f'<g clip-path="url(#{cid})">{group}</g>'
+    body.append(group)
 
 
 def blur_filter(sigma):

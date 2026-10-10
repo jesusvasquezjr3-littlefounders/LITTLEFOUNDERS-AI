@@ -114,23 +114,23 @@
   ],
   "anchor": [
    660,
-   1210
+   1236
   ],
   "rest": {
    "sx": 0.8,
-   "sy": 0.0
+   "sy": 0.05
   },
   "open": {
    "sx": 1.15,
-   "sy": 1.5
+   "sy": 1.35
   },
   "halfWidth": 66,
   "reach": 20,
   "follow": [
    {
     "part": "mustache",
-    "open": -14,
-    "smile": -11,
+    "open": -26,
+    "smile": -12,
     "stretch": 0.05
    }
   ]
@@ -177,5 +177,6 @@
    660,
    962
   ]
- }
+ },
+ "gain": 1.0
 }
