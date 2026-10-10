@@ -26,6 +26,8 @@ Gives agents and humans one place to see what to do next. Each task is small, ha
 
 ## Open tasks
 
+> **Scope decided by the owner on 2026-10-10.** The avatar work (T-022, T-023) waits until features need it: the foundations are built. Every other open task below is out of scope for the current stretch, which is frontend only.
+
 | ID | Task | Status | Notes |
 |---|---|---|---|
 | T-001 | Clean the landing page so it passes `npm run lint:slop`, then add that check to CI | open | The owner asked to be reminded. 173 spacing findings are auto-fixable; about 36 type findings need manual changes. |
