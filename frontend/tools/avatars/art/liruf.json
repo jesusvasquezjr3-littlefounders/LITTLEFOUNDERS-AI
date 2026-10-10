@@ -249,6 +249,13 @@
       "mirror_of": "glint-l"
     },
     {
+      "name": "snout-shadow",
+      "kind": "path",
+      "d": "M300 520 C340 470 470 448 577 448 C684 448 814 470 854 520 C870 640 860 800 840 935 L314 935 C294 800 284 640 300 520 Z",
+      "fill": "#3f5f47",
+      "opacity": 0.0
+    },
+    {
       "name": "snout",
       "kind": "smooth",
       "tension": 1.0,
@@ -290,13 +297,38 @@
           942
         ]
       ],
-      "fill": "#587d5d"
+      "fill": "#5a8060"
     },
     {
-      "name": "snout-light",
+      "name": "snout-side-l",
       "kind": "path",
-      "d": "M300 540 C360 478 470 450 577 450 C684 450 794 478 854 540 C790 500 686 478 577 478 C468 478 364 500 300 540 Z",
-      "fill": "#6a906a"
+      "d": "M300 520 C268 600 244 740 252 935 L330 935 C318 780 322 640 340 540 Z",
+      "fill": "#476b4f",
+      "opacity": 0.9
+    },
+    {
+      "name": "snout-side-r",
+      "mirror_of": "snout-side-l"
+    },
+    {
+      "name": "snout-top-plane",
+      "kind": "path",
+      "d": "M300 520 C360 462 470 440 577 440 C684 440 794 462 854 520 C800 560 690 580 577 580 C464 580 354 560 300 520 Z",
+      "fill": "#7aa17b"
+    },
+    {
+      "name": "snout-top-edge",
+      "kind": "path",
+      "d": "M300 520 C360 462 470 440 577 440 C684 440 794 462 854 520",
+      "stroke": "#9cc298",
+      "width": 8
+    },
+    {
+      "name": "snout-front-edge",
+      "kind": "path",
+      "d": "M300 520 C354 566 464 584 577 584 C690 584 800 566 854 520",
+      "stroke": "#476b4f",
+      "width": 8
     },
     {
       "name": "mouth",

@@ -111,7 +111,13 @@ const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.01, 100);
 camera.position.set(center.x, center.y, center.z + 10);
 camera.lookAt(center);
 
-window.__render = (pass, height) => {
+window.__render = (pass, height, yaw = 0) => {
+  gltf.scene.rotation.y = (yaw * Math.PI) / 180;
+  gltf.scene.position.set(0, 0, 0);
+  gltf.scene.position.x = center.x - (center.x * Math.cos(gltf.scene.rotation.y) + center.z * Math.sin(gltf.scene.rotation.y));
+  gltf.scene.position.z = center.z - (-center.x * Math.sin(gltf.scene.rotation.y) + center.z * Math.cos(gltf.scene.rotation.y));
+  gltf.scene.updateMatrixWorld(true);
+
   const width = Math.round(height * (size.x / size.y));
 
   renderer.setSize(width, height, false);

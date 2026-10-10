@@ -4,6 +4,7 @@
 //   npm run avatars:reference                          all four characters, both passes, 1600 px high
 //   npm run avatars:reference -- --character Rho       one character (Rho, Zara, Liruf, Dina)
 //   npm run avatars:reference -- --pass albedo         one pass (albedo, lit)
+//   npm run avatars:reference -- --yaw 0,35,70         also turned views (degrees), written as ref-<pass>-yaw<N>.png
 //
 // Needs Chrome (CHROME_PATH if unusual). No dev server: the page, three.js and the models are served here.
 import { mkdirSync, writeFileSync } from 'node:fs';
@@ -17,6 +18,7 @@ const args = parseArgs();
 const characters = typeof args.character === 'string' ? args.character.split(',') : ['Rho', 'Zara', 'Liruf', 'Dina'];
 const passes = typeof args.pass === 'string' ? args.pass.split(',') : ['albedo', 'lit'];
 const height = Number(args.height ?? 1600);
+const yaws = typeof args.yaw === 'string' ? args.yaw.split(',').map(Number) : [0];
 const out = resolve(here, '../../audit-out/avatars');
 const server = await startServer(here);
 const browser = await launch();
@@ -33,9 +35,11 @@ try {
     mkdirSync(join(out, character.toLowerCase()), { recursive: true });
 
     for (const pass of passes) {
-      const url = await page.ev(`window.__render('${pass}', ${height})`);
+      for (const yaw of yaws) {
+        const url = await page.ev(`window.__render('${pass}', ${height}, ${yaw})`);
 
-      writeFileSync(join(out, character.toLowerCase(), `ref-${pass}.png`), Buffer.from(url.split(',')[1], 'base64'));
+        writeFileSync(join(out, character.toLowerCase(), yaw === 0 ? `ref-${pass}.png` : `ref-${pass}-yaw${yaw}.png`), Buffer.from(url.split(',')[1], 'base64'));
+      }
     }
 
     await page.close();
