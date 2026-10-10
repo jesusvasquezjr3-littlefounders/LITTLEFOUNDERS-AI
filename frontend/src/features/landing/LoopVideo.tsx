@@ -37,7 +37,7 @@ function useStillOnly() {
 }
 
 /** Delivered pixel size of each scene (the tools in tools/render/ produce exactly this). */
-const SCENE_SIZE = { hero: { width: 1000, height: 800 }, problem: { width: 1000, height: 800 }, signin: { width: 1440, height: 420 } } as const;
+const SCENE_SIZE = { hero: { width: 1000, height: 800 }, problem: { width: 1500, height: 900 }, signin: { width: 1440, height: 420 } } as const;
 
 export function LoopVideo({ name, className }: { name: keyof typeof SCENE_SIZE; className?: string }) {
   const { isDark } = useTheme();

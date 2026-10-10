@@ -131,7 +131,7 @@ Typical use: `npm run audit:layout -- --matrix`, `npm run audit:a11y -- --matrix
 
 ## 6. The render tool
 
-For a scene with the characters (hero, problem, the sign-in window). `npm run render:signin` renders the window's scene to `public/landing/signin/` as an MP4 and a WebP poster for each color mode; `--still 0,3,6` writes PNGs to `audit-out/` to look at first; `--mode` and `--frames` narrow a run. Chrome and Blender are required (`BLENDER` and `CHROME_PATH` name them if they are elsewhere), and the artist models come from `glb/`. Method, rules and the scenes that exist: [[CHARACTER-COMPOSITIONS]]. Like the audit tools it is run by hand and is not a gate.
+For a scene with the characters (hero, problem, the sign-in window). `npm run render:signin` and `npm run render:problem` render a scene to `public/landing/<scene>/` as an MP4 and a WebP poster for each color mode; `--still 0,3,6` writes PNGs to `audit-out/` to look at first; `--mode` and `--frames` narrow a run. Chrome and Blender are required (`BLENDER` and `CHROME_PATH` name them if they are elsewhere), and the artist models come from `glb/`. Method, rules and the scenes that exist: [[CHARACTER-COMPOSITIONS]]. Like the audit tools it is run by hand and is not a gate.
 
 ## 7. The avatar tools
 

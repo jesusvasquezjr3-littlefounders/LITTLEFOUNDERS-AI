@@ -21,10 +21,11 @@
     "audit:scene": "node tools/audit/scene.mjs",
     "audit:color": "node tools/audit/color.mjs",
     "audit:shot": "node tools/audit/shot.mjs",
-    "render:signin": "node tools/render/render-signin.mjs",
+    "render:signin": "node tools/render/render-scene.mjs --scene signin",
     "avatars:reference": "node tools/avatars/reference.mjs",
     "avatars:compare": "node tools/avatars/compare.mjs",
-    "avatars:sheet": "node tools/avatars/sheet.mjs"
+    "avatars:sheet": "node tools/avatars/sheet.mjs",
+    "render:problem": "node tools/render/render-scene.mjs --scene problem"
   },
   "dependencies": {
     "@number-flow/react": "^0.6.2",
