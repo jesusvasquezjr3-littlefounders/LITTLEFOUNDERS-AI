@@ -1,0 +1,112 @@
+{
+ "prefix": "liruf-",
+ "viewBox": [
+  20,
+  40,
+  1120,
+  1520
+ ],
+ "eyes": [
+  {
+   "parts": [
+    "eye-white-l",
+    "iris-l",
+    "pupil-l",
+    "pupil-glow-l",
+    "glint-l"
+   ],
+   "gaze": [
+    "iris-l",
+    "pupil-l",
+    "pupil-glow-l",
+    "glint-l"
+   ],
+   "center": [
+    315,
+    346
+   ],
+   "range": 34
+  },
+  {
+   "parts": [
+    "eye-white-r",
+    "iris-r",
+    "pupil-r",
+    "pupil-glow-r",
+    "glint-r"
+   ],
+   "gaze": [
+    "iris-r",
+    "pupil-r",
+    "pupil-glow-r",
+    "glint-r"
+   ],
+   "center": [
+    839,
+    346
+   ],
+   "range": 34
+  }
+ ],
+ "brows": [],
+ "face": [
+  {
+   "parts": [
+    "snout",
+    "snout-side-l",
+    "snout-side-r",
+    "snout-top-plane",
+    "snout-top-edge",
+    "snout-front-edge",
+    "nostril-l",
+    "nostril-r"
+   ],
+   "depth": 1.3
+  },
+  {
+   "parts": [
+    "mouth",
+    "mouth-outline",
+    "fang-upper-l",
+    "fang-upper-r",
+    "fang-lower-l",
+    "fang-lower-r"
+   ],
+   "depth": 1.15
+  }
+ ],
+ "mouth": {
+  "parts": [
+   "mouth",
+   "mouth-outline",
+   "fang-upper-l",
+   "fang-upper-r",
+   "fang-lower-l",
+   "fang-lower-r"
+  ],
+  "anchor": [
+   577,
+   940
+  ],
+  "rest": {
+   "sx": 0.92,
+   "sy": 0.55
+  },
+  "open": {
+   "sx": 1.0,
+   "sy": 1.2
+  }
+ },
+ "cheeks": [],
+ "head": {
+  "pivot": [
+   577,
+   1200
+  ],
+  "parts": []
+ },
+ "body": [
+  "chest",
+  "belly"
+ ]
+}

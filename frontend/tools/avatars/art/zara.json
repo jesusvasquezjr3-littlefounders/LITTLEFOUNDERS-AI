@@ -28,11 +28,11 @@
         ],
         [
           1610,
-          1150
+          1270
         ],
         [
           0,
-          1150
+          1270
         ]
       ]
     },
@@ -395,5 +395,144 @@
       "fill": "#aab3bb"
     }
   ],
-  "tolerance": 3.0
+  "tolerance": 3.0,
+  "rig": {
+    "eyes": [
+      {
+        "parts": [
+          "eye-white-l",
+          "iris-l",
+          "pupil-l",
+          "glint-l",
+          "glint-small-l",
+          "lash-l",
+          "lash-wing-l"
+        ],
+        "gaze": [
+          "iris-l",
+          "pupil-l",
+          "glint-l",
+          "glint-small-l"
+        ],
+        "center": [
+          658,
+          646
+        ],
+        "range": 13
+      },
+      {
+        "parts": [
+          "eye-white-r",
+          "iris-r",
+          "pupil-r",
+          "glint-r",
+          "glint-small-r",
+          "lash-r",
+          "lash-wing-r"
+        ],
+        "gaze": [
+          "iris-r",
+          "pupil-r",
+          "glint-r",
+          "glint-small-r"
+        ],
+        "center": [
+          958,
+          646
+        ],
+        "range": 13
+      }
+    ],
+    "brows": [
+      {
+        "part": "brow-l",
+        "center": [
+          643,
+          530
+        ],
+        "side": -1
+      },
+      {
+        "part": "brow-r",
+        "center": [
+          973,
+          530
+        ],
+        "side": 1
+      }
+    ],
+    "face": [
+      {
+        "parts": [
+          "nostril-l",
+          "nostril-r"
+        ],
+        "depth": 1.2
+      },
+      {
+        "parts": [
+          "cheek-l",
+          "cheek-r"
+        ],
+        "depth": 0.7
+      },
+      {
+        "parts": [
+          "mouth",
+          "tongue",
+          "teeth"
+        ],
+        "depth": 1.0
+      },
+      {
+        "parts": [
+          "ear-l",
+          "ear-r"
+        ],
+        "depth": -0.6
+      }
+    ],
+    "mouth": {
+      "parts": [
+        "mouth",
+        "tongue",
+        "teeth"
+      ],
+      "anchor": [
+        808,
+        790
+      ],
+      "rest": {
+        "sx": 0.85,
+        "sy": 0.3
+      },
+      "open": {
+        "sx": 1.0,
+        "sy": 1.15
+      }
+    },
+    "cheeks": [
+      "cheek-l",
+      "cheek-r"
+    ],
+    "head": {
+      "pivot": [
+        808,
+        1000
+      ],
+      "parts": [
+        "hair",
+        "hair-light",
+        "hair-light-l",
+        "hair-light-r"
+      ]
+    },
+    "body": [
+      "tank",
+      "chain",
+      "pendant",
+      "pendant-core",
+      "shoulders"
+    ]
+  }
 }

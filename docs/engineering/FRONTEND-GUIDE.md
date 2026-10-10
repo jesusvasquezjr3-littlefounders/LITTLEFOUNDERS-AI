@@ -1,7 +1,7 @@
 ---
 title: Frontend guide
 status: draft
-updated: 2026-10-09
+updated: 2026-10-10
 ---
 
 # Frontend guide
@@ -81,7 +81,7 @@ frontend/
 
 - **Naming.** Components are PascalCase files with one main export; folders and non-component files are camelCase or lowercase. A component starts with a comment that says what it is for and which rule it applies.
 - **Copy namespaces.** `core.json` holds the shell (skip link, theme and language controls, footer, brand, contact); `site.json` holds the landing and the cookie choice. A key lives in exactly one namespace; `useCoreCopy()` and `useSiteCopy()` read them, and a missing key is a type error. Add a namespace per feature when a feature needs one.
-- **Styling.** Tailwind classes that read tokens (`text-[var(--v-ink-soft)]`, `bg-[var(--v-beige)]`); no raw hex values in components; `cn()` from `lib/utils` merges classes. Shared layout and type roles live next to the feature that owns them (`features/landing/type.ts`).
+- **Styling.** Tailwind classes that read tokens (`text-[var(--v-ink-soft)]`, `bg-[var(--v-beige)]`); no raw hex values in components; `cn()` from `lib/utils` merges classes. Shared layout and type roles live next to the feature that owns them (`features/landing/type.ts`). The character avatars live in `features/avatars` ([[CHARACTER-AVATARS]]): `<Avatar character expression gaze />` and `<FloatingAvatar />`, with `speak()` and `react()` on a ref; an avatar is decorative unless given a translated `label`, it never carries words, and `/dev/avatars` (dev server only) shows them alive.
 - **Theming.** Light and dark are both always designed. A color is added to `lf-theme.css` for both modes, with its label color chosen by measurement ([[RESEARCH-FOUNDATION]]), never inside a component.
 - **Dependencies.** A new package needs a reason a library from [[UI-LIBRARIES]] cannot give; a new UI library needs the owner.
 

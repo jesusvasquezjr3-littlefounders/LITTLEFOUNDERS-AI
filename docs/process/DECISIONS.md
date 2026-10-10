@@ -1,7 +1,7 @@
 ---
 title: Decision log
 status: scaffold
-updated: 2026-10-09
+updated: 2026-10-10
 ---
 
 # Decision log
@@ -108,6 +108,12 @@ The owner set the product audience at 12 to 18 years old, final: 12 is the young
 Date: 2026-10-09. Status: accepted.
 
 The previous version's mail service (`email-server/`, called Courier: an Express HTTP API and a Haraka SMTP relay to Amazon SES) is restored from the archive tag because it was working in production, and rebuilding it would cost time in tests and in environment variables, locally and in production. It exceeds the "restart from zero" rule on purpose, as the Supabase and Pulse setups did. What came back is the service, its two workflows and the local `.env` (from the saved copy; not tracked). What did not: the `email_logs` migration (the database has no schema, so history is kept in memory until it is recreated), the authentication email templates and their translated texts (T-021), and anything that called the service. Comments that pointed at removed code were corrected.
+
+### D-015: Character avatars are an own SVG rig
+
+Date: 2026-10-10. Status: accepted.
+
+The in-product avatars of Rho, Zara, Liruf and Dina are layered 2D vector drawings (head and shoulders) with named parts, moved by a small own rig and a React component (`frontend/src/features/avatars`), not by Rive or dotLottie, not in 3D and not from video. The owner approved the likeness and chose the floating-avatar use. Details, tools and limits: [[CHARACTER-AVATARS]]. The 3D shape of each character (viewed turned) governs every drawing.
 
 ## Related
 

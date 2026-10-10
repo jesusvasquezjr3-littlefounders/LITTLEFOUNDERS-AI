@@ -452,6 +452,25 @@
       "width": 24
     },
     {
+      "name": "mouth-shape",
+      "kind": "path",
+      "d": "M594 1218 C604 1288 716 1288 726 1218 C700 1228 620 1228 594 1218 Z",
+      "fill": "#7a1f1f"
+    },
+    {
+      "name": "mouth-tongue",
+      "kind": "path",
+      "d": "M622 1262 C640 1246 680 1246 698 1262 C690 1284 630 1284 622 1262 Z",
+      "fill": "#d9687a"
+    },
+    {
+      "name": "mouth-teeth",
+      "kind": "path",
+      "d": "M610 1224 C640 1234 680 1234 710 1224",
+      "stroke": "#fbf6f0",
+      "width": 10
+    },
+    {
       "name": "mustache",
       "pieces": [
         2
@@ -466,5 +485,155 @@
         "blur": 6
       }
     }
-  ]
+  ],
+  "rig": {
+    "eyes": [
+      {
+        "parts": [
+          "eye-white-l",
+          "iris-l",
+          "pupil-l",
+          "glint-l",
+          "glint-small-l"
+        ],
+        "gaze": [
+          "iris-l",
+          "pupil-l",
+          "glint-l",
+          "glint-small-l"
+        ],
+        "center": [
+          465,
+          847
+        ],
+        "range": 20
+      },
+      {
+        "parts": [
+          "eye-white-r",
+          "iris-r",
+          "pupil-r",
+          "glint-r",
+          "glint-small-r"
+        ],
+        "gaze": [
+          "iris-r",
+          "pupil-r",
+          "glint-r",
+          "glint-small-r"
+        ],
+        "center": [
+          855,
+          847
+        ],
+        "range": 20
+      }
+    ],
+    "brows": [
+      {
+        "part": "brow-l",
+        "center": [
+          465,
+          627
+        ],
+        "side": -1
+      },
+      {
+        "part": "brow-r",
+        "center": [
+          857,
+          626
+        ],
+        "side": 1
+      }
+    ],
+    "face": [
+      {
+        "parts": [
+          "nose",
+          "nose-light",
+          "nose-shadow"
+        ],
+        "depth": 1.25
+      },
+      {
+        "parts": [
+          "glasses",
+          "glasses-bridge"
+        ],
+        "depth": 1.0
+      },
+      {
+        "parts": [
+          "mustache"
+        ],
+        "depth": 1.15
+      },
+      {
+        "parts": [
+          "cheek-l",
+          "cheek-r"
+        ],
+        "depth": 0.7
+      },
+      {
+        "parts": [
+          "mouth-shape",
+          "mouth-tongue",
+          "mouth-teeth"
+        ],
+        "depth": 1.0
+      }
+    ],
+    "mouth": {
+      "parts": [
+        "mouth-shape",
+        "mouth-tongue",
+        "mouth-teeth"
+      ],
+      "anchor": [
+        660,
+        1210
+      ],
+      "rest": {
+        "sx": 0.8,
+        "sy": 0.0
+      },
+      "open": {
+        "sx": 1.15,
+        "sy": 1.5
+      },
+      "lift": {
+        "part": "mustache",
+        "dy": -14
+      }
+    },
+    "cheeks": [
+      "cheek-l",
+      "cheek-r"
+    ],
+    "head": {
+      "pivot": [
+        660,
+        1300
+      ],
+      "parts": [
+        "cap",
+        "hair-side-l",
+        "hair-side-r",
+        "hair-fringe"
+      ]
+    },
+    "body": [
+      "vest",
+      "vest-shade",
+      "sleeve-l",
+      "sleeve-r",
+      "shirt",
+      "shirt-shade",
+      "tie",
+      "pin",
+      "pin-core"
+    ]
+  }
 }

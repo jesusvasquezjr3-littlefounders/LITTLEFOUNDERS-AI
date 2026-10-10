@@ -416,10 +416,24 @@ x0, y0, x1, y1 = crop
 svg = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{x0} {y0} {x1 - x0} {y1 - y0}"><defs>{"".join(defs)}</defs>{"".join(body)}</svg>'
 out = os.path.join(folder_of(character), "avatar.svg")
 open(out, "w", encoding="utf8").write(svg)
-# the tracked copy of the art, small enough to keep in the repository
-os.makedirs(os.path.join(os.path.dirname(__file__), "out"), exist_ok=True)
-open(os.path.join(os.path.dirname(__file__), "out", f"{character.lower()}.svg"), "w", encoding="utf8").write(svg)
 # the same art with the whole reference frame, to lay over the reference when judging it
 full = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}"><defs>{"".join(defs)}</defs>{"".join(body)}</svg>'
 open(os.path.join(folder_of(character), "avatar-full.svg"), "w", encoding="utf8").write(full)
+
+# the shipped copy: every id gets the character's prefix, so several avatars can share one page, and the rig file
+# says which named parts move and how (read by src/features/avatars)
+import re  # noqa: E402
+prefix = spec.get("prefix", character.lower() + "-")
+shipped = re.sub(r'\bid="([^"]+)"', lambda m: f'id="{prefix}{m.group(1)}"', svg)
+shipped = re.sub(r'url\(#([^)]+)\)', lambda m: f'url(#{prefix}{m.group(1)})', shipped)
+shipped = re.sub(r'href="#([^"]+)"', lambda m: f'href="#{prefix}{m.group(1)}"', shipped)
+assets = os.path.join(os.path.dirname(__file__), "..", "..", "src", "features", "avatars", "assets")
+os.makedirs(assets, exist_ok=True)
+open(os.path.join(assets, f"{character.lower()}.svg"), "w", encoding="utf8").write(shipped)
+rig = {"prefix": prefix, "viewBox": [x0, y0, x1 - x0, y1 - y0], **spec.get("rig", {})}
+used = {n for e in rig.get("eyes", []) for n in e["parts"]} | {b["part"] for b in rig.get("brows", [])} | {n for f in rig.get("face", []) for n in f["parts"]} | set(rig.get("mouth", {}).get("parts", [])) | set(rig.get("cheeks", [])) | set(rig.get("body", [])) | set(rig.get("head", {}).get("parts", []))
+missing = sorted(n for n in used if n not in named)
+if missing:
+    print("WARNING: rig names not in the art:", missing)
+json.dump(rig, open(os.path.join(assets, f"{character.lower()}.rig.json"), "w", encoding="utf8"), indent=1)
 print(f"{character}: {os.path.getsize(out) / 1024:.0f} KB, {len(body)} layers, about {nodes} nodes -> {out}")

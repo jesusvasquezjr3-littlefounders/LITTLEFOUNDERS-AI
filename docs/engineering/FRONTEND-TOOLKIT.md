@@ -1,7 +1,7 @@
 ---
 title: Frontend toolkit
 status: draft
-updated: 2026-10-09
+updated: 2026-10-10
 ---
 
 # Frontend toolkit
@@ -135,7 +135,7 @@ For a scene with the characters (hero, problem, the sign-in window). `npm run re
 
 ## 7. The avatar tools
 
-For the 2D vector heads of the characters ([[CHARACTER-AVATARS]]), in `frontend/tools/avatars/`, run by hand: `npm run avatars:reference` renders each head from the source model in `glb/` (flat and lit passes) into `audit-out/avatars/<character>/`; `python tools/avatars/segment.py <Character>` writes a numbered map of its color pieces; the art spec `art/<character>.json` says which pieces or drawn paths make each named part; `python tools/avatars/parts.py <Character>` builds the layered SVG into `out/<character>.svg` (tracked) and `avatar-full.svg` (for comparing); `npm run avatars:compare` lays it next to the reference (with an overlay); `npm run avatars:sheet` shows the four finished avatars together. Python needs `pip install opencv-python-headless numpy`; the rest needs Chrome. They share the static server in `tools/render/serve.mjs`.
+For the 2D vector avatars ([[CHARACTER-AVATARS]]), in `frontend/tools/avatars/`, run by hand: `npm run avatars:reference` renders each bust from the source model in `glb/` into `audit-out/avatars/<character>/` (`--yaw 0,40,75,-40 --pass lit` gives turned views: look at them before drawing anything); `python tools/avatars/segment.py <Character>` writes a numbered map of its color pieces; the art spec `art/<character>.json` says which pieces or drawn paths make each named part and the `rig` (what moves); `python tools/avatars/parts.py <Character>` builds the SVG and the rig file into `src/features/avatars/assets/` (shipped) and `audit-out` (for comparing); `npm run avatars:compare` lays the avatar next to the reference with an overlay; `npm run avatars:sheet` shows the four together. To see them alive run `npm run dev` and open `/dev/avatars`. Python needs `pip install opencv-python-headless numpy`; the rest needs Chrome.
 
 ## Related
 

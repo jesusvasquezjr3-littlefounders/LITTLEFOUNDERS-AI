@@ -10,6 +10,9 @@ import { AppShell } from '@/components/AppShell';
 import { useCoreCopy } from '@/i18n/useCopy';
 import { releaseBootVeil } from '@/lib/boot';
 
+// Development only: the avatars alive. `import.meta.env.DEV` is false in a production build, so this chunk is not shipped.
+const DevAvatars = import.meta.env.DEV ? lazy(() => import('@/features/avatars/DevAvatars')) : null;
+
 const Landing = lazy(() => import('@/features/landing/Landing').then((module) => ({ default: module.Landing })));
 
 /** Shown while a page's code loads: a thinking orb, announced as "Loading". */
@@ -54,6 +57,7 @@ export function App() {
           <Routes>
             <Route element={<AppShell />}>
               <Route index element={<Landing />} />
+              {DevAvatars ? <Route path="dev/avatars" element={<DevAvatars />} /> : null}
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
