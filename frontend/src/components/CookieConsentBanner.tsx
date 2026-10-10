@@ -45,6 +45,13 @@ export function CookieConsentBanner({ onDecision }: { onDecision?: (granted: boo
     setPreferencesOpen(true);
   };
 
+  /** The floating buttons (back to top, the phone sign-in bar) step aside while the banner is open: see lf-theme.css. */
+  useEffect(() => {
+    document.documentElement.toggleAttribute('data-consent-banner', choice === 'unset');
+
+    return () => document.documentElement.removeAttribute('data-consent-banner');
+  }, [choice]);
+
   useEffect(() => {
     const open = () => {
       setChoice(getCookieConsent());

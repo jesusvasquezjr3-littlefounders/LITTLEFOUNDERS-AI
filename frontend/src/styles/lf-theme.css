@@ -48,6 +48,8 @@
   --v-danger-fill: #c4172a;
   --v-danger-ink: #ac001a;
   --v-danger-soft: #ffebe9;
+  /* The red of the large "Error 404" on the not-found page: 5.5:1 on the light canvas. */
+  --lf-error: #c4172a;
 
 
   /*
@@ -95,6 +97,8 @@
   --v-accent-ink: #ffa45c;
   --v-danger-ink: #fe7f7e;
   --v-danger-soft: #491816;
+  /* The same red, brighter for the dark canvas: 6.3:1. */
+  --lf-error: #ff5a5f;
 
   --v-structure: #060713;
   --card: var(--v-paper);
@@ -188,3 +192,16 @@ html:root[data-mode] {
 :where(h1, h2, h3, h4, p, li, label, a, button) {
   overflow-wrap: break-word;
 }
+
+/*
+ * Shared interaction states (docs/engineering/FRONTEND-GUIDE.md, "Interaction and motion").
+ * Hover only where a hand can hover, so a tap never leaves a hover state stuck on a phone.
+ */
+@media (hover: hover) {
+  [data-slot='breadcrumb-link']:hover { color: var(--v-text); text-decoration: underline; text-underline-offset: 4px; }
+  a[data-brand-link] img { transition: opacity 160ms ease, transform 160ms ease; }
+  a[data-brand-link]:hover img { opacity: 0.82; }
+}
+
+/* The floating controls give the screen back to the cookie banner while it is open. */
+:root[data-consent-banner] [data-fab] { display: none; }

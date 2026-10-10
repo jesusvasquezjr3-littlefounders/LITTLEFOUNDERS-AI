@@ -5,6 +5,7 @@ import { RingCenter } from '@/components/charts/ring-center';
 import { RingChart } from '@/components/charts/ring-chart';
 import { useSiteCopy } from '@/i18n/useCopy';
 import { LoopVideo } from '@/features/landing/LoopVideo';
+import { reveal } from '@/lib/motionPresets';
 import { body, display, grid, section, statement } from '@/features/landing/type';
 
 /*
@@ -19,7 +20,6 @@ import { body, display, grid, section, statement } from '@/features/landing/type
  * then the sources centered under both. Stacked and centered below 1024 px.
  */
 const OUT_OF = 10;
-const reveal = { initial: { opacity: 0, y: 24 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, amount: 0.25 }, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } } as const;
 const FULL = 'col-span-4 md:col-span-8 lg:col-span-12';
 const HALF = 'col-span-4 md:col-span-8 lg:col-span-6';
 

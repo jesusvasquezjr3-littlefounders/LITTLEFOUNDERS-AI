@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MorphIcon } from 'morphicons/react';
-import { LogIn, Mail, X } from 'lucide';
+import { Mail, X } from 'lucide';
 import { sileo } from 'sileo';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -11,7 +11,7 @@ import { AUTH_TARGETS, type AuthAction } from '@/lib/authRoutes';
 import { useCoreCopy } from '@/i18n/useCopy';
 
 /*
- * "Sign in" in the topbar and the window it opens: Google, email or username, and a way to create an
+ * "Sign in" in the topbar (from 768 px; on phones the fixed bar at the bottom carries it) and the window it opens: Google, email or username, and a way to create an
  * account. There is no sign-in page; the choices live in this window. Every action reads its
  * destination from `lib/authRoutes.ts`; until one is set the action says so in a toast.
  *
@@ -21,27 +21,11 @@ import { useCoreCopy } from '@/i18n/useCopy';
  * focus order: the first thing a keyboard visitor reaches is the first way to sign in.
  */
 
-/** True below the width where the topbar has room for the word "Sign in" beside the two round controls. */
-function useCompactTopbar() {
-  const query = '(max-width: 479px)';
-  const [compact, setCompact] = useState(() => typeof window.matchMedia === 'function' && window.matchMedia(query).matches);
+/** Where the trigger sits: the topbar (from 768 px) or the fixed bar at the bottom of phones (MobileSignInBar). */
+export type SignInPlacement = 'topbar' | 'bar';
 
-  useEffect(() => {
-    if (typeof window.matchMedia !== 'function') return;
-    const list = window.matchMedia(query);
-    const update = () => setCompact(list.matches);
-
-    list.addEventListener('change', update);
-
-    return () => list.removeEventListener('change', update);
-  }, []);
-
-  return compact;
-}
-
-export function SignInDialog() {
+export function SignInDialog({ placement = 'topbar' }: { placement?: SignInPlacement }) {
   const copy = useCoreCopy();
-  const compact = useCompactTopbar();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
@@ -60,11 +44,9 @@ export function SignInDialog() {
 
   return <Dialog open={open} onOpenChange={setOpen}>
     <DialogTrigger asChild>
-      {compact
-        ? <Button type="button" data-icon-only className="size-12 min-w-0 p-0" aria-label={copy.siteShell.signIn} title={copy.siteShell.signIn}>
-          <MorphIcon icon={LogIn} size={22} strokeWidth={2} reducedMotion="user" />
-        </Button>
-        : <Button type="button" size="sm">{copy.siteShell.signIn}</Button>}
+      {placement === 'bar'
+        ? <Button type="button" size="lg" fullWidth data-cta="sign-in" data-origin="mobile-bar">{copy.siteShell.signIn}</Button>
+        : <Button type="button" size="sm" className="max-md:!hidden">{copy.siteShell.signIn}</Button>}
     </DialogTrigger>
     <DialogContent className="!w-[min(420px,calc(100%-32px))] !gap-0 overflow-hidden !p-0 text-center">
       <div className="h-[116px] w-full [mask-image:linear-gradient(to_right,transparent,black_6%,black_94%,transparent),linear-gradient(to_bottom,black_78%,transparent)] [mask-composite:intersect]">

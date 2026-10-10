@@ -31,7 +31,7 @@ export function SiteFooter() {
   const copy = core.footer;
   const brand = core.appShell.brand;
 
-  return <footer className="bg-black text-white">
+  return <footer className="bg-black pb-[calc(4.75rem+env(safe-area-inset-bottom))] text-white md:pb-0">
     <div className={`${GRID} items-start gap-y-2 py-12 text-center md:py-16 md:text-start`}>
       <div className="col-span-4 flex min-h-12 items-center justify-center md:col-span-8 md:justify-start lg:col-span-3">
         <a href="/" aria-label={brand} className={`inline-flex min-h-12 items-center ${FOCUS}`}>

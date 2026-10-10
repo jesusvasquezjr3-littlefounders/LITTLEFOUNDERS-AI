@@ -1,5 +1,7 @@
 import { useId } from 'react';
+import { motion } from 'motion/react';
 import { useSiteCopy } from '@/i18n/useCopy';
+import { reveal, STAGGER } from '@/lib/motionPresets';
 import { align, alignItems, body, grid, heading, section, title } from '@/features/landing/type';
 
 /*
@@ -12,10 +14,10 @@ export function Principles() {
   const titleId = useId();
 
   return <section aria-labelledby={titleId} className={`${grid} gap-y-8 ${section}`}>
-    <h2 id={titleId} className={`${heading} ${align} col-span-4 md:col-span-8 lg:col-span-7`}>{copy.principlesTitle}</h2>
-    {copy.principles.map((item) => <div key={item.name} className={`col-span-4 grid content-start gap-2 border-t border-[var(--v-border)] pt-5 md:col-span-4 lg:col-span-6 ${alignItems} ${align}`}>
+    <motion.h2 id={titleId} {...reveal} className={`${heading} ${align} col-span-4 md:col-span-8 lg:col-span-7`}>{copy.principlesTitle}</motion.h2>
+    {copy.principles.map((item, index) => <motion.div key={item.name} {...reveal} transition={{ ...reveal.transition, delay: index * STAGGER }} className={`col-span-4 grid content-start gap-2 border-t border-[var(--v-border)] pt-5 md:col-span-4 lg:col-span-6 ${alignItems} ${align}`}>
       <h3 className={title}>{item.name}</h3>
       <p className={body}>{item.text}</p>
-    </div>)}
+    </motion.div>)}
   </section>;
 }

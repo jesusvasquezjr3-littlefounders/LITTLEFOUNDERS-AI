@@ -115,6 +115,12 @@ Date: 2026-10-10. Status: accepted.
 
 The in-product avatars of Rho, Zara, Liruf and Dina are layered 2D vector drawings (head and shoulders) with named parts, moved by a small own rig and a React component (`frontend/src/features/avatars`), not by Rive or dotLottie, not in 3D and not from video. The owner approved the likeness and chose the floating-avatar use. Details, tools and limits: [[CHARACTER-AVATARS]]. The 3D shape of each character (viewed turned) governs every drawing.
 
+### D-016: Universal frontend behaviors
+
+Date: 2026-10-10. Status: accepted.
+
+The owner defined eleven behaviors that every page has, not only the landing: smooth animation on scroll, button micro-interactions, hover states, a custom favicon, a back-to-top button, a loading screen and skeletons, transitions between pages, speed optimization, a custom 404 page, breadcrumbs and a fixed call to action on phones (Sign in, because it is the quickest). The favicon is the compact logo. The 404 page is a composition with Rho and Liruf kneeling back to back, small in the frame, heads low, under a small red "Error 404" with a warning mark, with a plain sentence and one button to `/`. The rules and where each lives are in [[FRONTEND-GUIDE]] ("Interaction, motion and page furniture"); the 404 scene is in [[CHARACTER-COMPOSITIONS]].
+
 ## Related
 
 - [[RESEARCH-FOUNDATION]]

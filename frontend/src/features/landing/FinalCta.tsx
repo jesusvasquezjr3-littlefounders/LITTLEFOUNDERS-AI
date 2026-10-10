@@ -1,6 +1,8 @@
 import { useId } from 'react';
+import { motion } from 'motion/react';
 import { useSiteCopy } from '@/i18n/useCopy';
 import { CtaButtons } from '@/features/landing/CtaButtons';
+import { reveal, STAGGER } from '@/lib/motionPresets';
 import { align, grid, heading, section } from '@/features/landing/type';
 
 /*
@@ -12,10 +14,10 @@ export function FinalCta() {
   const copy = useSiteCopy().landingV2;
   const titleId = useId();
 
-  return <section aria-labelledby={titleId} className={`${grid} items-center gap-y-6 border-t border-[var(--v-border)] ${section}`}>
+  return <motion.section aria-labelledby={titleId} {...reveal} className={`${grid} items-center gap-y-6 border-t border-[var(--v-border)] ${section}`}>
     <h2 id={titleId} className={`${heading} ${align} col-span-4 md:col-span-8 lg:col-span-7`}>{copy.ctaTitle}</h2>
-    <div className="col-span-4 flex justify-center md:col-span-8 md:justify-start lg:col-span-5 lg:justify-end">
+    <motion.div {...reveal} transition={{ ...reveal.transition, delay: STAGGER }} className="col-span-4 flex justify-center md:col-span-8 md:justify-start lg:col-span-5 lg:justify-end">
       <CtaButtons origin="landing-final" />
-    </div>
-  </section>;
+    </motion.div>
+  </motion.section>;
 }

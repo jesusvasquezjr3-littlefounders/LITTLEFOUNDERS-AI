@@ -4,12 +4,10 @@ All notable changes to the repository. Newest first. Updated in the same commit 
 
 ## Unreleased
 
-### Changed
-
-- Switching between light and dark now cross-fades the whole page over 450 ms with a View Transition, instead of the hard flash it was (the `theme-transitioning` class had no CSS behind it). Browsers without the API, and visitors who ask for reduced motion, still get the instant swap.
-
 ### Added
 
+- The eleven universal frontend behaviors (D-016): scroll reveals from shared presets (`lib/motionPresets.ts`), hover states only where a hand can hover, a back-to-top button, a page skeleton while a page's code loads (Cojeev Skeleton), a fade-in and jump to the top on every navigation, breadcrumbs (Cojeev Breadcrumb, `Breadcrumbs`), a fixed "Sign in" bar on phones (the topbar button from 768 px), a custom 404 page inside the shell, and the compact "LF" logo as favicon and app icons. Rules and where each lives: "Interaction, motion and page furniture" in [[FRONTEND-GUIDE]].
+- The 404 scene (`npm run render:notfound`): Rho and Liruf kneel back to back, small in the frame, heads low, each acting its own small story (a search of the floor, a sigh, hands to the chest, a claw tapping the ground) with anticipation, overlap and eased moves; a warm spotlight, rim lights, falling specks of light and a camera that drifts. The page puts a small red "Error 404" with a warning mark above it (`--lf-error` token). The render tool can show one character alone (`--only`, `--close`, `--cam side`). Rules for acting are in [[CHARACTER-COMPOSITIONS]].
 - The landing's problem scene rebuilt as a cinematic render (`npm run render:problem`): Liruf waters a seed, a sprout grows and blooms, Dina watches standing (no walk cycle), with real lighting, soft shadows and borders that fade into the page. The render tool now takes a scene name.
 - Scope note in [[BUILD-TASKS]]: avatar work waits until features need it; the current stretch is frontend only.
 - Hanging-hair behavior in the avatar rig (`strands`): Zara's sideburns are pinned at the hairline and sway like hair instead of floating like earrings; a finer jaw and a chin edge for Zara.
@@ -36,6 +34,13 @@ All notable changes to the repository. Newest first. Updated in the same commit 
 
 - Sign-in window (frontend only): a "Sign in" button in the topbar opens a window with Google, email or username, and "create an account", with a looping scene of Rho and Dina at a table under floating glass screens in a loading state, at most 30 % of the window's height. Every action is a placeholder in `lib/authRoutes.ts` (T-019). Cojeev Dialog added. Rule 14 and D-011: every route path is in English.
 - [[CHARACTER-COMPOSITIONS]] (D-012) and the render tool `frontend/tools/render/` (`npm run render:signin`, `three` as a development dependency).
+
+### Changed
+
+- A scene below the fold downloads only its poster until the visitor scrolls near it (`priority` on `LoopVideo` for the one above).
+- The page fallback is the skeleton, not the Thinking Orb; the sign-in button in the topbar shows from 768 px and the compact icon variant is gone.
+- Every unknown address shows the 404 page instead of redirecting to `/`.
+- Switching between light and dark now cross-fades the whole page over 450 ms with a View Transition, instead of the hard flash it was (the `theme-transitioning` class had no CSS behind it). Browsers without the API, and visitors who ask for reduced motion, still get the instant swap.
 
 ### Changed
 

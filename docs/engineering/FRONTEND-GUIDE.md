@@ -72,9 +72,9 @@ frontend/
     components/          ours: AppShell, SiteFooter, TopbarControls, CookieConsentBanner, CircleFlag, icons/
     components/ui/       copied from the registries (Cojeev). Not edited, not linted; see the patch list in UI-LIBRARIES
     components/charts/   copied from the registries (Bklit). Same rule
-    features/<name>/     one folder per page or feature; landing/ holds the sections and type.ts
+    features/<name>/     one folder per page or feature; landing/ holds the sections and type.ts, notFound/ the 404 page
     i18n/                index.ts (language), copy.ts (typed bundles), useCopy.ts (hooks), <locale>/core.json and site.json
-    lib/                 analytics, consent and visitor, boot, footerLinks, utils; cojeev/ and cojeev-motion/ are registry code
+    lib/                 analytics, consent and visitor, boot, footerLinks, motionPresets, utils; cojeev/ and cojeev-motion/ are registry code
     styles/              app.css (the one entry), lf-fonts.css, lf-theme.css, cojeev/ (registry CSS)
     theme/               useTheme: light, dark or auto, sets both html.dark and html[data-mode], cross-fading the page via a View Transition (skipped for reduced motion)
 ```
@@ -89,9 +89,27 @@ frontend/
 
 Met on the landing and kept for every screen: the skip link is the first Tab stop; every interactive target is at least 48 px (76 px where a young child answers or plays, [[RESEARCH-FOUNDATION]]); focus is always visible; a dialog traps focus and returns it to what opened it; text contrast is at least 4.5:1 and component edges 3:1; color is never the only channel; reduced motion is honored once at the root (`MotionConfig reducedMotion="user"`) and per component where a library has its own switch; no axe violation in light and dark in en-US, es-MX and pt-BR.
 
+## Interaction, motion and page furniture
+
+The owner defined these eleven on 2026-10-10 ([[DECISIONS]] D-016). They belong to the shell and to shared code, so every page has them without asking; a new page only has to feed them (a title, a trail, its own blocks). Every motion honors reduced motion (opacity stays, movement goes), every string is a locale key, and every duration sits between 150 and 500 ms on the easing `ENTER` (`lib/motionPresets.ts`).
+
+1. **Smooth animation on scroll.** A block rises 24 px and fades in once, the first time a quarter of it is on screen (`reveal`, spread on a `motion.*` element); siblings follow 80 ms apart (`STAGGER`). The hero animates on load. Nothing replays when the visitor scrolls back. Anchor jumps and the back-to-top scroll glide (`scroll-behavior: smooth`, in `app.css`).
+2. **Button micro-interactions.** A button is always Cojeev's Button: its hover color per variant, the 1 px press, the busy state and its flow press come with it. An icon that changes meaning morphs (Morphicons). An interactive element that is not a Button uses Motion's `whileHover` and `whileTap` with the spring of the back-to-top button (stiffness 420, damping 32). No hand-written hover for a button.
+3. **Hover states.** Written only inside `@media (hover: hover)` (`lf-theme.css`), so a tap never leaves one stuck on a phone. Links underline with a 4 px offset, a breadcrumb link goes to full ink, the logo link dims to 82 %. Focus is visible on everything, always, and does not depend on hover.
+4. **Favicon.** The compact logo, the "LF" with the two children: `favicon.ico` (16, 32 and 48 px), `favicon-48.png`, `icon-192.png` and `icon-512.png` on a transparent ground, and `apple-touch-icon.png` (180 px) on white because iOS fills transparency with black. They were cut from the compact logo kept in the repository history (`frontend/public/favicon.png` at `4b509c74^`), without the wordmark under it, which is unreadable at 48 px.
+5. **Back to top.** A round 48 px outline Button with an arrow (`BackToTop`, in the shell). It appears after one and a half screens, takes the visitor to the top and puts focus on `<main>` so it is not lost. On phones it sits above the sign-in bar; it steps aside while the cookie banner is open (`data-consent-banner` on `<html>`, `lf-theme.css`).
+6. **Loading screen and skeletons.** First visit: the boot veil in `index.html`, a plain ground that dissolves once the app has painted. A page whose code is loading: `PageSkeleton` inside the shell (Cojeev Skeleton, the shape of a page on the page grid, so nothing jumps when it arrives). The Thinking Orb is for waits on work, not for page loads.
+7. **Transitions.** A new page fades in with an 8 px rise over 300 ms and starts at its top (`AppShell`; an in-page `#anchor` keeps its own target). Changing the theme cross-fades the whole page over 450 ms (View Transition, `useTheme`). Dialogs, sheets and menus use Cojeev's own.
+8. **Speed.** A page is its own lazy chunk (the landing, the 404 page; the avatars page is development only). Only the scene above the fold loads its video at once (`priority` on `LoopVideo`); a scene below it downloads its poster and nothing else until the visitor scrolls near it. Fonts are self-hosted and preloaded; icons are bundled path data, and a library's lazy icon data is not pulled in for one arrow (the breadcrumb uses Lucide through Morphicons). Numbers: "Performance today".
+9. **404 page.** `features/notFound/NotFound.tsx`, the `*` route inside the shell, so the header, the footer and the phone bar stay. Top to bottom: "Error 404" in red with a warning mark, at title size (21 px: the owner twice asked for it small) (`--lf-error`, a token measured for both color modes; the mark never stands alone), the scene with Rho and Liruf ([[CHARACTER-COMPOSITIONS]], scene `notfound`), the line "We can't find this page", a plain sentence and one Button to `/`. It asks crawlers not to index it. The server still answers 200 for an unknown path (`vercel.json` rewrites everything to the app shell), so this is the client's answer and not an HTTP status: a real 404 status needs the host to know the list of pages, which is a later decision.
+10. **Breadcrumbs.** `components/Breadcrumbs.tsx` wraps Cojeev's Breadcrumb: Home, the sections between as links, the current page last as plain text with `aria-current`. Every page below the home page puts one at the top of its content, with labels from the locale files; the home page has none. The label of the nav and "Home" are keys in `core.json` (`siteShell.breadcrumb`, `siteShell.home`).
+11. **Sign in, fixed on phones.** Below 768 px a full-width accent "Sign in" Button is pinned to the bottom edge (`MobileSignInBar`), above the page and under the cookie banner; the footer pads its bottom so nothing is covered. From 768 px the same Button sits in the topbar and the bar is gone. Both open the same window (`SignInDialog`, `placement`).
+
+A page names itself with `usePageTitle(title)`, reveals its blocks with `reveal`, and is checked with the audit tools at the widths in rule 2.
+
 ## Performance today
 
-Measured on 2026-10-09: about 289 KB of JavaScript, compressed, for the landing (React DOM 84, the app 131, Motion 49, i18n 17, router 7, the page 10) plus a lazy 77 KB chunk of icon data. React, Motion, the router and i18n are built into their own files so a deploy that changes only our code does not invalidate them in a returning visitor's cache. No budget is set yet (open decision below); cache headers are in `frontend/vercel.json`.
+Measured on 2026-10-09: about 289 KB of JavaScript, compressed, for the landing (React DOM 84, the app 131, Motion 49, i18n 17, router 7, the page 10) plus a lazy 77 KB chunk of icon data. React, Motion, the router and i18n are built into their own files so a deploy that changes only our code does not invalidate them in a returning visitor's cache. Re-measured on 2026-10-10 after the shared behaviors landed: the app chunk is 128 KB compressed (it was 131: the old page-loading orb is gone), the landing 10 KB, and the 404 page is its own 2 KB chunk loaded only on an unknown address; the lazy icon chunk is unchanged at 77 KB. Videos: the scene above the fold loads at once, the others download only their poster until the visitor scrolls near them (`LoopVideo`). No budget is set yet (open decision below); cache headers are in `frontend/vercel.json`.
 
 ## Analytics, consent and the 3D scenes
 
@@ -109,7 +127,7 @@ Plausible, Umami and Google Analytics 4 load only after the visitor accepts the 
 
 Not decided; do not guess them. Raise each with the owner when a feature needs it.
 
-- [ ] Routing beyond the single `/` route, and code splitting per route.
+- [ ] Routing beyond `/` and the 404 page, a real HTTP 404 status for unknown paths, and the rule for splitting code per route.
 - [ ] State management and server-state rules.
 - [ ] Data fetching, caching and error handling against the API contract ([[API-GUIDE]]); depends on the backend.
 - [ ] Forms and validation at the boundary.

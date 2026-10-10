@@ -12,7 +12,10 @@
     "themeDark": "Dark",
     "rights": "All rights reserved.",
     "contactEmail": "informame@littlefounders.ai",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "backToTop": "Back to top",
+    "breadcrumb": "Breadcrumb",
+    "home": "Home"
   },
   "auth": {
     "title": "Sign in",
@@ -42,5 +45,13 @@
       "x": "X",
       "linkedin": "LinkedIn"
     }
+  },
+  "notFound": {
+    "code": "Error 404",
+    "title": "We can't find this page",
+    "text": "The link may be old or have a typo. Start again from the home page.",
+    "button": "Go to the home page",
+    "sceneAlt": "Rho and Liruf kneel back to back with their heads low, sad that they cannot find the page.",
+    "pageTitle": "Page not found"
   }
 }

@@ -1,8 +1,8 @@
 // Renders a scene page of this folder to public/landing/<scene>/ as a looping H.264 MP4 and a WebP poster per color
-// mode. Scenes: signin (the sign-in window) and problem (the landing's problem section). A developer tool, run by
+// mode. Scenes: signin (the sign-in window), problem (the landing's problem section) and notfound (the 404 page). A developer tool, run by
 // hand; it is not part of the build.
 //
-//   npm run render:signin | render:problem   both modes, the scene's loop at 24 fps (several minutes in software GL)
+//   npm run render:signin | render:problem | render:notfound   both modes, the scene's loop at 24 fps (several minutes in software GL)
 //   npm run render:problem -- --still 3.5    PNGs of the scene at the given seconds (comma separated) into audit-out/ to look at, per mode
 //   npm run render:problem -- --mode dark    one mode
 //   npm run render:problem -- --frames 48    a short test run
@@ -25,6 +25,7 @@ const MODES = typeof args.mode === 'string' ? [args.mode] : ['light', 'dark'];
 const SCENES = {
   signin: { loop: 12, width: 1440, height: 420 }, // sizes equal SCENE_SIZE in src/features/landing/LoopVideo.tsx
   problem: { loop: 12, width: 1500, height: 900 },
+  notfound: { loop: 12, width: 1600, height: 680 },
 };
 const scene = typeof args.scene === 'string' ? args.scene : 'signin';
 const config = SCENES[scene];
@@ -50,7 +51,7 @@ const browser = await launch();
 
 try {
   for (const mode of MODES) {
-    const page = await browser.newPage({ width: SIZE.width, height: SIZE.height, url: `${origin}/${scene}-scene.html?mode=${mode}${args.debug ? '&debug' : ''}`, settle: 500 });
+    const page = await browser.newPage({ width: SIZE.width, height: SIZE.height, url: `${origin}/${scene}-scene.html?mode=${mode}${args.debug ? '&debug' : ''}${typeof args.cam === 'string' ? `&cam=${args.cam}` : ''}${typeof args.only === 'string' ? `&only=${args.only}` : ''}${args.close ? '&close' : ''}`, settle: 500 });
 
     for (let n = 0; n < 300; n++) {
       if (await page.ev("document.body.dataset.ready === '1'")) break;

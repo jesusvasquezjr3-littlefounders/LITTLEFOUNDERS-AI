@@ -2,6 +2,7 @@ import { useId, type CSSProperties } from 'react';
 import { motion } from 'motion/react';
 import { Badge } from '@/components/ui/badge';
 import { useLocale, useSiteCopy } from '@/i18n/useCopy';
+import { reveal, STAGGER } from '@/lib/motionPresets';
 import { align, alignItems, body, grid, heading, lead, section, title } from '@/features/landing/type';
 
 /*
@@ -32,8 +33,7 @@ export function Path() {
       {copy.path.map((step, index) => <motion.li key={step.name}
         style={{ '--fill': TONES[index]?.fill, '--ink': TONES[index]?.ink } as CSSProperties}
         className={`grid grid-cols-1 gap-y-3 border-t border-[var(--v-border)] py-6 first:border-t-0 first:pt-0 last:pb-0 md:grid-cols-[auto_minmax(0,1fr)] md:gap-x-5 md:gap-y-2 ${alignItems} ${align}`}
-        initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }}
-        transition={{ duration: 0.5, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}>
+        {...reveal} transition={{ ...reveal.transition, delay: index * STAGGER }}>
         <span aria-hidden="true" className="grid size-14 place-items-center rounded-[var(--r-card-sm)] bg-[var(--fill)] text-2xl leading-none font-extrabold tabular-nums text-[var(--ink)] md:row-span-3">{number.format(index + 1)}</span>
         <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 md:justify-start">
           <h3 className={title}><span className="sr-only">{step.step}: </span>{step.name}</h3>

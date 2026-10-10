@@ -1,7 +1,7 @@
 ---
 title: UI libraries
 status: accepted
-updated: 2026-10-09
+updated: 2026-10-10
 ---
 
 # UI libraries
@@ -33,11 +33,11 @@ Names the only building blocks of the interface, so no agent reaches for another
 | Library | Role | Arrives as | Where it is used now |
 |---|---|---|---|
 | Motion | All animation | npm `motion`, import from `motion/react` | Hero and section reveals, the cookie banner, `MotionConfig reducedMotion="user"` in `App.tsx`; Cojeev and Bklit are built on it |
-| 000h by Cojeev | General components | shadcn registry `@cojeev` | Button, Sheet, Dialog, Dropdown menu, Badge, Alert (`src/components/ui/`). The Dialog close button is not used (it has a fixed English label); the sign-in window uses its own close button with a locale string |
+| 000h by Cojeev | General components | shadcn registry `@cojeev` | Button, Sheet, Dialog, Dropdown menu, Badge, Alert, Skeleton and Breadcrumb (`src/components/ui/`; Card came with them as a dependency). The Dialog close button is not used (it has a fixed English label); the sign-in window uses its own close button with a locale string |
 | Bklit UI | Charts | shadcn registry `@bklit` | Ring chart for the "4 in 10" figure (`src/components/charts/`) |
 | Sileo | Toasts | npm `sileo` + `sileo/styles.css` | Cookie choice confirmation; `<Toaster>` in `App.tsx` |
 | Morphicons | Icons that change state | npm `morphicons` + `lucide` icon data | Sun/moon theme toggle |
-| Thinking Orbs | Loading | npm `thinking-orbs` | Page-loading fallback in `App.tsx` |
+| Thinking Orbs | Waiting on work | npm `thinking-orbs` | None yet: a page that loads shows the skeleton; the orb is for "the Mentor is thinking" |
 | Bencho | Interaction blocks to copy | Copied from the site | None yet (see below) |
 
 ## How it is wired
@@ -77,6 +77,8 @@ Default source for any component that is not a chart, toast, icon morph or loade
 `MorphIcon` from `morphicons/react`, icon data from `lucide` (not `lucide-react`): `<MorphIcon icon={dark ? Sun : Moon} reducedMotion="user" />`. Stroke icon sets only; one icon set for the whole product; always `reducedMotion="user"`; icons are `aria-hidden` unless a `label` is given.
 
 ### Thinking Orbs
+Not used for page loads any more (the shell shows `PageSkeleton`, Cojeev's Skeleton); keep it for waits on work.
+
 `<ThinkingOrb state="working" size={64} />`; states `working searching solving listening connecting weaving composing breathing shaping`; sizes 64, 32, 20; props `speed`, `paused`, `theme` (`auto` default, follows the `dark` class; the documentation page says a `dark` boolean, the installed version 0.3.2 has `theme`). MIT. Rule: the surrounding element carries the status text (`role="status"`); `paused` when motion is reduced.
 
 ### Bencho
@@ -89,6 +91,10 @@ Default source for any component that is not a chart, toast, icon morph or loade
 **Reading it with the browser tools.** Use the Chrome on the computer the agent is running on, never another connected one: check the machine first (`list_connected_browsers` marks the local one, and PowerShell's `$env:COMPUTERNAME` says which computer this is; the development machine is the Windows MSI laptop, and a Mac is also connected to the account). The owner signs in to Bencho with Google in their own Chrome and has authorised the agent to use that session at Bencho; the agent does not sign in, create accounts or approve sign-in screens itself. The page text tool does not see the Code pane: expand the section and read it from a screenshot or the accessibility tree, or have the owner press the copy button and paste.
 
 **Rules when a block is adopted.** Put it under `src/components/bencho/` with its notice and URL in a header comment; import `motion/react` (blocks use `framer-motion`) and replace `lucide-react` with `lucide` icon data through Morphicons where an icon changes state; take strings from the locale files and colors from the tokens; add keyboard and reduced-motion behavior; swap photographs for our own art. Sounds are off by default. No block is adopted yet; they are brought in one at a time as screens need them (T-009).
+
+### Library strings that are not ours
+
+Cojeev's Breadcrumb carries English defaults (`aria-label="Breadcrumb"`, a Back button labelled "Back"). `components/Breadcrumbs.tsx` passes the translated label and does not use the Back button. Its separator would pull Cojeev's lazy icon data (about 354 KB); ours is a Lucide chevron through Morphicons.
 
 ## Local patches to copied code
 
@@ -119,7 +125,8 @@ Re-run this audit when a component is added, using a script like the one describ
 | Chart, gauge, ring, heatmap | Bklit UI |
 | A message that fades | Sileo |
 | An icon that changes state | Morphicons |
-| Loading, "the Mentor is thinking" | Thinking Orbs |
+| A page or a block loading | Cojeev Skeleton (`PageSkeleton`) |
+| Waiting on work, "the Mentor is thinking" | Thinking Orbs |
 | A 3D character | Not here; see [[DESIGN-SYSTEM]] |
 
 ## Related

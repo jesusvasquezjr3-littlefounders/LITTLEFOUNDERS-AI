@@ -30,7 +30,7 @@ export function Hero() {
       </motion.div>
     </motion.div>
     <div role="img" aria-label={copy.heroSceneAlt} className="pointer-events-none col-span-4 -my-4 aspect-[5/4] w-full max-w-xl min-w-0 [mask-image:radial-gradient(ellipse_72%_70%_at_50%_52%,#000_74%,transparent_100%)] md:col-span-8 md:-my-8 md:max-w-none lg:col-span-6 lg:my-0">
-      <LoopVideo name="hero" className="block size-full object-contain" />
+      <LoopVideo name="hero" priority className="block size-full object-contain" />
     </div>
   </section>;
 }

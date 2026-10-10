@@ -20,6 +20,9 @@
 @import "@/styles/cojeev/alert.css";
 @import "@/styles/cojeev/dropdown-menu.css";
 @import "@/styles/cojeev/dialog.css";
+@import "@/styles/cojeev/card.css";
+@import "@/styles/cojeev/skeleton.css";
+@import "@/styles/cojeev/breadcrumb.css";
 @import "@/styles/lf-theme.css";
 
 @custom-variant dark (&:is(.dark *));
@@ -291,6 +294,11 @@
 }
 
   @custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
+/* Anchor jumps and the back-to-top scroll glide; with reduced motion they cut. */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
 /* Theme change: the page cross-fades as one image (see src/theme/useTheme.tsx). */
 ::view-transition-old(root),
 ::view-transition-new(root) {

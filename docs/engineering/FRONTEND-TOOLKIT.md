@@ -95,11 +95,11 @@ When a task would benefit from one of these, the agent says which command and wh
 
 **Add or change a color.** Add it to `src/styles/lf-theme.css` for light and dark; choose its label color by measuring contrast on it (section 5); check the pairs it sits next to under color-vision simulation; update the tables in [[RESEARCH-FOUNDATION]] section 9.
 
-**Show a message or a loading state.** A toast is `sileo.<kind>({ title })` with a locale string and never carries a minor's personal data; a loading state is a `ThinkingOrb` inside a `role="status"` container, named through its `aria-label`.
+**Show a message or a loading state.** A toast is `sileo.<kind>({ title })` with a locale string and never carries a minor's personal data. A page that is loading shows `PageSkeleton` (it is already the Suspense fallback in the shell); work that takes a moment ("the Mentor is thinking") is a `ThinkingOrb` inside a `role="status"` container, named through its `aria-label`.
 
 **Fill a footer link.** Put the address in `src/lib/footerLinks.ts` (T-016); a social mark or legal entry with an address becomes a link on its own.
 
-**Add a page or a feature.** Create `src/features/<name>/` with its own `type.ts` or move the shared constants to a common module when the second page needs them; add the route in `App.tsx`; add its entry to the page table in `scripts/seo/site.mjs`; write the feature document from `docs/features/FEATURE-TEMPLATE.md` with the owner first. Routing, state and data are open decisions in [[FRONTEND-GUIDE]].
+**Add a page or a feature.** Read "Interaction, motion and page furniture" in [[FRONTEND-GUIDE]] first: the page gets a breadcrumb trail (`Breadcrumbs`), names itself with `usePageTitle`, reveals its blocks with `reveal` from `lib/motionPresets.ts`, and inherits the skeleton, the page transition, back to top and the phone sign-in bar from the shell. Create `src/features/<name>/` with its own `type.ts` or move the shared constants to a common module when the second page needs them; add the route in `App.tsx`; add its entry to the page table in `scripts/seo/site.mjs`; write the feature document from `docs/features/FEATURE-TEMPLATE.md` with the owner first. Routing, state and data are open decisions in [[FRONTEND-GUIDE]].
 
 ## 4. Known traps
 
@@ -131,7 +131,7 @@ Typical use: `npm run audit:layout -- --matrix`, `npm run audit:a11y -- --matrix
 
 ## 6. The render tool
 
-For a scene with the characters (hero, problem, the sign-in window). `npm run render:signin` and `npm run render:problem` render a scene to `public/landing/<scene>/` as an MP4 and a WebP poster for each color mode; `--still 0,3,6` writes PNGs to `audit-out/` to look at first; `--mode` and `--frames` narrow a run. Chrome and Blender are required (`BLENDER` and `CHROME_PATH` name them if they are elsewhere), and the artist models come from `glb/`. Method, rules and the scenes that exist: [[CHARACTER-COMPOSITIONS]]. Like the audit tools it is run by hand and is not a gate.
+For a scene with the characters (hero, problem, the sign-in window, the 404 page). To look at one character alone, add `--only rho --close` (and `--cam side`) to a `--still` run. `npm run render:signin`, `npm run render:problem` and `npm run render:notfound` render a scene to `public/landing/<scene>/` as an MP4 and a WebP poster for each color mode; `--still 0,3,6` writes PNGs to `audit-out/` to look at first; `--mode` and `--frames` narrow a run. Chrome and Blender are required (`BLENDER` and `CHROME_PATH` name them if they are elsewhere), and the artist models come from `glb/`. Method, rules and the scenes that exist: [[CHARACTER-COMPOSITIONS]]. Like the audit tools it is run by hand and is not a gate.
 
 ## 7. The avatar tools
 

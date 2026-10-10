@@ -1,28 +1,18 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { lazy, useEffect, useState } from 'react';
+import { Route, Routes } from 'react-router-dom';
 import { MotionConfig } from 'motion/react';
 import { Toaster } from 'sileo';
-import { ThinkingOrb } from 'thinking-orbs';
 import { ThemeProvider, useTheme } from '@/theme/useTheme';
 import { AnalyticsScripts } from '@/lib/analytics';
 import { CookieConsentBanner } from '@/components/CookieConsentBanner';
 import { AppShell } from '@/components/AppShell';
-import { useCoreCopy } from '@/i18n/useCopy';
 import { releaseBootVeil } from '@/lib/boot';
 
 // Development only: the avatars alive. `import.meta.env.DEV` is false in a production build, so this chunk is not shipped.
 const DevAvatars = import.meta.env.DEV ? lazy(() => import('@/features/avatars/DevAvatars')) : null;
 
 const Landing = lazy(() => import('@/features/landing/Landing').then((module) => ({ default: module.Landing })));
-
-/** Shown while a page's code loads: a thinking orb, announced as "Loading". */
-function PageLoading() {
-  const label = useCoreCopy().appShell.loading;
-
-  return <div role="status" className="grid min-h-[60dvh] place-items-center">
-    <ThinkingOrb state="working" size={64} aria-label={label} />
-  </div>;
-}
+const NotFound = lazy(() => import('@/features/notFound/NotFound').then((module) => ({ default: module.NotFound })));
 
 /** Toasts follow the visitor's theme (not the operating system's), drawn as the opposite surface so they stand off the page. */
 function ThemedToaster() {
@@ -32,9 +22,9 @@ function ThemedToaster() {
 }
 
 /*
- * The whole app: one page, `/`, inside the site shell. Any other URL goes
- * back to it. Reduced motion is honored once, here, for every Motion
- * component below.
+ * The whole app: the landing at `/` inside the site shell, and the not-found page for every other
+ * URL (the shell shows a skeleton while a page's code loads). Reduced motion is honored once, here,
+ * for every Motion component below.
  */
 export function App() {
   const [consentVersion, setConsentVersion] = useState(0);
@@ -53,15 +43,13 @@ export function App() {
       <ThemeProvider>
         <AnalyticsScripts consentVersion={consentVersion} />
         <ThemedToaster />
-        <Suspense fallback={<PageLoading />}>
-          <Routes>
-            <Route element={<AppShell />}>
-              <Route index element={<Landing />} />
-              {DevAvatars ? <Route path="dev/avatars" element={<DevAvatars />} /> : null}
-            </Route>
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </Suspense>
+        <Routes>
+          <Route element={<AppShell />}>
+            <Route index element={<Landing />} />
+            {DevAvatars ? <Route path="dev/avatars" element={<DevAvatars />} /> : null}
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        </Routes>
         {/* After the page in the DOM so the skip link stays the first stop; it is fixed to the bottom either way. */}
         <CookieConsentBanner onDecision={() => setConsentVersion((v) => v + 1)} />
       </ThemeProvider>

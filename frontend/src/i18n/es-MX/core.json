@@ -12,7 +12,10 @@
     "themeDark": "Oscuro",
     "rights": "Todos los derechos reservados.",
     "contactEmail": "informame@littlefounders.ai",
-    "signIn": "Iniciar sesión"
+    "signIn": "Iniciar sesión",
+    "backToTop": "Volver arriba",
+    "breadcrumb": "Ruta de navegación",
+    "home": "Inicio"
   },
   "auth": {
     "title": "Inicia sesión",
@@ -42,5 +45,13 @@
       "x": "X",
       "linkedin": "LinkedIn"
     }
+  },
+  "notFound": {
+    "code": "Error 404",
+    "title": "No encontramos esta página",
+    "text": "Puede que el enlace sea viejo o tenga un error de escritura. Empieza de nuevo desde el inicio.",
+    "button": "Ir al inicio",
+    "sceneAlt": "Rho y Liruf, de rodillas y de espaldas entre sí, con la cabeza baja, tristes porque no encuentran la página.",
+    "pageTitle": "Página no encontrada"
   }
 }

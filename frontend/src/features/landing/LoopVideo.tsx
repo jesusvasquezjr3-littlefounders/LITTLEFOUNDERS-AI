@@ -11,7 +11,8 @@ import { useTheme } from '@/theme/useTheme';
  *  - One H.264 MP4: every browser and phone decodes it in hardware.
  *  - The poster paints at once, and stays when the visitor asks for reduced
  *    motion or for less data, or when the browser refuses to autoplay.
- *  - It pauses while off screen, so it never decodes unseen frames.
+ *  - It pauses while off screen, so it never decodes unseen frames, and a scene below the fold
+ *    downloads nothing but its poster until the visitor scrolls near it.
  *  - Muted, hidden from assistive technology, never a sound.
  */
 
@@ -37,9 +38,10 @@ function useStillOnly() {
 }
 
 /** Delivered pixel size of each scene (the tools in tools/render/ produce exactly this). */
-const SCENE_SIZE = { hero: { width: 1000, height: 800 }, problem: { width: 1500, height: 900 }, signin: { width: 1440, height: 420 } } as const;
+const SCENE_SIZE = { hero: { width: 1000, height: 800 }, problem: { width: 1500, height: 900 }, signin: { width: 1440, height: 420 }, notfound: { width: 1600, height: 680 } } as const;
 
-export function LoopVideo({ name, className }: { name: keyof typeof SCENE_SIZE; className?: string }) {
+/** `priority` is for the scene above the fold (it loads at once); every other scene waits until the visitor scrolls near it. */
+export function LoopVideo({ name, className, priority = false }: { name: keyof typeof SCENE_SIZE; className?: string; priority?: boolean }) {
   const { isDark } = useTheme();
   const mode = isDark ? 'dark' : 'light';
   const still = useStillOnly();
@@ -63,9 +65,9 @@ export function LoopVideo({ name, className }: { name: keyof typeof SCENE_SIZE; 
     return () => watch.disconnect();
   }, [mode, still]);
 
-  if (still) return <img className={className} src={poster} alt="" width={width} height={height} decoding="async" />;
+  if (still) return <img className={className} src={poster} alt="" width={width} height={height} decoding="async" loading={priority ? 'eager' : 'lazy'} fetchPriority={priority ? 'high' : 'auto'} />;
 
-  return <video key={mode} ref={video} className={className} poster={poster} width={width} height={height} autoPlay muted loop playsInline preload="auto"
+  return <video key={mode} ref={video} className={className} poster={poster} width={width} height={height} autoPlay muted loop playsInline preload={priority ? 'auto' : 'none'}
     aria-hidden="true" disablePictureInPicture>
     <source src={`${base}/${name}-${mode}.mp4`} type="video/mp4" />
   </video>;
