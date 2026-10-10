@@ -6,6 +6,7 @@ All notable changes to the repository. Newest first. Updated in the same commit 
 
 ### Added
 
+- Zara's jaw redrawn symmetric with a narrower chin, her neck and chest as one continuous skin tone, and sideburns at her temples.
 - Zara's eyes redrawn to match the original (rounder white, larger iris kept inside the eye, a thick tapered liner with a wing); `clip_ellipse` for art specs.
 - Avatars: Zara's expressions rebuilt to be clean and gentle (per-character `expressionScale`, softer mouth), Liruf redrawn without outlines and given eyelids so he is expressive, faithful and in the same style as the others. Rho and Dina approved.
 - The avatar test page at `/dev/avatars` (dev server only) now has every control in one place: characters, 19 expressions, 12 gestures, 13 mouth shapes, look, text in three languages, an audio file for lip sync, and a slider for every rig number; `Avatar` gained an `overrides` prop for it.

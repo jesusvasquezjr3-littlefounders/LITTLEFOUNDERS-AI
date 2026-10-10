@@ -136,7 +136,11 @@
    "hair",
    "hair-light",
    "hair-light-l",
-   "hair-light-r"
+   "hair-light-r",
+   "sideburn-l",
+   "sideburn-r",
+   "sideburn-light-l",
+   "sideburn-light-r"
   ]
  },
  "body": [
