@@ -8,6 +8,16 @@
 # The functions-v1 route is commented out (edge-runtime not deployed, see
 # below). Never edit kong-entrypoint.sh's substitution behavior here, only
 # the routes/services below.
+#
+# Closed to browsers (docs/security/SECURITY-GUIDE.md): the browser talks only
+# to the backend (Core), so the auth, REST, GraphQL and Realtime routes accept
+# the service key alone (ACL group `admin`); the public anon key opens nothing.
+# What stays open without a key is what a Google sign-in needs to pass through
+# the browser (/auth/v1/authorize and /auth/v1/callback) and the public signing
+# keys. The upstream open route /auth/v1/verify is removed on purpose: sign-in
+# is by a one-time code that only Core may check, so nobody can guess codes
+# against the gateway. The SAML routes are removed because SAML is not used.
+# The local stack mounts this same file (database/scripts/local-stack.sh).
 _format_version: '2.1'
 _transform: true
 
@@ -46,17 +56,7 @@ basicauth_credentials:
 ### API Routes
 ###
 services:
-  ## Open Auth routes
-  - name: auth-v1-open
-    _comment: 'Auth: /auth/v1/verify* -> http://$KONG_AUTH_HOST:9999/verify*'
-    url: http://$KONG_AUTH_HOST:9999/verify
-    routes:
-      - name: auth-v1-open
-        strip_path: true
-        paths:
-          - /auth/v1/verify
-    plugins:
-      - name: cors
+  ## Open Auth routes (only what a browser redirect needs)
   - name: auth-v1-open-callback
     _comment: 'Auth: /auth/v1/callback* -> http://$KONG_AUTH_HOST:9999/callback*'
     url: http://$KONG_AUTH_HOST:9999/callback
@@ -88,26 +88,6 @@ services:
     plugins:
       - name: cors
 
-  - name: auth-v1-open-sso-acs
-    url: "http://$KONG_AUTH_HOST:9999/sso/saml/acs"
-    routes:
-      - name: auth-v1-open-sso-acs
-        strip_path: true
-        paths:
-        - /auth/v1/sso/saml/acs
-    plugins:
-      - name: cors
-
-  - name: auth-v1-open-sso-metadata
-    url: "http://$KONG_AUTH_HOST:9999/sso/saml/metadata"
-    routes:
-      - name: auth-v1-open-sso-metadata
-        strip_path: true
-        paths:
-        - /auth/v1/sso/saml/metadata
-    plugins:
-      - name: cors
-
   ## Secure Auth routes
   - name: auth-v1
     _comment: 'Auth: /auth/v1/* -> http://$KONG_AUTH_HOST:9999/*'
@@ -135,7 +115,6 @@ services:
           hide_groups_header: true
           allow:
             - admin
-            - anon
 
   ## OpenAPI root - admin only
   - name: rest-v1-openapi
@@ -191,7 +170,6 @@ services:
           hide_groups_header: true
           allow:
             - admin
-            - anon
 
   ## Secure GraphQL routes
   - name: graphql-v1
@@ -221,7 +199,6 @@ services:
           hide_groups_header: true
           allow:
             - admin
-            - anon
 
   ## Secure Realtime routes
   - name: realtime-v1-ws
@@ -251,7 +228,6 @@ services:
           hide_groups_header: true
           allow:
             - admin
-            - anon
 
   # Block access to /realtime/v1/api/openapi
   - name: realtime-v1-rest-openapi
@@ -312,7 +288,6 @@ services:
           hide_groups_header: true
           allow:
             - admin
-            - anon
 
   ## Storage API endpoint (with Authorization header transformation).
   ## No key-auth — S3 protocol requests don't carry an apikey header.

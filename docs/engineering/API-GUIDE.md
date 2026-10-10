@@ -1,7 +1,7 @@
 ---
 title: API guide
 status: scaffold
-updated: 2026-10-09
+updated: 2026-10-10
 ---
 
 # API guide
@@ -32,7 +32,20 @@ Keeps every endpoint consistent so clients and agents can predict behavior. Each
 - [ ] The machine-readable contract and how client types are generated from it.
 - [ ] Webhooks, if any.
 
+## Current state
+
+What Core's first endpoints do ([[F-001-authentication]]); the shared rules above are still to be set with the owner, and these are the starting point.
+
+- JSON over HTTPS under `/api/v1`. Every answer is `{ "data": ..., "error": null }` or `{ "data": null, "error": { "code": "..." } }`, the shape the mail service already used.
+- An error is a code in capitals (`CODE_INVALID`, `RATE_LIMITED`, `FORBIDDEN`), with the HTTP status that fits. The server never sends a sentence for a person: the frontend maps the code to a locale string, in three languages. The codes are listed in `backend/src/lib/http.ts`.
+- A request body is JSON, at most 10 KB, and is parsed with a strict schema: an unknown field is a `BAD_REQUEST`.
+- A refusal by a limit is 429 with `Retry-After` and `retryAfterSeconds` ([[RATE-LIMITING-AND-ABUSE]]).
+- The session travels in cookies, so the frontend sends `credentials: 'include'` and never handles a token (`frontend/src/lib/api.ts`).
+- Nothing is cached: every answer carries `Cache-Control: no-store`.
+
 ## Related
+
+- [[F-001-authentication]]
 
 - [[BACKEND-GUIDE]]
 - [[DATABASE-GUIDE]]

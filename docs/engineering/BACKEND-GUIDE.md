@@ -1,7 +1,7 @@
 ---
 title: Backend guide
 status: scaffold
-updated: 2026-10-09
+updated: 2026-10-10
 ---
 
 # Backend guide
@@ -33,10 +33,17 @@ Governs the code that will live in `backend/`: where business rules are enforced
 
 ## Current state
 
-- `backend/` is empty and reserved.
+- `backend/` is Core (D-028 in [[DECISIONS]]). Node 24, TypeScript in strict mode (`noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`), Express 5, Zod 4, `jose` for tokens, `rate-limiter-flexible` with `ioredis` for counters, `helmet` for headers. The same shape as the mail service, so the two read alike.
+- Commands, from `backend/`: `npm run dev` (port 4000, reads `backend/.env`), `npm run type-check`, `npm run lint`, `npm run build`, `npm start`.
+- Layout: `src/config.ts` (the environment, validated once at boot), `src/app.ts` (the middleware order and the one error handler), `src/middleware/` (origin check, CORS, the session), `src/routes/` (one file per area: `auth`, `account`, `admin`, `email` for unsubscribing, `hooks` for the authentication service's signed calls), `src/services/` (one file per thing Core talks to or signs: `gotrue`, `vault`, `tokens`, `cookies`, `limits`, `mailer` for the mail service, `unsubscribe` for the links in emails; see [[F-002-emails]]), `src/lib/` (the answer shape and error codes, the logger).
+- Conventions in force: a handler parses its input with a strict schema before anything else and throws an `ApiError` with a code; one handler at the end turns anything thrown into an answer; a counter is taken before the thing it protects; no handler takes a user id from the request; answers from other services are parsed; nothing personal is logged.
+- What is done in the database and not in Core: every identity rule (who is a child, who may hold or grant a type, the age written once). Core calls the `core_*` functions and has no privilege on tables ([[DATABASE-GUIDE]]).
+- Not decided: background jobs and queues, and the boundary for the AI tutor.
 
 ## Related
 
+- [[F-001-authentication]]
+- [[DECISIONS]]
 - [[ARCHITECTURE]]
 - [[API-GUIDE]]
 - [[DATABASE-GUIDE]]

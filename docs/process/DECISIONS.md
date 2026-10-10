@@ -89,7 +89,7 @@ The frontend audit scripts (accessibility, keyboard, layout, grid, scene framing
 
 Date: 2026-10-09. Status: accepted.
 
-Every route path in the platform is in English, whatever the interface language: `/sign-up`, never `/crear-cuenta`. Only the words on screen are translated ([[FRONTEND-GUIDE]] rule 1). Sign-in is not a page: it is a window opened from the topbar, and its actions read their destinations from `frontend/src/lib/authRoutes.ts`, which holds placeholders until the first application routes exist.
+Every route path in the platform is in English, whatever the interface language: `/sign-up`, never `/crear-cuenta`. Only the words on screen are translated ([[FRONTEND-GUIDE]] rule 1). Sign-in is not a page: it is a window opened from the topbar ([[F-001-authentication]]); the one page it uses, where a Google sign-in comes back, is `/auth/callback`.
 
 ### D-012: Rules for character compositions
 
@@ -99,9 +99,9 @@ Scenes with the characters follow one set of rules (true scale with Dina large, 
 
 ### D-013: The platform is for ages 12 to 18
 
-Date: 2026-10-09. Status: accepted.
+Date: 2026-10-09. Status: superseded by D-027 on 2026-10-10 (the line is 13, and younger people are admitted by D-025).
 
-The owner set the product audience at 12 to 18 years old, final: 12 is the youngest age served, not 13. The platforms the product is compared with (Scratch, Code.org, Khan Academy) let teenagers from 13 manage their own account and require a parent or guardian for younger children, so the sign-up of 12-year-olds is a design item (T-020), not a reason to move the line. The landing says "ages 12 to 18" and the first skill starts at 12. How sign-up handles age is in D-025. Children under 12 are not served until the owner designs a different registration process, after looking at how existing learning platforms register young users. Legal inputs the owner supplied (not yet confirmed with counsel) are recorded in [[CHILD-SAFETY-AND-PRIVACY]].
+The owner set the product audience at 12 to 18 years old, final: 12 is the youngest age served, not 13. The platforms the product is compared with (Scratch, Code.org, Khan Academy) let teenagers from 13 manage their own account and require a parent or guardian for younger children, so the sign-up of 12-year-olds is a design item (T-020), not a reason to move the line. The landing says "ages 12 to 18" and the first skill starts at 12. Children under 12 are not served until the owner designs a different registration process, after looking at how existing learning platforms register young users. Legal inputs the owner supplied (not yet confirmed with counsel) are recorded in [[CHILD-SAFETY-AND-PRIVACY]].
 
 ### D-014: The mail service is restored
 
@@ -131,7 +131,7 @@ Inside the platform, a wait is shown in a window like the sign-in window (Cojeev
 
 Date: 2026-10-10. Status: accepted.
 
-The owner mapped six learning products (Mimo, Brilliant, Duolingo, Finanz, GoHenry, Astra AI) in the private repository `LittleFounders-AI/reference-mapping-for-littlefounders` and the first product decisions (D-019 to D-026) come from reading it in full. It is a reference, not a specification: its evidence is uneven (the two finance products were mapped from public pages only), so a pattern taken from it is named with the product it came from, and nothing time-based or server-side in it is treated as a known rule.
+The owner mapped six learning products (Mimo, Brilliant, Duolingo, Finanz, GoHenry, Astra AI) in the private repository `LittleFounders-AI/reference-mapping-for-littlefounders` and the first product decisions (D-019 to D-027) come from reading it in full. It is a reference, not a specification: its evidence is uneven (the two finance products were mapped from public pages only), so a pattern taken from it is named with the product it came from, and nothing time-based or server-side in it is treated as a known rule.
 
 ### D-019: A mistake is never punished
 
@@ -173,7 +173,7 @@ The official currency of LittleFounders is Seeds ("Semillas" in Spanish). How Se
 
 Date: 2026-10-10. Status: accepted.
 
-The product is aimed first at people aged 12 and over (D-013). So that a younger person who signs up meets no friction, the age step uses a self-declared checkbox like Astra AI's ("I confirm I have my parent's or guardian's permission") instead of a verified parental-consent process. This answers the sign-up part of T-020. Open with the owner: the age below which the checkbox appears, and whether it also admits children under 12, whom D-013 does not serve. To confirm with counsel before production: a self-declared checkbox is not verifiable parental consent, which some regimes require for the youngest users ([[CHILD-SAFETY-AND-PRIVACY]]).
+The product is aimed at people aged 13 and over (D-027). So that a younger person who signs up meets no friction, the age step uses a self-declared checkbox like Astra AI's ("I confirm I have my parent's or guardian's permission") instead of a verified parental-consent process, and the product does not promise verified consent anywhere: not in the interface, not in the terms and not in the privacy text. The age step accepts 6 to 100, so children from 6 to 12 are admitted this way. This closes the sign-up design of T-020. Taken by default, change it if the owner wants: the checkbox appears for a declared age under 13. An age outside 6 to 100 (200, 1000) is a chance for a friendly joke in the interface, to be designed with the sign-up screen. To confirm with counsel before production: a self-declared checkbox is not verifiable parental consent, which COPPA requires in the United States for children under 13 ([[CHILD-SAFETY-AND-PRIVACY]]).
 
 ### D-026: Finance content comes later
 
@@ -181,12 +181,71 @@ Date: 2026-10-10. Status: accepted.
 
 No finance content is written yet. It is made later, as the functionality is developed one feature at a time.
 
+### D-027: The platform is for ages 13 and over
+
+Date: 2026-10-10. Status: accepted. Supersedes D-013.
+
+The owner moved the line from 12 to 13 to follow the United States COPPA line, the same one the platforms the product is compared with use (Scratch, Code.org, Khan Academy). The product is designed for people aged 13 and over; the landing, its search description and the first two skills say 13 ("ages 13 to 18", "From age 13") in the three languages. Younger people are not turned away at sign-up: D-025 admits them from age 6 with self-declared permission.
+
+### D-028: The browser talks to one backend, and the session is a cookie
+
+Date: 2026-10-10. Status: accepted.
+
+The owner chose a backend of our own (Core, in `backend/`: Node 24, TypeScript, Express and Zod, like the mail service) as the only server the browser calls. Core talks to the authentication service and to the database; the browser reaches neither, and the gateway is closed to everything but Core's key. The session lives in cookies the page's JavaScript cannot read, not in browser storage as the previous version kept it. Design and the review against the security checklists: [[F-001-authentication]], [[SECURITY-GUIDE]].
+
+### D-029: No passwords
+
+Date: 2026-10-10. Status: accepted.
+
+A person signs in with Google (the account chooser opens in its own window) or with a one-time code sent to their email, typed after giving their email or their username. The code is used once and expires after 15 minutes. Signing up is the same code: there is no password to create, remember or recover. The emails that carry the code are designed afterwards (T-021).
+
+### D-030: The five user types
+
+Date: 2026-10-10. Status: accepted.
+
+`superadmin`, `admin`, `parent` (a verified parent: the verification, KYC, is a later feature), `child` (an account whose declared age is under 18) and `universal` (18 or over). They are the previous version's types, so production data can be migrated, with three changes the owner approved: the stored name `kid` becomes `child`; `child` now means under 18 by age, where `kid` meant "created by a verified parent", so minors who are `universal` in production become `child` in the migration; and the unused sixth type `bigfounder` is dropped (after checking that no account holds it). What happens to the previous version's child accounts, which sign in with a password and have no real email address, is decided at the migration (T-026). Rules and tables: [[F-001-authentication]].
+
+### D-031: Production's environment variable names are kept
+
+Date: 2026-10-10. Status: accepted.
+
+The new version reads the variables production already has, under the same names, so the keys that work there (Google, Amazon SES, Supabase) are not re-entered or rotated by the change of version. The names were read from the production services on 2026-10-10 (names only, with the owner's permission) and are listed in [[ENVIRONMENT-SETUP]]. New settings get new names; an existing name is never repurposed.
+
+### D-032: The emails are our own, written and sent by our services
+
+Date: 2026-10-10. Status: accepted.
+
+Every email has the brand's own design and words. The authentication service keeps making and checking the one-time code but no longer writes or sends mail: it hands the code to Core, signed, Core chooses the email and the language, and the mail service builds it and relays it through Amazon SES. How it was built, and the alternative that was tried and dropped, is in [[F-002-emails]].
+
+### D-033: An account's language is the language the person uses the site in
+
+Date: 2026-10-10. Status: accepted.
+
+The language is stored with the account, and every email is sent in it. To keep joining free of friction nobody is asked for it: a new account takes the language the site was showing at that moment, and it follows the person when they change the site's language while signed in. Three languages exist: English, Spanish and Portuguese.
+
+### D-034: One email design, with the characters looking up at the reader
+
+Date: 2026-10-10. Status: accepted.
+
+Every email has, in this order: the logo, a picture of the characters, the message, a button or a code, a closing line, a pale yellow box of notes and advice, the logo in black, the social logos (without links for now), the rights line and "Unsubscribe". Everything is centered, with the frontend's typeface, colors and button. The picture is the four characters close together seen from above, only their heads turned up, the rest of each body as it is; a light file. It must feel immersive like the scenes in the product: no colored background and no border around it (the first version, on a yellow panel, was rejected). The basic emails are designed now, and later emails reuse the format. The owner approved the built design on 2026-10-10.
+
+### D-035: "Unsubscribe" stops the optional emails, never the ones about the account
+
+Date: 2026-10-10. Status: accepted, with one part assumed.
+
+The owner asked for an "Unsubscribe" link in every email. What it stops was assumed while building and is to be confirmed: emails that are not about the account (the welcome, later news). Emails that are part of using the account, such as a sign-in code, always arrive. Details: [[F-002-emails]].
+
 ## Related
 
+- [[F-001-authentication]]
+- [[SECURITY-GUIDE]]
+- [[ENVIRONMENT-SETUP]]
 - [[RESEARCH-FOUNDATION]]
 - [[GLOSSARY]]
 - [[CHILD-SAFETY-AND-PRIVACY]]
 - [[UI-LIBRARIES]]
+- [[F-001-authentication]]
+- [[F-002-emails]]
 - [[PRODUCT-REQUIREMENTS]]
 - [[ARCHITECTURE]]
 - [[SYSTEM-DESIGN]]

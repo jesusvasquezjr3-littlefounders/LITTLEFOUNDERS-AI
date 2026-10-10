@@ -27,10 +27,13 @@
     "avatars:sheet": "node tools/avatars/sheet.mjs",
     "render:problem": "node tools/render/render-scene.mjs --scene problem",
     "render:notfound": "node tools/render/render-scene.mjs --scene notfound",
-    "render:loading": "node tools/render/render-loading.mjs"
+    "render:loading": "node tools/render/render-loading.mjs",
+    "render:email": "node tools/render/render-email.mjs",
+    "audit:signin": "node tools/audit/signin.mjs"
   },
   "dependencies": {
     "@number-flow/react": "^0.6.2",
+    "@radix-ui/react-checkbox": "^1.3.12",
     "@radix-ui/react-dialog": "^1.2.0",
     "@radix-ui/react-direction": "^1.1.5",
     "@radix-ui/react-dropdown-menu": "^2.1.25",
@@ -43,6 +46,7 @@
     "clsx": "^2.1.1",
     "i18next": "^24.2.0",
     "i18next-browser-languagedetector": "^8.0.0",
+    "input-otp": "^1.5.0",
     "lucide": "^1.54.0",
     "morphicons": "^1.7.1",
     "motion": "^14.0.0",
@@ -53,7 +57,8 @@
     "sileo": "^0.1.5",
     "tailwind-merge": "^3.7.0",
     "thinking-orbs": "^0.3.2",
-    "tw-animate-css": "^1.4.0"
+    "tw-animate-css": "^1.4.0",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@oxlint/plugins": "1.87.0",

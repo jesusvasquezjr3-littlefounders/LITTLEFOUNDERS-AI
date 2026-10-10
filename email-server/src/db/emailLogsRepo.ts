@@ -3,7 +3,7 @@ import type { EmailLogEntry, EmailLogSummary, EmailLogPage } from '../services/e
 
 /*
  * Service-role PostgREST access to `email_logs`
- * — the DURABLE delivery history. The table's migration was removed with the database restart of 2026-10-09 and has to be recreated before this path is used.
+ * — the DURABLE delivery history (database/migrations/0002_email.sql).
  *
  * Before this, Courier's history was a 1000-entry in-process ring buffer that
  * was wiped by every redeploy, every Railway restart, and every Haraka
@@ -158,6 +158,20 @@ export async function insertEmailLog(entry: EmailLogEntry): Promise<boolean> {
     body: JSON.stringify(row),
   });
   return res.ok;
+}
+
+/**
+ * Sets the status of the line an email already has, found by its message id. Returns whether a
+ * line was there: mail this service did not build has none, and the caller then writes one.
+ */
+export async function updateEmailLogStatus(messageId: string, status: string): Promise<boolean> {
+  if (!isVaultConfigured()) return false;
+  const res = await rest<unknown[]>(`/email_logs?message_id=eq.${encodeURIComponent(messageId)}`, {
+    method: 'PATCH',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify({ status }),
+  });
+  return res.ok && Array.isArray(res.body) && res.body.length > 0;
 }
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

@@ -44,6 +44,7 @@ Node 24. Everything below is run from `frontend/`.
 | Components | shadcn registries `@cojeev` and `@bklit`, plus Motion, Sileo, Morphicons and Thinking Orbs: [[UI-LIBRARIES]] |
 | Copy | i18next only chooses and remembers the language; the copy itself is typed JSON per locale |
 | Lint | ESLint (typescript-eslint) and the vendored anti-slop Oxlint rules |
+| Data | `lib/api.ts` calls Core with the session cookies and parses every answer with Zod (`zod/mini`) |
 
 | Command | What it does |
 |---|---|
@@ -73,9 +74,11 @@ frontend/
     components/          ours: AppShell, SiteFooter, TopbarControls, CookieConsentBanner, CircleFlag, icons/
     components/ui/       copied from the registries (Cojeev). Not edited, not linted; see the patch list in UI-LIBRARIES
     components/charts/   copied from the registries (Bklit). Same rule
-    features/<name>/     one folder per page or feature; landing/ holds the sections and type.ts, notFound/ the 404 page
+    features/<name>/     one folder per page or feature; landing/ holds the sections and type.ts, notFound/ the 404 page,
+                         auth/ the session, the sign-in window, the account controls and the page a Google sign-in returns to
     i18n/                index.ts (language), copy.ts (typed bundles), useCopy.ts (hooks), <locale>/core.json and site.json
-    lib/                 analytics, consent and visitor, boot, footerLinks, motionPresets, utils; cojeev/ and cojeev-motion/ are registry code
+    lib/                 api (the one way to call Core), analytics, consent and visitor, boot, footerLinks, motionPresets, utils;
+                         cojeev/ and cojeev-motion/ are registry code
     styles/              app.css (the one entry), lf-fonts.css, lf-theme.css, cojeev/ (registry CSS)
     theme/               useTheme: light, dark or auto, sets both html.dark and html[data-mode], cross-fading the page via a View Transition (skipped for reduced motion)
 ```
@@ -104,7 +107,7 @@ The owner defined these eleven on 2026-10-10 ([[DECISIONS]] D-016). They belong 
 8. **Speed.** A page is its own lazy chunk (the landing, the 404 page; the avatars page is development only). Only the scene above the fold loads its video at once (`priority` on `LoopVideo`); a scene below it downloads its poster and nothing else until the visitor scrolls near it. Fonts are self-hosted and preloaded; icons are bundled path data, and a library's lazy icon data is not pulled in for one arrow (the breadcrumb uses Lucide through Morphicons). Numbers: "Performance today".
 9. **404 page.** `features/notFound/NotFound.tsx`, the `*` route inside the shell, so the header, the footer and the phone bar stay. Top to bottom: "Error 404" in red with a warning mark, at title size (21 px: the owner twice asked for it small) (`--lf-error`, a token measured for both color modes; the mark never stands alone), the scene with Rho and Liruf ([[CHARACTER-COMPOSITIONS]], scene `notfound`), the line "We can't find this page", a plain sentence and one Button to `/`. It asks crawlers not to index it. The server still answers 200 for an unknown path (`vercel.json` rewrites everything to the app shell), so this is the client's answer and not an HTTP status: a real 404 status needs the host to know the list of pages, which is a later decision.
 10. **Breadcrumbs.** `components/Breadcrumbs.tsx` wraps Cojeev's Breadcrumb: Home, the sections between as links, the current page last as plain text with `aria-current`. Every page below the home page puts one at the top of its content, with labels from the locale files; the home page has none. The label of the nav and "Home" are keys in `core.json` (`siteShell.breadcrumb`, `siteShell.home`).
-11. **Sign in, fixed on phones.** Below 768 px a full-width accent "Sign in" Button is pinned to the bottom edge (`MobileSignInBar`), above the page and under the cookie banner; the footer pads its bottom so nothing is covered. From 768 px the same Button sits in the topbar and the bar is gone. Both open the same window (`SignInDialog`, `placement`).
+11. **Sign in, fixed on phones.** Below 768 px a full-width accent "Sign in" Button is pinned to the bottom edge (`MobileSignInBar`), above the page and under the cookie banner; the footer pads its bottom so nothing is covered. From 768 px the same Button sits in the topbar and the bar is gone. Both open the same window (`AuthDialog`; the buttons are `SignInButton`, `placement`). The bar is only for a visitor who is signed out: signed in, the topbar's round account button takes its place at every width.
 
 ### The loading window (built; the owner approved the designs on 2026-10-10)
 
@@ -120,9 +123,22 @@ Defined on 2026-10-10 for the waits that happen inside the platform. The first p
 
 A page names itself with `usePageTitle(title)`, reveals its blocks with `reveal`, and is checked with the audit tools at the widths in rule 2.
 
+## Sign-in, the session and calls to the backend
+
+Built on 2026-10-10 ([[F-001-authentication]]); it settles three of the open decisions at the end of this page.
+
+- **Calls to the backend.** One function, `api(path, schema, request)` in `lib/api.ts`. It sends the session cookies (`credentials: 'include'`), parses the answer with the schema it is given, and throws an `ApiFailure` with Core's error code for everything else. A component never calls `fetch` and never reads an answer that was not parsed. The backend's address is `VITE_BACKEND_URL`.
+- **No token in the page.** The session is two `HttpOnly` cookies the page cannot read. Nothing in `src/` stores, reads or sends a token, and nothing may start to ([[SECURITY-GUIDE]]). The only thing kept in `localStorage` is the flag `lf.session` (the character `1`), so a visitor who never signed in makes no request to the backend at all.
+- **The session** is `SessionProvider` and `useSession()` in `features/auth/session.tsx`: `status` (`loading`, `signedOut`, `signedIn`), `account`, and the actions (`requestCode`, `verifyCode`, `declareAge`, `signInWithGoogle`, `signOut`, `reload`). It is provided once, in `App.tsx`, above every page.
+- **The window** is opened through `AuthDialogProvider` in `features/auth/AuthDialog.tsx`, also provided once; anything opens it with `useAuthDialog().open()` (or `open('signUp')`). The window itself, with its fields, is `features/auth/AuthWindow.tsx`: its own chunk (12.7 KB compressed), downloaded the first time it is opened and fetched early when the pointer or the focus reaches a Sign in button, so the landing does not carry a form most visitors never see. It is a Cojeev Dialog with the scene on top and one step at a time: choose, identifier, code, age. Fields are Cojeev's Field, Input, InputOTP and Checkbox. Each step has one primary button, disabled until there is an answer (D-020); a step change is a 200 ms fade on `ENTER`; a failure is a sentence in the window (`role="alert"`), and the focus goes back to the field. Closing the window returns the focus to what opened it. The window opens by itself at the age step for an account that has not said its age.
+- **Errors are codes.** Core answers with a code; `useFailureText` in the window maps it to a sentence from `auth.errors` in the locale files. A new code needs its sentence in the three languages.
+- **Forms.** A form is a `<form noValidate>` whose submit handler checks the value and shows our own sentence; the browser's validation bubbles are not used (they are not ours to translate or style). The same rule is checked again by Core, which is the one that counts.
+- **Google** opens a small window on Core (`signInWithGoogle`); the page `/auth/callback` (`features/auth/AuthCallback.tsx`, outside the shell) tells the waiting page how it went over a `BroadcastChannel` and closes. When the browser refuses windows, the same trip happens in the tab.
+- **Looking at it.** `npm run audit:signin` walks every step in a real browser against the local stack, runs axe-core on each step and saves the screenshots ([[FRONTEND-TOOLKIT]]).
+
 ## Performance today
 
-Measured on 2026-10-09: about 289 KB of JavaScript, compressed, for the landing (React DOM 84, the app 131, Motion 49, i18n 17, router 7, the page 10) plus a lazy 77 KB chunk of icon data. React, Motion, the router and i18n are built into their own files so a deploy that changes only our code does not invalidate them in a returning visitor's cache. Re-measured on 2026-10-10 after the shared behaviors landed: the app chunk is 128 KB compressed (it was 131: the old page-loading orb is gone), the landing 10 KB, and the 404 page is its own 2 KB chunk loaded only on an unknown address; the lazy icon chunk is unchanged at 77 KB. Videos: the scene above the fold loads at once, the others download only their poster until the visitor scrolls near them (`LoopVideo`). No budget is set yet (open decision below); cache headers are in `frontend/vercel.json`.
+Measured on 2026-10-09: about 289 KB of JavaScript, compressed, for the landing (React DOM 84, the app 131, Motion 49, i18n 17, router 7, the page 10) plus a lazy 77 KB chunk of icon data. React, Motion, the router and i18n are built into their own files so a deploy that changes only our code does not invalidate them in a returning visitor's cache. Re-measured on 2026-10-10 after the shared behaviors landed: the app chunk is 128 KB compressed (it was 131: the old page-loading orb is gone), the landing 10 KB, and the 404 page is its own 2 KB chunk loaded only on an unknown address; the lazy icon chunk is unchanged at 77 KB. Videos: the scene above the fold loads at once, the others download only their poster until the visitor scrolls near them (`LoopVideo`). Re-measured on 2026-10-10 after sign-in was built: the app chunk is 137 KB compressed (the session, the one function that calls the backend and Zod's small build add 9 KB), the sign-in window is its own 12.7 KB chunk loaded on demand, and the page a Google sign-in returns to is 0.7 KB. No budget is set yet (open decision below); cache headers are in `frontend/vercel.json`.
 
 ## Analytics, consent and the 3D scenes
 
@@ -141,16 +157,16 @@ Plausible, Umami and Google Analytics 4 load only after the visitor accepts the 
 Not decided; do not guess them. Raise each with the owner when a feature needs it.
 
 - [ ] Routing beyond `/` and the 404 page, a real HTTP 404 status for unknown paths, and the rule for splitting code per route.
-- [ ] State management and server-state rules.
-- [ ] Data fetching, caching and error handling against the API contract ([[API-GUIDE]]); depends on the backend.
-- [ ] Forms and validation at the boundary.
-- [ ] Client security: content security policy, token and storage handling ([[SECURITY-GUIDE]]).
+- [ ] State management and server-state rules beyond the session (which is a context, above).
+- [ ] Caching of server data: nothing is cached today, and the first feature that lists data will need a rule.
+- [ ] Client security still open: a content security policy for the pages. Token and storage handling is settled above.
 - [ ] Performance budgets and bundle limits ([[PERFORMANCE-AND-SCALING]]).
 - [ ] The product's own icons: format, grid, review, registry (T-012).
 - [ ] Which surfaces are young-child surfaces and the age bands (T-013).
 
 ## Related
 
+- [[F-001-authentication]]
 - [[FRONTEND-TOOLKIT]]
 - [[DESIGN-SYSTEM]]
 - [[UI-LIBRARIES]]

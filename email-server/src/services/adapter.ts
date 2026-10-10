@@ -1,12 +1,13 @@
-// Engine adapter interface. The real engine (Postal/Maddy/Haraka/Stalwart —
-// decision OPEN) implements EmailAdapter; consumers of
-// POST /api/v1/send never change when it lands.
+// How a built email leaves the service. POST /api/v1/send builds the email (src/mail) and hands it
+// to one of these; which one is chosen by EMAIL_ENGINE (src/config.ts).
 
 export interface SendRequest {
   to: string;
   subject: string;
   html?: string;
   text?: string;
+  /** Extra headers, such as the one-click unsubscribe pair. */
+  headers?: Record<string, string>;
 }
 
 export interface SendResult {

@@ -1,0 +1,130 @@
+import { createHash } from 'node:crypto';
+import { Redis } from 'ioredis';
+import { RateLimiterMemory, RateLimiterRedis, RateLimiterRes, type RateLimiterAbstract } from 'rate-limiter-flexible';
+import type { Config } from '../config.js';
+import { ApiError } from '../lib/http.js';
+import { describeError, log, toError } from '../lib/log.js';
+
+/*
+ * Every counter that keeps sign-in from being abused. Numbers and reasons:
+ * docs/security/RATE-LIMITING-AND-ABUSE.md.
+ *
+ * A one-time code has six digits, so what protects it is the number of guesses allowed, not its
+ * length: five per code, and thirty a day per address, whoever is guessing and from wherever. The
+ * counters are shared (Redis) in production so that several instances of Core count together.
+ *
+ * Two behaviors when the counter store cannot be reached: a limit that only protects capacity lets
+ * the request through (`open`), a limit that protects an account refuses it (`closed`), because an
+ * unmetered guess is worse than a failed sign-in.
+ */
+type Spec = { points: number; seconds: number; onStoreFailure: 'open' | 'closed' };
+
+const SPECS = {
+  // Per visitor address.
+  ipGlobal: { points: 300, seconds: 15 * 60, onStoreFailure: 'open' },
+  ipCodeRequest: { points: 10, seconds: 15 * 60, onStoreFailure: 'closed' },
+  ipCodeVerify: { points: 30, seconds: 15 * 60, onStoreFailure: 'closed' },
+  ipSession: { points: 120, seconds: 15 * 60, onStoreFailure: 'open' },
+  ipAccount: { points: 30, seconds: 15 * 60, onStoreFailure: 'closed' },
+  // Per account identifier (the address a code goes to), from any visitor address.
+  codeCooldown: { points: 1, seconds: 60, onStoreFailure: 'closed' },
+  codeHourly: { points: 5, seconds: 60 * 60, onStoreFailure: 'closed' },
+  attemptsPerCode: { points: 5, seconds: 15 * 60, onStoreFailure: 'closed' },
+  attemptsDaily: { points: 30, seconds: 24 * 60 * 60, onStoreFailure: 'closed' },
+} as const satisfies Record<string, Spec>;
+
+export type LimitName = keyof typeof SPECS;
+
+/** Counter keys never hold an address or a username, only a digest of one. */
+export function keyFor(value: string): string {
+  return createHash('sha256').update(value, 'utf8').digest('hex').slice(0, 32);
+}
+
+export type Limits = Awaited<ReturnType<typeof createLimits>>;
+
+export async function createLimits(config: Config) {
+  let redis: Redis | undefined;
+
+  if (config.redisUrl) {
+    redis = new Redis(config.redisUrl, { enableOfflineQueue: false, maxRetriesPerRequest: 1, lazyConnect: true });
+    redis.on('error', (error) => log.warn('redis.error', describeError(error)));
+
+    try {
+      await redis.connect();
+    } catch (thrown) {
+      // Keep going: ioredis reconnects on its own, and each limit decides what an unreachable store means.
+      log.warn('redis.connect_failed', describeError(toError(thrown)));
+    }
+  }
+
+  const limiters = new Map<LimitName, RateLimiterAbstract>();
+
+  for (const [name, spec] of Object.entries(SPECS)) {
+    const options = { keyPrefix: `lf:core:${name}`, points: spec.points, duration: spec.seconds };
+
+    limiters.set(name as LimitName, redis ? new RateLimiterRedis({ ...options, storeClient: redis }) : new RateLimiterMemory(options));
+  }
+
+  const limiter = (name: LimitName): RateLimiterAbstract => {
+    const found = limiters.get(name);
+
+    if (!found) throw new Error(`unknown limit ${name}`);
+
+    return found;
+  };
+
+  /** What a counter threw: a refusal carries the wait; anything else means the store failed. */
+  function refusal(name: LimitName, thrown: unknown, code: 'RATE_LIMITED' | 'TOO_MANY_ATTEMPTS'): ApiError | null {
+    if (thrown instanceof RateLimiterRes) return new ApiError(code, Math.max(1, Math.ceil(thrown.msBeforeNext / 1000)));
+
+    log.error('limits.store_failed', { limit: name, ...describeError(toError(thrown)) });
+
+    return SPECS[name].onStoreFailure === 'closed' ? new ApiError('UNAVAILABLE') : null;
+  }
+
+  return {
+    /** Takes one point, or throws the error to answer with. */
+    async consume(name: LimitName, key: string, code: 'RATE_LIMITED' | 'TOO_MANY_ATTEMPTS' = 'RATE_LIMITED'): Promise<void> {
+      try {
+        await limiter(name).consume(key);
+      } catch (thrown) {
+        const error = refusal(name, thrown, code);
+
+        if (error) throw error;
+      }
+    },
+
+    /** Takes one point and says whether it was allowed, for a limit the caller must not be told about. */
+    async allow(name: LimitName, key: string): Promise<boolean> {
+      try {
+        await limiter(name).consume(key);
+
+        return true;
+      } catch (thrown) {
+        return refusal(name, thrown, 'RATE_LIMITED') === null;
+      }
+    },
+
+    /** Gives one point back (a correct code is not a failed attempt). Best effort. */
+    async refund(name: LimitName, key: string): Promise<void> {
+      try {
+        await limiter(name).reward(key);
+      } catch (thrown) {
+        log.warn('limits.refund_failed', { limit: name, ...describeError(toError(thrown)) });
+      }
+    },
+
+    /** Forgets a counter (a new code starts with a clean set of attempts). Best effort. */
+    async reset(name: LimitName, key: string): Promise<void> {
+      try {
+        await limiter(name).delete(key);
+      } catch (thrown) {
+        log.warn('limits.reset_failed', { limit: name, ...describeError(toError(thrown)) });
+      }
+    },
+
+    async close(): Promise<void> {
+      if (redis) await redis.quit().catch(() => undefined);
+    },
+  };
+}

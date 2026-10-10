@@ -3,22 +3,13 @@ import express from 'express';
 import { z } from 'zod';
 import { NoopAdapter, type EmailAdapter } from './services/adapter.js';
 import { getEmailLogs, getEmailSummary, recordDelivery, recordEmail } from './services/emailLog.js';
+import { renderEmail, SendBody } from './mail/templates.js';
 
 export const SERVICE = 'email-server';
 export const VERSION = '0.2.0';
 
 /** Fixed-width (32-byte) digest, so timingSafeEqual can never length-mismatch. */
 const digest = (v: string): Buffer => crypto.createHash('sha256').update(v, 'utf8').digest();
-
-const SendBody = z.object({
-  to: z.string().email(),
-  subject: z.string().min(1),
-  html: z.string().optional(),
-  text: z.string().optional(),
-  templateType: z.string().optional(),
-  locale: z.string().optional(),
-  userId: z.string().uuid().optional(),
-});
 
 const LogsQuery = z.object({
   limit: z.coerce.number().int().min(1).max(200).default(50),
@@ -33,8 +24,9 @@ const LogsSummaryQuery = z.object({
 });
 
 /*
- * What the Haraka SMTP plugin reports for mail it relayed (GoTrue auth mail).
- * `to` is NOT z.string().email() here on purpose: this records what the relay
+ * What the Haraka SMTP plugin reports for mail it relayed: our own emails once
+ * Amazon SES accepted them, and anything another internal service submitted
+ * over SMTP. `to` is NOT z.string().email() here on purpose: this records what the relay
  * actually accepted, and refusing to log an address the SMTP layer already
  * delivered to would put a hole in the audit trail.
  */
@@ -49,7 +41,12 @@ const DeliveryBody = z.object({
   detail: z.record(z.string(), z.unknown()).default({}),
 });
 
-export function createApp(adapter: EmailAdapter = new NoopAdapter()): express.Express {
+/*
+ * POST /api/v1/send takes the name of an email, a language and the few values that email needs
+ * (src/mail/templates.ts). A caller cannot send words or HTML of its own: whoever holds the internal
+ * key can ask for one of our emails and nothing else.
+ */
+export function createApp(adapter: EmailAdapter = new NoopAdapter(), options: { siteUrl: string } = { siteUrl: 'https://littlefounders.ai' }): express.Express {
   const app = express();
   app.use(express.json());
 
@@ -82,9 +79,11 @@ export function createApp(adapter: EmailAdapter = new NoopAdapter()): express.Ex
       });
       return;
     }
-    const result = await adapter.send(parsed.data);
-    await recordEmail(result, parsed.data, {
-      templateType: parsed.data.templateType,
+    const email = renderEmail(parsed.data, options);
+    const request = { to: parsed.data.to, subject: email.subject, html: email.html, text: email.text, headers: email.headers };
+    const result = await adapter.send(request);
+    await recordEmail(result, request, {
+      templateType: parsed.data.template,
       locale: parsed.data.locale,
       userId: parsed.data.userId,
     });
@@ -94,8 +93,9 @@ export function createApp(adapter: EmailAdapter = new NoopAdapter()): express.Ex
   /*
    * Delivery capture for the SMTP path. Called by the Haraka plugin
    * (haraka/plugins/log_delivery.js) once a message has been successfully
-   * relayed to SES, so GoTrue's auth mail — which never touches POST /send —
-   * still lands in the delivery history.
+   * relayed to SES. For an email this service built, that turns its `queued`
+   * line into `relayed`; mail another service submitted over SMTP gets a line
+   * of its own.
    */
   app.post('/api/v1/logs', async (req, res) => {
     const parsed = DeliveryBody.safeParse(req.body);

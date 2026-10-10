@@ -4,8 +4,10 @@ import { z } from 'zod';
  * Env is validated once at boot — the service
  * crashes on invalid config, never at request time.
  *
- * Courier runs one of two engines:
+ * Courier runs one of three engines:
  *   - 'noop'   — logs and reports queued; used in dev/test with no real SMTP.
+ *   - 'smtp'   — submits to the SMTP server at SMTP_HOST:SMTP_PORT and nothing
+ *                else: the local mail catcher, to read the emails in development.
  *   - 'haraka' — boots the Haraka SMTP engine (email-server/haraka) which
  *                relays outbound to Amazon SES. Requires the SES_* credentials.
  *
@@ -26,7 +28,14 @@ const Env = z.object({
   MAIL_FROM: z.string().min(3).default('LittleFounders <noreply@littlefounders.ai>'),
 
   // Which engine to boot. Left optional; resolved per NODE_ENV below.
-  EMAIL_ENGINE: z.enum(['noop', 'haraka']).optional(),
+  EMAIL_ENGINE: z.enum(['noop', 'smtp', 'haraka']).optional(),
+
+  // The site's own address: the emails take their images and typeface from it and link to it.
+  FRONTEND_URL: z.url().default('https://littlefounders.ai'),
+
+  // Engine 'smtp' only: the local mail catcher (database/scripts/local-stack.sh starts one).
+  SMTP_HOST: z.string().min(1).default('127.0.0.1'),
+  SMTP_PORT: z.coerce.number().int().positive().default(1025),
 
   // Haraka: where the co-located HTTP adapter submits mail (localhost listener),
   // and the HELO/hostname Haraka announces. The private submission port (587)
@@ -50,7 +59,7 @@ const Env = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(20).optional(),
 });
 
-export type EmailEngine = 'noop' | 'haraka';
+export type EmailEngine = 'noop' | 'smtp' | 'haraka';
 
 export type Config = Readonly<{
   NODE_ENV: 'development' | 'test' | 'production';
@@ -58,6 +67,9 @@ export type Config = Readonly<{
   INTERNAL_API_KEY: string;
   MAIL_FROM: string;
   EMAIL_ENGINE: EmailEngine;
+  FRONTEND_URL: string;
+  SMTP_HOST: string;
+  SMTP_PORT: number;
   HARAKA_LOCAL_HOST: string;
   HARAKA_LOCAL_PORT: number;
   HARAKA_HOSTNAME: string;

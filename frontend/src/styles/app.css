@@ -23,6 +23,12 @@
 @import "@/styles/cojeev/card.css";
 @import "@/styles/cojeev/skeleton.css";
 @import "@/styles/cojeev/breadcrumb.css";
+@import "@/styles/cojeev/input.css";
+@import "@/styles/cojeev/input-otp.css";
+@import "@/styles/cojeev/checkbox.css";
+@import "@/styles/cojeev/choice-foundations.css";
+@import "@/styles/cojeev/label.css";
+@import "@/styles/cojeev/field.css";
 @import "@/styles/lf-theme.css";
 
 @custom-variant dark (&:is(.dark *));

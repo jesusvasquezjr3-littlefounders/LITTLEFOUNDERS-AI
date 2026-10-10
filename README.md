@@ -8,14 +8,14 @@ LittleFounders helps children and teenagers learn about money.
 
 | Piece | State |
 |---|---|
-| `frontend/` | The landing page (hero, the problem, the four skills, what stays true, the closing ask) inside a shell with header and black footer, built on React 19, Tailwind CSS v4 and seven UI libraries, with the three locales (`en-US`, `es-MX`, `pt-BR`), light/dark theme, the brand tokens and consent-gated Plausible, Umami and Google Analytics 4. Its calls to action do nothing yet. How to work on it: `docs/engineering/FRONTEND-GUIDE.md` and `FRONTEND-TOOLKIT.md`. |
-| `database/` | Only the pinned Supabase release (`SUPABASE_VERSION`), the Railway images for the database and gateway, and local-stack scripts. There is no schema: `database/migrations/` is empty. |
-| `backend/` | Empty, reserved for the new backend. |
-| `email-server/` | Courier, the outgoing mail service, restored from the previous version because it worked in production (D-014): a small HTTP API plus a Haraka SMTP relay to Amazon SES. It sends the authentication mail Supabase hands it over SMTP. Templates for that mail are not restored yet (T-021). |
+| `frontend/` | The landing page (hero, the problem, the four skills, what stays true, the closing ask) inside a shell with header and black footer, built on React 19, Tailwind CSS v4 and seven UI libraries, with the three locales (`en-US`, `es-MX`, `pt-BR`), light/dark theme, the brand tokens and consent-gated Plausible, Umami and Google Analytics 4. The sign-in window works against the backend (a code by email or Google, then the age step); the landing's own calls to action do nothing yet. How to work on it: `docs/engineering/FRONTEND-GUIDE.md` and `FRONTEND-TOOLKIT.md`. |
+| `database/` | The pinned Supabase release (`SUPABASE_VERSION`), the Railway images for the database and the gateway (closed to everything but the backend's key), local-stack scripts with a mail catcher, and the migrations: profiles, user types, the age record and the audit trail (`migrations/0001_identity.sql`), then what the emails need (`0002_email.sql`). |
+| `backend/` | Core, the only server the browser calls: sign-in without passwords, sessions in cookies the page cannot read, the account's age and username, and staff grants of user types. Node 24, TypeScript, Express and Zod. Design and security review: `docs/features/F-001-authentication.md`. |
+| `email-server/` | Courier, the outgoing mail service, restored from the previous version because it worked in production (D-014): a small HTTP API plus a Haraka SMTP relay to Amazon SES. It builds every email from its own templates, in three languages (`src/mail/`; `npm run preview` writes them all to look at), for a caller that names one. Design and how an email is sent: `docs/features/F-002-emails.md`. |
 | `pulse/` | Observability, kept as is: Plausible CE, ClickHouse, PostgreSQL, Umami and Uptime Kuma, each a pinned upstream image. |
 | 3D characters | Four Mentor models: `glb/` holds the sources and `frontend/public/scenes/` the optimized scenes, both tracked with Git LFS (about 180 MB). Install Git LFS before cloning. |
 
-Nothing else exists: no API, no accounts, no lessons, no tutor, no media services. The previous version's other services (Core, Oracle, Forge, Echo, Prism, Depot, Guardian, Data Intel) may still be running in production; they have no code in this repo.
+Nothing else exists: no lessons, no tutor, no media services, and none of the above is deployed (production still runs the previous version). The previous version's other services (Core, Oracle, Forge, Echo, Prism, Depot, Guardian, Data Intel) may still be running in production; they have no code in this repo.
 
 ## Run it
 
@@ -27,9 +27,11 @@ npm run dev          # http://localhost:5173
 npm run type-check && npm run lint && npm run build
 ```
 
-Mail service, from `email-server/`: `npm ci`, `npm run dev` (port 4005, engine `noop` unless `EMAIL_ENGINE=haraka`), then the same three checks. It reads `email-server/.env` (not tracked; `.env.example` lists every variable).
+Backend, from `backend/`: `npm install`, `npm run dev` (port 4000), then `npm run type-check && npm run lint && npm run build`. It reads `backend/.env` (not tracked; `.env.example` lists every variable, under the names production already uses). To run sign-in end to end locally, with the database stack and the mail catcher, follow "Running sign-in locally" in `docs/operations/ENVIRONMENT-SETUP.md`.
 
-Database stack (Docker Desktop must be running), from `database/`: `npm run db:sync` fetches the pinned Supabase release, then `db:up`, `db:down`, `db:nuke`, `db:reset`, `db:status`. `db:nuke` deletes all local volumes.
+Mail service, from `email-server/`: `npm ci`, `npm run dev` (port 4005; `EMAIL_ENGINE` is `noop`, `smtp` for the local mail catcher, or `haraka`), then the same three checks. It reads `email-server/.env` (not tracked; `.env.example` lists every variable).
+
+Database stack (Docker Desktop must be running), from `database/`: `npm run db:sync` fetches the pinned Supabase release, then `db:up`, `db:migrate`, `db:down`, `db:nuke`, `db:reset`, `db:status`. `db:nuke` and `db:reset` delete all local data. The mail the stack sends locally (the one-time codes) is caught at `http://localhost:8025`.
 
 `bash scripts/check-secrets.sh` scans tracked files for committed credentials.
 

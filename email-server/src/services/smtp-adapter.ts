@@ -7,6 +7,8 @@ import type { EmailAdapter, SendRequest, SendResult } from './adapter.js';
  * relaying and forwards it to Amazon SES over TLS + SMTP AUTH. The internal hop
  * is intentionally plaintext-on-loopback; the sensitive hop (Haraka -> SES) is
  * encrypted.
+ *
+ * With EMAIL_ENGINE=smtp the same adapter submits to a local mail catcher instead (development).
  */
 export interface SmtpAdapterOptions {
   host: string;
@@ -40,7 +42,9 @@ export class SmtpAdapter implements EmailAdapter {
       subject: req.subject,
       html: req.html,
       text: req.text,
+      headers: req.headers,
     });
-    return { id: info.messageId, status: 'queued' };
+    // The bare id, without the angle brackets: the same form the SMTP capture reports it in.
+    return { id: info.messageId.replace(/^<|>$/g, ''), status: 'queued' };
   }
 }

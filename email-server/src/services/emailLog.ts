@@ -1,17 +1,16 @@
 import type { SendRequest, SendResult } from './adapter.js';
-import { insertEmailLog, isVaultConfigured, listEmailLogs, summarizeEmailLogs } from '../db/emailLogsRepo.js';
+import { insertEmailLog, isVaultConfigured, listEmailLogs, summarizeEmailLogs, updateEmailLogStatus } from '../db/emailLogsRepo.js';
 
 /*
  * Courier's delivery history.
  *
  * Two writers, one store:
- *   - POST /api/v1/send      — mail we dispatch ourselves (templateType from
- *                              the caller, defaults to 'transactional').
- *   - POST /api/v1/logs      — mail captured by the Haraka SMTP plugin, i.e.
- *                              GoTrue auth mail (confirmation / recovery /
- *                              magic-link / invite / email-change), which
- *                              reaches the relay over SMTP and never touches
- *                              our HTTP API.
+ *   - POST /api/v1/send      — an email this service built: one line, `queued`,
+ *                              with the template, the language and the account.
+ *   - POST /api/v1/logs      — the Haraka SMTP plugin, once Amazon SES accepted
+ *                              a message. For an email of ours that turns its
+ *                              line into `relayed`; mail another internal
+ *                              service submitted over SMTP gets its own line.
  *
  * Reads prefer the durable `email_logs` table. The in-process ring
  * buffer is used only when Vault is unconfigured (dev/test); a configured
@@ -89,6 +88,15 @@ function remember(entry: EmailLogEntry): void {
  * and a Vault outage degrades to buffer-only, exactly as without the table.
  */
 export async function recordDelivery(input: DeliveryRecord): Promise<void> {
+  // The relay reporting on an email that already has its line: update that line, do not add one.
+  if (input.detail?.source === 'smtp') {
+    const status = input.status ?? 'relayed';
+    const known = entries.find((entry) => entry.messageId === input.messageId);
+
+    if (known) known.status = status;
+    if (await updateEmailLogStatus(input.messageId, status) || known) return;
+  }
+
   const entry: EmailLogEntry = {
     id: input.messageId,
     messageId: input.messageId,

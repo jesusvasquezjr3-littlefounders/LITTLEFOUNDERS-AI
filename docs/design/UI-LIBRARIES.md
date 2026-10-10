@@ -33,7 +33,7 @@ Names the only building blocks of the interface, so no agent reaches for another
 | Library | Role | Arrives as | Where it is used now |
 |---|---|---|---|
 | Motion | All animation | npm `motion`, import from `motion/react` | Hero and section reveals, the cookie banner, `MotionConfig reducedMotion="user"` in `App.tsx`; Cojeev and Bklit are built on it |
-| 000h by Cojeev | General components | shadcn registry `@cojeev` | Button, Sheet, Dialog, Dropdown menu, Badge, Alert, Skeleton and Breadcrumb (`src/components/ui/`; Card came with them as a dependency). The Dialog close button is not used (it has a fixed English label); the sign-in window uses its own close button with a locale string |
+| 000h by Cojeev | General components | shadcn registry `@cojeev` | Button, Sheet, Dialog, Dropdown menu, Badge, Alert, Skeleton and Breadcrumb, and for the sign-in window Input, Input OTP, Checkbox, Field and Label (`src/components/ui/`; Card came with them as a dependency, and `input-otp` and `@radix-ui/react-checkbox` as packages). The Dialog close button is not used (it has a fixed English label); the sign-in window uses its own close button with a locale string |
 | Bklit UI | Charts | shadcn registry `@bklit` | Ring chart for the "4 in 10" figure (`src/components/charts/`) |
 | Sileo | Toasts | npm `sileo` + `sileo/styles.css` | Cookie choice confirmation; `<Toaster>` in `App.tsx` |
 | Morphicons | Icons that change state | npm `morphicons` + `lucide` icon data | Sun/moon theme toggle |
@@ -121,7 +121,7 @@ Re-run this audit when a component is added, using a script like the one describ
 |---|---|
 | Any animation, transition, scroll or gesture | Motion |
 | Button, sheet, menu, badge, alert, any general component | Cojeev |
-| A rich interaction Cojeev lacks (OTP, slide to confirm, dropzone) | Bencho block, adapted |
+| A rich interaction Cojeev lacks (slide to confirm, dropzone) | Bencho block, adapted. The one-time code field is Cojeev's `input-otp`, so no Bencho block was needed for it |
 | Chart, gauge, ring, heatmap | Bklit UI |
 | A message that fades | Sileo |
 | An icon that changes state | Morphicons |

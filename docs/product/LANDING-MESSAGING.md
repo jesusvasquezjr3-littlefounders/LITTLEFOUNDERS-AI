@@ -1,7 +1,7 @@
 ---
 title: Landing messaging
 status: draft
-updated: 2026-10-09
+updated: 2026-10-10
 ---
 
 # Landing messaging
@@ -24,7 +24,7 @@ Keeps the landing's words consistent across sessions and languages, and records 
 
 | Observation | What the landing does now |
 |---|---|
-| The headline did not say whose financial future it was. A parent should read it as theirs, and the message must be "hyper clear" about who it is for. | The headline speaks to the parent: "Let your kids practice money before it's real." The first sentence under it names the ages, 12 to 18 (D-013 in [[DECISIONS]]). |
+| The headline did not say whose financial future it was. A parent should read it as theirs, and the message must be "hyper clear" about who it is for. | The headline speaks to the parent: "Let your kids practice money before it's real." The first sentence under it names the ages, 13 to 18 (D-027 in [[DECISIONS]]). |
 | "Practice field" sounds like soccer. "Playground" brings parents and kids to mind quickly, and a playground gives kids a sense of ownership and accountability. | "Playground" is in the hero's lead (es-MX "un espacio para jugar y aprender", pt-BR "playground"); "practice field" is gone. |
 | Attention lasts about ten seconds. The page must be crystal clear in that time. | The hero answers who (your kids), what (practice money before it's real) and what it is not (real money) with one headline, one sentence and two buttons. |
 | The four patterns parents ask for belong on the home page: money habits, saving, staying out of debt, entrepreneurship. | A section of four numbered steps, in that order, each with the age it opens (see below). |
@@ -39,8 +39,8 @@ Keeps the landing's words consistent across sessions and languages, and records 
 1. **Hero.** Who it is for, the promise, no real money, two calls to action (parent, and "I just want to learn" for older kids). The 3D Mentors stay.
 2. **The evidence.** "By age 7, money habits are already forming" (University of Cambridge, 2013) and the share of adults in the visitor's own country who do not understand money basics (S&P Global FinLit Survey, 2014), each language with its own country's figure. The 3D dinosaurs stay.
 3. **The path.** Four skills, one step at a time:
-   1. Money habits, from age 12
-   2. Saving, from age 12
+   1. Money habits, from age 13
+   2. Saving, from age 13
    3. Staying out of debt, from age 15
    4. Starting a business, from age 17
 4. **What stays true.** No real money, ever; their decisions, their results.
@@ -48,7 +48,7 @@ Keeps the landing's words consistent across sessions and languages, and records 
 
 ## Assumptions to validate
 
-- **The age ranges.** The advisor sketched the order from his own story and said which ages make sense is for the owner to say after talking to parents; he also mentioned the segments 6 to 12, 12 to 15 and 16 to 18 for analysis. On 2026-10-09 the owner set the platform for ages 12 to 18 (D-013), so the page says "From age 12, 12, 15, 17"; the 6 to 12 segment is out of scope until the process for younger children is designed. Change it in the locale files once parents answer.
+- **The age ranges.** The advisor sketched the order from his own story and said which ages make sense is for the owner to say after talking to parents; he also mentioned the segments 6 to 12, 12 to 15 and 16 to 18 for analysis. On 2026-10-10 the owner set the platform for ages 13 and over (D-027, after 12 to 18 the day before), so the page says "ages 13 to 18" and "From age 13, 13, 15, 17"; children from 6 can still sign up (D-025), but the page does not address them. Change it in the locale files once parents answer.
 - **"Playground".** It is the advisor's word, tested on one person. The advisor offered to help test exact words with parents.
 - **Free to start and the Mentor.** The previous search description promised both. Neither is promised now, because pricing is not decided and the Mentor is not part of what the page explains yet.
 

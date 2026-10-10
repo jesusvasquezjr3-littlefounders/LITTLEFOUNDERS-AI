@@ -162,19 +162,19 @@ export const PAGES = [
       'en-US': {
         title: 'A playground where kids and teens practice money | LittleFounders',
         description:
-          'A playground for ages 12 to 18 to practice money habits, saving, staying out of debt and starting a business, with no real money.',
+          'A playground for ages 13 to 18 to practice money habits, saving, staying out of debt and starting a business, with no real money.',
         h1: "Let your kids practice money before it's real.",
       },
       'es-MX': {
         title: 'Un espacio donde niños y jóvenes practican con el dinero | LittleFounders',
         description:
-          'Un espacio para que niños y jóvenes de 12 a 18 años practiquen hábitos con el dinero, ahorro, evitar deudas y emprender, sin dinero real.',
+          'Un espacio para que niños y jóvenes de 13 a 18 años practiquen hábitos con el dinero, ahorro, evitar deudas y emprender, sin dinero real.',
         h1: 'Que tus hijos practiquen con el dinero antes de que sea real.',
       },
       'pt-BR': {
         title: 'Um playground onde crianças e jovens praticam com dinheiro | LittleFounders',
         description:
-          'Um playground para quem tem de 12 a 18 anos praticar hábitos com dinheiro, poupança, evitar dívidas e empreender, sem dinheiro de verdade.',
+          'Um playground para quem tem de 13 a 18 anos praticar hábitos com dinheiro, poupança, evitar dívidas e empreender, sem dinheiro de verdade.',
         h1: 'Deixe seus filhos praticarem com dinheiro antes de ser de verdade.',
       },
     },

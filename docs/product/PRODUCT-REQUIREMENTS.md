@@ -33,7 +33,8 @@ Agents and humans read this to know what to build and, just as important, what n
 ## Current state
 
 - The product was restarted from zero on 2026-10-09. Only the landing page (hero and problem sections) exists; its calls to action do nothing yet.
-- The owner set the first product principles on 2026-10-10 after the reference mapping was read: mistakes are never punished, one primary button per screen, value before data, rewards one idea per screen, no commercial pressure and a free layer for everything, Seeds as the currency, self-declared permission at sign-up, and finance content later. They are recorded one by one in [[DECISIONS]] (D-018 to D-026). No feature is defined yet.
+- The owner set the first product principles on 2026-10-10 after the reference mapping was read: mistakes are never punished, one primary button per screen, value before data, rewards one idea per screen, no commercial pressure and a free layer for everything, Seeds as the currency, self-declared permission at sign-up, finance content later, and an audience of 13 and over. They are recorded one by one in [[DECISIONS]] (D-018 to D-027).
+- The first feature is built and not deployed: sign-in without passwords (a code by email, or Google), the age step and the five user types ([[F-001-authentication]], D-028 to D-031). The emails that carry the code and the onboarding come next, in that order, by the owner's decision.
 
 ## Related
 

@@ -1,7 +1,7 @@
 ---
 title: Technical requirements
 status: scaffold
-updated: 2026-10-09
+updated: 2026-10-10
 ---
 
 # Technical requirements
@@ -24,6 +24,12 @@ A product requirement says what a feature does; a technical requirements documen
 - [ ] The index of TRDs: feature ID, title, status, link.
 - [ ] The rule for when a TRD is required, and who accepts it.
 - [ ] How a TRD references its product requirement, flows, data model, endpoints and tasks.
+
+## Current state
+
+| ID | Title | Status |
+|---|---|---|
+| F-001 | [[F-001-authentication]]: sign-in, sign-up and user types | draft, built, not deployed |
 
 ## Related
 

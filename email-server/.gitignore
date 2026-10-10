@@ -11,3 +11,6 @@ haraka/config/tls_key.pem
 haraka/config/tls_cert.pem
 haraka/queue/
 haraka/*.pid
+
+# Written by `npm run preview` to look at the emails.
+preview/
