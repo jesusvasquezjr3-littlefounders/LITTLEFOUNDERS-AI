@@ -27,7 +27,12 @@
     658,
     646
    ],
-   "range": 13
+   "range": 13,
+   "side": -1,
+   "pupil": [
+    "iris-l",
+    "pupil-l"
+   ]
   },
   {
    "parts": [
@@ -49,7 +54,12 @@
     958,
     646
    ],
-   "range": 13
+   "range": 13,
+   "side": 1,
+   "pupil": [
+    "iris-r",
+    "pupil-r"
+   ]
   }
  ],
  "brows": [
@@ -71,13 +81,6 @@
   }
  ],
  "face": [
-  {
-   "parts": [
-    "nostril-l",
-    "nostril-r"
-   ],
-   "depth": 1.2
-  },
   {
    "parts": [
     "cheek-l",
@@ -118,7 +121,9 @@
   "open": {
    "sx": 1.0,
    "sy": 1.15
-  }
+  },
+  "halfWidth": 110,
+  "reach": 54
  },
  "cheeks": [
   "cheek-l",
@@ -142,5 +147,21 @@
   "pendant",
   "pendant-core",
   "shoulders"
- ]
+ ],
+ "nose": {
+  "parts": [],
+  "lines": [
+   "nose-wrinkle-l",
+   "nose-wrinkle-r"
+  ],
+  "flare": [
+   "nostril-l",
+   "nostril-r"
+  ],
+  "center": [
+   808,
+   758
+  ]
+ },
+ "gain": 1.7
 }

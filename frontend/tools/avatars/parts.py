@@ -227,6 +227,7 @@ def ring_of(piece_id):
 
 CLIPS = {}
 BLUR = {}
+MIRRORED = {l["mirror_of"] for l in spec["layers"] if "mirror_of" in l}
 
 
 def add(name, markup, bbox=None):
@@ -238,7 +239,11 @@ def add(name, markup, bbox=None):
         cid = f"clip-{name}"
         defs.append(f'<clipPath id="{cid}"><use href="#p-{clip}"/></clipPath>')
         markup = f'<g clip-path="url(#{cid})">{markup}</g>'
-    body.append(f'<g id="{name}">{markup}</g>')
+    if name in MIRRORED:
+        # a mirrored part is drawn once; the mirror references the art, not the group, so the rig can move each side alone
+        body.append(f'<g id="{name}"><g id="{name}-art">{markup}</g></g>')
+    else:
+        body.append(f'<g id="{name}">{markup}</g>')
 
 
 def blur_filter(sigma):
@@ -294,7 +299,7 @@ for layer in spec["layers"]:
         CLIPS[name] = layer["clip_to"]
 
     if "mirror_of" in layer:
-        add(name, f'<use href="#{layer["mirror_of"]}" transform="translate({2 * axis:.1f} 0) scale(-1 1)"/>')
+        add(name, f'<use href="#{layer["mirror_of"]}-art" transform="translate({2 * axis:.1f} 0) scale(-1 1)"/>')
         continue
 
     ids = list(layer.get("pieces", []))

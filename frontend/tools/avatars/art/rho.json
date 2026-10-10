@@ -352,6 +352,18 @@
       "opacity": 0.7
     },
     {
+      "name": "nose-wrinkle-l",
+      "kind": "path",
+      "d": "M606 888 Q630 900 640 918 M598 906 Q620 916 630 936",
+      "stroke": "#b45a3c",
+      "width": 7,
+      "opacity": 0
+    },
+    {
+      "name": "nose-wrinkle-r",
+      "mirror_of": "nose-wrinkle-l"
+    },
+    {
       "name": "nose-shadow",
       "kind": "ellipse",
       "cx": 660,
@@ -506,7 +518,12 @@
           465,
           847
         ],
-        "range": 20
+        "range": 20,
+        "side": -1,
+        "pupil": [
+          "iris-l",
+          "pupil-l"
+        ]
       },
       {
         "parts": [
@@ -526,7 +543,12 @@
           855,
           847
         ],
-        "range": 20
+        "range": 20,
+        "side": 1,
+        "pupil": [
+          "iris-r",
+          "pupil-r"
+        ]
       }
     ],
     "brows": [
@@ -548,14 +570,6 @@
       }
     ],
     "face": [
-      {
-        "parts": [
-          "nose",
-          "nose-light",
-          "nose-shadow"
-        ],
-        "depth": 1.25
-      },
       {
         "parts": [
           "glasses",
@@ -603,10 +617,16 @@
         "sx": 1.15,
         "sy": 1.5
       },
-      "lift": {
-        "part": "mustache",
-        "dy": -14
-      }
+      "halfWidth": 66,
+      "reach": 20,
+      "follow": [
+        {
+          "part": "mustache",
+          "open": -14,
+          "smile": -11,
+          "stretch": 0.05
+        }
+      ]
     },
     "cheeks": [
       "cheek-l",
@@ -634,6 +654,23 @@
       "tie",
       "pin",
       "pin-core"
-    ]
+    ],
+    "nose": {
+      "parts": [
+        "nose",
+        "nose-light",
+        "nose-shadow"
+      ],
+      "lines": [
+        "nose-wrinkle-l",
+        "nose-wrinkle-r"
+      ],
+      "flare": [],
+      "center": [
+        660,
+        962
+      ]
+    },
+    "gain": 1.0
   }
 }

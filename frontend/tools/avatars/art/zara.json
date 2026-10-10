@@ -353,6 +353,18 @@
       "mirror_of": "nostril-l"
     },
     {
+      "name": "nose-wrinkle-l",
+      "kind": "path",
+      "d": "M782 686 Q796 698 800 716 M774 700 Q788 710 792 726",
+      "stroke": "#df977a",
+      "width": 4.5,
+      "opacity": 0
+    },
+    {
+      "name": "nose-wrinkle-r",
+      "mirror_of": "nose-wrinkle-l"
+    },
+    {
       "name": "mouth",
       "kind": "path",
       "d": "M703 788 C743 812 783 818 808 818 C833 818 873 812 913 790 C901 840 863 872 808 884 C755 872 717 840 703 788 Z",
@@ -418,7 +430,12 @@
           658,
           646
         ],
-        "range": 13
+        "range": 13,
+        "side": -1,
+        "pupil": [
+          "iris-l",
+          "pupil-l"
+        ]
       },
       {
         "parts": [
@@ -440,7 +457,12 @@
           958,
           646
         ],
-        "range": 13
+        "range": 13,
+        "side": 1,
+        "pupil": [
+          "iris-r",
+          "pupil-r"
+        ]
       }
     ],
     "brows": [
@@ -462,13 +484,6 @@
       }
     ],
     "face": [
-      {
-        "parts": [
-          "nostril-l",
-          "nostril-r"
-        ],
-        "depth": 1.2
-      },
       {
         "parts": [
           "cheek-l",
@@ -509,7 +524,9 @@
       "open": {
         "sx": 1.0,
         "sy": 1.15
-      }
+      },
+      "halfWidth": 110,
+      "reach": 54
     },
     "cheeks": [
       "cheek-l",
@@ -533,6 +550,22 @@
       "pendant",
       "pendant-core",
       "shoulders"
-    ]
+    ],
+    "nose": {
+      "parts": [],
+      "lines": [
+        "nose-wrinkle-l",
+        "nose-wrinkle-r"
+      ],
+      "flare": [
+        "nostril-l",
+        "nostril-r"
+      ],
+      "center": [
+        808,
+        758
+      ]
+    },
+    "gain": 1.7
   }
 }

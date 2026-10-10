@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { Avatar, type AvatarHandle, type Character, type Gaze } from './Avatar';
-import { EXPRESSION_NAMES, type ExpressionName } from './expressions';
+import { EXPRESSION_NAMES, GESTURE_NAMES, type ExpressionName } from './expressions';
 
 /*
  * A development page for looking at the avatars alive: `/dev/avatars`, only in the dev server (App.tsx does not mount
@@ -32,8 +32,7 @@ export default function DevAvatars() {
       {(['cursor', 'idle', 'fixed'] as const).map((value) => <button key={value} type="button" data-gaze={value} className={`min-h-12 rounded-full border px-4 ${mode === value ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : ''}`} onClick={() => setMode(value)}>{value}</button>)}
       <span className="mx-2" />
       {(['en', 'es', 'pt'] as const).map((key) => <button key={key} type="button" data-speak={key} className="min-h-12 rounded-full border px-4" onClick={() => all((handle) => void handle.speak(PHRASES[key]))}>speak {key}</button>)}
-      <button type="button" data-react="nod" className="min-h-12 rounded-full border px-4" onClick={() => all((handle) => handle.react('nod'))}>nod</button>
-      <button type="button" data-react="wiggle" className="min-h-12 rounded-full border px-4" onClick={() => all((handle) => handle.react('wiggle'))}>wiggle</button>
+      {GESTURE_NAMES.map((name) => <button key={name} type="button" data-react={name} className="min-h-12 rounded-full border px-4" onClick={() => all((handle) => handle.react(name))}>{name}</button>)}
     </div>
     <div className="mb-4 flex items-center gap-4">
       <label className="flex items-center gap-2">x<input type="range" min={-1} max={1} step={0.05} value={look.x} data-look="x" onChange={(event) => setLook({ ...look, x: Number(event.target.value) })} /></label>

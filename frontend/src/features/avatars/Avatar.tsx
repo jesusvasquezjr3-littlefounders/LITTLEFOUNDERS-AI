@@ -1,21 +1,24 @@
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { EXPRESSIONS, type ExpressionName } from './expressions';
+import { EXPRESSIONS, GESTURES, type ExpressionName, type GestureName } from './expressions';
 import { AvatarRig, NEUTRAL_FRAME, type Frame, type RigSpec } from './rig';
 import { VISEMES, speechLength, visemesFromText, type VisemeEvent } from './visemes';
 
 /*
  * A character avatar: the head and shoulders of Rho, Zara, Liruf or Dina drawn as a light 2D vector, alive but cheap.
- * It blinks, breathes, follows the pointer with its eyes and a small head turn, holds an expression, and moves its
- * mouth when it speaks. No 3D, no video, no network after its own small file loads (about 5 to 13 KB).
+ * It blinks, breathes, glances around, follows the pointer with its eyes and a turn of the head, holds one of nineteen
+ * expressions (the brows, lids, nose, mouth corners and cheeks each move), reacts with gestures (a nod, a shake, a jump,
+ * a shrug...), and moves its mouth when it speaks. No 3D, no video, no network after its own small file loads.
  *
- *  - `expression` is the resting face; changing it eases from one to the other.
+ *  - `expression` is the resting face; changing it springs from one to the other, with a little overshoot.
  *  - `gaze` is 'cursor' (follow the pointer, the default), 'idle' (look around now and then), or a fixed point
  *    `{ x, y }` from -1 to 1.
  *  - `speak(text | timeline)` moves the mouth and resolves when it ends. The timeline form is for the generated
- *    voice, whose timing replaces the text-based guess.
+ *    voice, whose timing replaces the text-based guess. While it speaks the avatar also lifts its brows and nods.
+ *  - `react(gesture)` plays a short gesture over the held face.
  *  - Decorative by default (hidden from assistive technology). Pass `label` (a translated string) when the avatar
  *    carries meaning, and then also provide the same words as text on the page.
- *  - With reduced motion it holds still: no blinking, breathing or following; the mouth still moves while speaking.
+ *  - With reduced motion it holds still: no blinking, breathing, gestures or following; the mouth still moves while
+ *    speaking.
  */
 
 export type Character = 'rho' | 'zara' | 'liruf' | 'dina';
@@ -26,8 +29,8 @@ export interface AvatarHandle {
   /** Moves the mouth for a phrase (or a prepared timeline). Resolves when the speech ends or is stopped. */
   speak: (input: string | VisemeEvent[], options?: { rate?: number }) => Promise<void>;
   stop: () => void;
-  /** A small reaction: a nod, a blink, or a happy wiggle. */
-  react: (kind: 'nod' | 'blink' | 'wiggle') => void;
+  /** A short gesture over the held face. */
+  react: (gesture: GestureName) => void;
 }
 
 export interface AvatarProps {
@@ -68,24 +71,50 @@ function prefersReducedMotion(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-const ease = (current: number, target: number, dt: number, rate: number) => current + (target - current) * (1 - Math.exp(-dt * rate));
+interface Speech { events: VisemeEvent[]; length: number; start: number; done: () => void }
+
+interface Playing { name: GestureName; start: number }
 
 interface Control {
   expression: ExpressionName;
   gaze: Gaze;
   speech: Speech | null;
-  nodAt: number;
-  blinkAt: number;
-  wiggleAt: number;
+  gestures: Playing[];
   kick: (() => void) | null;
 }
 
-interface Speech { events: VisemeEvent[]; length: number; start: number; done: () => void }
+/** Every number of a frame, which the springs move one by one. */
+const KEYS: readonly (keyof Frame)[] = [
+  'lookX', 'lookY', 'turn', 'blinkL', 'blinkR', 'eyeOpenL', 'eyeOpenR', 'eyeTilt', 'pupil', 'browLiftL', 'browLiftR',
+  'browTiltL', 'browTiltR', 'browSqueeze', 'noseWrinkle', 'mouthOpen', 'mouthWide', 'smile', 'smirk', 'pucker', 'press',
+  'cheek', 'tilt', 'breath', 'nod', 'lean', 'bounce', 'lift',
+];
+
+/** Numbers that are computed each frame (blinking, breathing, gaze, nods), not sprung toward an expression. */
+const COMPUTED: ReadonlySet<keyof Frame> = new Set(['blinkL', 'blinkR', 'breath', 'nod', 'bounce', 'lookX', 'lookY']);
+
+const STIFFNESS = 210;
+
+const DAMPING = 17;
+
+function springStep(value: number, velocity: number, target: number, dt: number): [number, number] {
+  let x = value;
+  let v = velocity;
+  const steps = Math.max(1, Math.ceil(dt / 0.008));
+  const h = dt / steps;
+
+  for (let i = 0; i < steps; i++) {
+    v += (STIFFNESS * (target - x) - DAMPING * v) * h;
+    x += v * h;
+  }
+
+  return [x, v];
+}
 
 export const Avatar = forwardRef<AvatarHandle, AvatarProps>(function Avatar({ character, expression = 'neutral', gaze = 'cursor', label, className }, ref) {
   const host = useRef<HTMLDivElement>(null);
   const [loaded, setLoaded] = useState<Loaded | null>(null);
-  const control = useRef<Control>({ expression, gaze, speech: null, nodAt: -1, blinkAt: -1, wiggleAt: -1, kick: null });
+  const control = useRef<Control>({ expression, gaze, speech: null, gestures: [], kick: null });
 
   control.current.expression = expression;
   control.current.gaze = gaze;
@@ -116,13 +145,10 @@ export const Avatar = forwardRef<AvatarHandle, AvatarProps>(function Avatar({ ch
       control.current.speech?.done();
       control.current.speech = null;
     },
-    react(kind) {
-      const now = performance.now() / 1000;
+    react(gesture) {
+      if (prefersReducedMotion()) return;
 
-      if (kind === 'nod') control.current.nodAt = now;
-      else if (kind === 'blink') control.current.blinkAt = now;
-      else control.current.wiggleAt = now;
-
+      control.current.gestures.push({ name: gesture, start: performance.now() / 1000 });
       control.current.kick?.();
     },
   }), []);
@@ -133,9 +159,11 @@ export const Avatar = forwardRef<AvatarHandle, AvatarProps>(function Avatar({ ch
 
     if (!loaded || !element || !svg) return;
 
+    const box = element;
     const rig = new AvatarRig(svg, loaded.spec);
     const reduced = prefersReducedMotion();
-    const state = { ...NEUTRAL_FRAME };
+    const state: Frame = { ...NEUTRAL_FRAME };
+    const velocity: Frame = { ...NEUTRAL_FRAME };
     const look = { x: 0, y: 0 };
     const pointer = { x: 0, y: 0, seen: -10 };
     const idle = { x: 0, y: 0, next: 1 };
@@ -145,6 +173,8 @@ export const Avatar = forwardRef<AvatarHandle, AvatarProps>(function Avatar({ ch
     let last = performance.now() / 1000;
     let settled = 0;
 
+    for (const key of KEYS) velocity[key] = 0;
+
     const onPointer = (event: PointerEvent) => { pointer.x = event.clientX; pointer.y = event.clientY; pointer.seen = performance.now() / 1000; };
 
     const watch = 'IntersectionObserver' in window ? new IntersectionObserver(([entry]) => { visible = entry?.isIntersecting ?? true;
@@ -153,7 +183,7 @@ export const Avatar = forwardRef<AvatarHandle, AvatarProps>(function Avatar({ ch
 
     if (!reduced) window.addEventListener('pointermove', onPointer, { passive: true });
 
-    watch?.observe(element);
+    watch?.observe(box);
 
     function tick() {
       frameRequest = 0;
@@ -167,9 +197,18 @@ export const Avatar = forwardRef<AvatarHandle, AvatarProps>(function Avatar({ ch
       last = now;
 
       const target: Frame = { ...NEUTRAL_FRAME, ...EXPRESSIONS[name] };
-      const speed = reduced ? 60 : 9;
 
-      for (const key of ['browLift', 'browTilt', 'eyeOpen', 'mouthOpen', 'mouthWide', 'cheek', 'tilt'] as const) state[key] = ease(state[key], target[key], dt, speed);
+      // the expression: every number springs to its target (instantly when motion is reduced)
+      for (const key of KEYS) {
+        if (COMPUTED.has(key)) continue;
+
+        if (reduced) { state[key] = target[key]; continue; }
+
+        const [x, v] = springStep(state[key], velocity[key], target[key], dt);
+
+        state[key] = x;
+        velocity[key] = v;
+      }
 
       // gaze
       let wantX = 0;
@@ -178,9 +217,9 @@ export const Avatar = forwardRef<AvatarHandle, AvatarProps>(function Avatar({ ch
       if (!reduced) {
         if (mode !== 'cursor' && mode !== 'idle') { wantX = mode.x; wantY = mode.y; }
         else if (mode === 'cursor' && now - pointer.seen < 4) {
-          const box = element!.getBoundingClientRect();
-          const dx = pointer.x - (box.left + box.width / 2);
-          const dy = pointer.y - (box.top + box.height * 0.42);
+          const rect = box.getBoundingClientRect();
+          const dx = pointer.x - (rect.left + rect.width / 2);
+          const dy = pointer.y - (rect.top + rect.height * 0.42);
           const distance = Math.hypot(dx, dy) || 1;
           const strength = Math.min(1, distance / 320);
 
@@ -196,38 +235,55 @@ export const Avatar = forwardRef<AvatarHandle, AvatarProps>(function Avatar({ ch
 
       wantX = Math.max(-1, Math.min(1, wantX + target.lookX));
       wantY = Math.max(-1, Math.min(1, wantY + target.lookY));
-      look.x = ease(look.x, wantX, dt, reduced ? 60 : 8);
-      look.y = ease(look.y, wantY, dt, reduced ? 60 : 8);
+
+      const follow = reduced ? 1 : 1 - Math.exp(-dt * 9);
+
+      look.x += (wantX - look.x) * follow;
+      look.y += (wantY - look.y) * follow;
       state.lookX = look.x;
       state.lookY = look.y;
 
       // blinking and breathing
+      let blinkNow = 0;
+
       if (!reduced) {
-        if (control.current.blinkAt > 0) { blink.start = control.current.blinkAt; control.current.blinkAt = -1; }
-        else if (now > blink.next && blink.start < 0) { blink.start = now; blink.twice = Math.random() < 0.15; }
+        if (blink.start < 0 && now > blink.next) { blink.start = now; blink.twice = Math.random() < 0.15; }
 
         if (blink.start >= 0) {
           const p = (now - blink.start) / 0.2;
 
-          state.blink = p < 0.4 ? p / 0.4 : Math.max(0, 1 - (p - 0.4) / 0.6);
+          blinkNow = p < 0.4 ? p / 0.4 : Math.max(0, 1 - (p - 0.4) / 0.6);
 
-          if (p >= 1) { state.blink = 0; blink.start = blink.twice ? now + 0.05 : -1; blink.next = now + 2.4 + Math.random() * 3.2; blink.twice = false; }
+          if (p >= 1) { blinkNow = 0; blink.start = blink.twice ? now + 0.05 : -1; blink.next = now + 2.4 + Math.random() * 3.2; blink.twice = false; }
         }
 
         state.breath = Math.sin(now * 1.7);
-      } else { state.blink = 0; state.breath = 0; }
+      } else { state.breath = 0; }
 
-      // a nod, and a wiggle that is a quick tilt
-      const nodP = control.current.nodAt > 0 ? (now - control.current.nodAt) / 0.5 : 2;
+      // gestures add to the frame while they play, then hand back to the held face
+      const add: Frame = { ...NEUTRAL_FRAME };
 
-      state.nod = nodP < 1 ? Math.sin(nodP * Math.PI) : 0;
+      for (const key of KEYS) add[key] = 0;
 
-      const wiggleP = control.current.wiggleAt > 0 ? (now - control.current.wiggleAt) / 0.7 : 2;
-      const wiggle = wiggleP < 1 ? Math.sin(wiggleP * Math.PI * 3) * (1 - wiggleP) * 4 : 0;
+      control.current.gestures = control.current.gestures.filter((play) => {
+        const gesture = GESTURES[play.name];
+        const p = (now - play.start) / gesture.duration;
 
-      // speech
+        if (p >= 1) return false;
+
+        const values: Partial<Frame> = gesture.at(p);
+
+        for (const key of KEYS) add[key] += values[key] ?? 0;
+
+        return true;
+      });
+
+      const moving = control.current.speech !== null || control.current.gestures.length > 0;
+
+      // speech: the mouth follows the visemes, and the face joins in a little
       let open = state.mouthOpen;
       let wide = state.mouthWide;
+      let talk = 0;
 
       if (speech) {
         const at = now - speech.start;
@@ -242,16 +298,28 @@ export const Avatar = forwardRef<AvatarHandle, AvatarProps>(function Avatar({ ch
 
           open = Math.max(open * 0.5, mouthLook.open);
           wide = mouthLook.wide * state.mouthWide;
+          talk = mouthLook.open;
         }
       }
 
-      const out: Frame = { ...state, mouthOpen: open, mouthWide: wide, tilt: state.tilt + wiggle };
+      const out: Frame = { ...state, mouthOpen: open, mouthWide: wide };
+
+      for (const key of KEYS) out[key] += add[key];
+
+      out.blinkL = Math.max(blinkNow, add.blinkL);
+      out.blinkR = Math.max(blinkNow, add.blinkR);
+      out.nod = add.nod + talk * 0.12;
+      out.bounce = add.bounce;
+      out.browLiftL += talk * 0.18;
+      out.browLiftR += talk * 0.18;
+
+      if (!reduced) out.turn += Math.sin(now * 0.45) * 0.05;
 
       rig.apply(out);
 
-      const moving = !reduced || control.current.speech !== null || nodP < 1 || wiggleP < 1;
+      const stillSettling = KEYS.some((key) => !COMPUTED.has(key) && Math.abs(state[key] - target[key]) > 0.002);
 
-      settled = moving ? 0 : settled + 1;
+      settled = moving || stillSettling ? 0 : settled + 1;
 
       if (!reduced || settled < 8) schedule();
     }

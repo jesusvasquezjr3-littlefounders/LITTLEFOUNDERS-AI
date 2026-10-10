@@ -25,7 +25,12 @@
     315,
     346
    ],
-   "range": 34
+   "range": 34,
+   "side": -1,
+   "pupil": [
+    "iris-l",
+    "pupil-l"
+   ]
   },
   {
    "parts": [
@@ -45,24 +50,33 @@
     839,
     346
    ],
-   "range": 34
+   "range": 34,
+   "side": 1,
+   "pupil": [
+    "iris-r",
+    "pupil-r"
+   ]
   }
  ],
- "brows": [],
- "face": [
+ "brows": [
   {
-   "parts": [
-    "snout",
-    "snout-side-l",
-    "snout-side-r",
-    "snout-top-plane",
-    "snout-top-edge",
-    "snout-front-edge",
-    "nostril-l",
-    "nostril-r"
+   "part": "brow-l",
+   "center": [
+    313,
+    128
    ],
-   "depth": 1.3
+   "side": -1
   },
+  {
+   "part": "brow-r",
+   "center": [
+    841,
+    128
+   ],
+   "side": 1
+  }
+ ],
+ "face": [
   {
    "parts": [
     "mouth",
@@ -73,6 +87,24 @@
     "fang-lower-r"
    ],
    "depth": 1.15
+  },
+  {
+   "parts": [
+    "brow-l",
+    "brow-r"
+   ],
+   "depth": 0.9
+  },
+  {
+   "parts": [
+    "snout",
+    "snout-side-l",
+    "snout-side-r",
+    "snout-top-plane",
+    "snout-top-edge",
+    "snout-front-edge"
+   ],
+   "depth": 1.3
   }
  ],
  "mouth": {
@@ -95,7 +127,9 @@
   "open": {
    "sx": 1.0,
    "sy": 1.2
-  }
+  },
+  "halfWidth": 247,
+  "reach": 52
  },
  "cheeks": [],
  "head": {
@@ -108,5 +142,20 @@
  "body": [
   "chest",
   "belly"
- ]
+ ],
+ "nose": {
+  "parts": [],
+  "lines": [
+   "snout-wrinkle-l",
+   "snout-wrinkle-r"
+  ],
+  "flare": [
+   "nostril-l",
+   "nostril-r"
+  ],
+  "center": [
+   577,
+   520
+  ]
+ }
 }
