@@ -21,6 +21,13 @@ function resolveIsDark(choice: ThemeChoice): boolean {
   return choice === 'auto' ? systemPrefersDark() : choice === 'dark';
 }
 
+function canCrossFade(): boolean {
+  return (
+    typeof document.startViewTransition === 'function' &&
+    !(typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+  );
+}
+
 function initialChoice(): ThemeChoice {
   const stored = localStorage.getItem(STORAGE_KEY);
 
@@ -35,9 +42,9 @@ function initialChoice(): ThemeChoice {
  * It is NOT what makes the theme right on the FIRST paint, and the comment
  * that used to claim so here was wrong for as long as it stood: an effect runs
  * after React commits, which on 2026-09-04 was measured at ~530 ms of a fully
- * rendered LIGHT page in front of a dark-mode visitor, followed by the
- * `theme-transitioning` rule below cross-fading the whole document into dark
- * over another 500 ms — a bug with an animation drawing attention to it. The
+ * rendered LIGHT page in front of a dark-mode visitor, followed by a
+ * cross-fade of the whole document into dark — a bug with an animation
+ * drawing attention to it. The
  * first paint belongs to the inline script in index.html, which resolves the
  * same key with the same `auto` semantics before <body> is parsed. This
  * provider then AGREES with what is already on the element (see FIRST APPLY).
@@ -56,13 +63,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, choice);
-    let transitionTimer: ReturnType<typeof setTimeout> | undefined;
 
     /*
      * FIRST APPLY — no transition.
      *
-     * `theme-transitioning` exists so that CHANGING the theme cross-fades
-     * rather than snaps. On mount nothing is changing: index.html already put
+     * CHANGING the theme cross-fades rather than snaps. On mount nothing is
+     * changing: index.html already put
      * the right class on <html>, so this pass is a confirmation. Animating it
      * would be animating a no-op — and when the two ever disagree (storage
      * written by another tab, say), a hard correction inside the boot veil is
@@ -71,25 +77,25 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
      */
     const apply = () => {
       const dark = resolveIsDark(choice);
-
-      if (mounted.current) {
-        // Inject transitioning class to trigger smooth CSS animations
-        document.documentElement.classList.add('theme-transitioning');
-      }
+      const root = document.documentElement;
+      const paint = () => {
+        root.classList.toggle('dark', dark);
+        root.dataset.mode = dark ? 'dark' : 'light';
+      };
+      const animate = mounted.current && root.dataset.mode !== (dark ? 'dark' : 'light') && canCrossFade();
 
       mounted.current = true;
 
-      document.documentElement.classList.toggle('dark', dark);
-      document.documentElement.dataset.mode = dark ? 'dark' : 'light';
-      setIsDark(dark);
+      /*
+       * A real change cross-fades the whole page as one image (the View
+       * Transition in app.css), so every surface, text and canvas moves
+       * together instead of each property racing on its own clock. Without
+       * the API, or with reduced motion, it is the plain instant swap.
+       */
+      if (animate) document.startViewTransition(paint);
+      else paint();
 
-      // Remove after duration matches the CSS (500ms). Tracked + cleared in the
-      // effect cleanup: an un-cleared timer fires after test teardown and shows
-      // up as an unhandled error that fails the whole run (frontend CI 2026-07-22).
-      clearTimeout(transitionTimer);
-      transitionTimer = setTimeout(() => {
-        document.documentElement.classList.remove('theme-transitioning');
-      }, 500);
+      setIsDark(dark);
     };
 
     apply();
@@ -98,13 +104,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       const mq = window.matchMedia('(prefers-color-scheme: dark)');
       mq.addEventListener('change', apply);
 
-      return () => {
-        clearTimeout(transitionTimer);
-        mq.removeEventListener('change', apply);
-      };
+      return () => mq.removeEventListener('change', apply);
     }
-
-    return () => clearTimeout(transitionTimer);
   }, [choice]);
 
   return <ThemeContext.Provider value={{ choice, setChoice, isDark }}>{children}</ThemeContext.Provider>;

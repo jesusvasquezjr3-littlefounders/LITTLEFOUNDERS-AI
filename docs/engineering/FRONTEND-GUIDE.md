@@ -76,7 +76,7 @@ frontend/
     i18n/                index.ts (language), copy.ts (typed bundles), useCopy.ts (hooks), <locale>/core.json and site.json
     lib/                 analytics, consent and visitor, boot, footerLinks, utils; cojeev/ and cojeev-motion/ are registry code
     styles/              app.css (the one entry), lf-fonts.css, lf-theme.css, cojeev/ (registry CSS)
-    theme/               useTheme: light, dark or auto, sets both html.dark and html[data-mode]
+    theme/               useTheme: light, dark or auto, sets both html.dark and html[data-mode], cross-fading the page via a View Transition (skipped for reduced motion)
 ```
 
 - **Naming.** Components are PascalCase files with one main export; folders and non-component files are camelCase or lowercase. A component starts with a comment that says what it is for and which rule it applies.

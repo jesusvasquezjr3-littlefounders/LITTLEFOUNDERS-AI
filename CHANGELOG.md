@@ -4,6 +4,10 @@ All notable changes to the repository. Newest first. Updated in the same commit 
 
 ## Unreleased
 
+### Changed
+
+- Switching between light and dark now cross-fades the whole page over 450 ms with a View Transition, instead of the hard flash it was (the `theme-transitioning` class had no CSS behind it). Browsers without the API, and visitors who ask for reduced motion, still get the instant swap.
+
 ### Added
 
 - The landing's problem scene rebuilt as a cinematic render (`npm run render:problem`): Liruf waters a seed, a sprout grows and blooms, Dina watches standing (no walk cycle), with real lighting, soft shadows and borders that fade into the page. The render tool now takes a scene name.

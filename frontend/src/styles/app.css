@@ -291,3 +291,9 @@
 }
 
   @custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
+/* Theme change: the page cross-fades as one image (see src/theme/useTheme.tsx). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 450ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
