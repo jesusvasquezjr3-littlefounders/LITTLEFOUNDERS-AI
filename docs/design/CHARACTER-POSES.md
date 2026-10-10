@@ -1,7 +1,7 @@
 ---
 title: Character poses
 status: draft
-updated: 2026-10-09
+updated: 2026-10-10
 ---
 
 # Character poses
@@ -38,6 +38,7 @@ These come from the notes of the previous version and were measured on the files
 - Liruf, Rho and Zara share 24 bone names, so one clip file drives all three. They do **not** share a rest pose (23 of the 24 bones differ), so a shared clip carries rotation only and is applied on top of each character's own pose. Played as absolute values it deforms two of the three.
 - Dina is a quadruped on her own 27-joint rig with different bone names. She is excluded from the shared clips by rig kind and is driven through a separate table that covers all twelve actions with the parts she has (head, chest, ears and tail). She is not excluded from poses.
 - The artist exports are fragmented meshes; assume defects when a pose looks wrong and check the model before the animation.
+- **`glb/Rho.glb` and `glb/Liruf.glb` are torn, `glb/originals/` is not** (found 2026-10-10 while previewing the loading window). In the rest pose, with no animation at all, the processed Liruf has his belly open (the inside of the body shows through) and the processed Rho has gaps along the left side of his vest; the files in `glb/originals/` are clean in the same pose. Zara's two files are identical. So every static render takes Rho, Liruf and Zara from `glb/originals/`: the 404 scene, the landing's problem scene, the sign-in window's scene and the loading runners were all re-rendered from them on 2026-10-10 (the hero scene was not: its tools are gone, and Rho's vest shows the same torn patches there). The originals also carry Meshy's own clips (`running` for Liruf, `walking_man` for Rho and Zara); the loading runners use a stride authored in code instead, because it reads livelier, and it deforms nothing on the originals. Dina has no original: her only file is `glb/Dina.glb`, with her own walk clip.
 
 ## The pose catalog (previous version)
 

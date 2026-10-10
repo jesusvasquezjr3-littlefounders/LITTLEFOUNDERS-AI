@@ -26,7 +26,8 @@
     "avatars:compare": "node tools/avatars/compare.mjs",
     "avatars:sheet": "node tools/avatars/sheet.mjs",
     "render:problem": "node tools/render/render-scene.mjs --scene problem",
-    "render:notfound": "node tools/render/render-scene.mjs --scene notfound"
+    "render:notfound": "node tools/render/render-scene.mjs --scene notfound",
+    "render:loading": "node tools/render/render-loading.mjs"
   },
   "dependencies": {
     "@number-flow/react": "^0.6.2",

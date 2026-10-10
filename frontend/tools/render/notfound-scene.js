@@ -223,7 +223,8 @@ const discs = DISCS.map(([x, y, z, radius, light, dark, opacity], i) => {
 // ---- the characters
 const loader = new GLTFLoader();
 const load = (url) => new Promise((resolve, reject) => loader.load(url, resolve, undefined, reject));
-const [rho, liruf] = await Promise.all(['Rho', 'Liruf'].map((name) => load(`/glb/${name}.glb`)));
+// the artist originals: glb/Rho.glb and glb/Liruf.glb are torn at the vest and the belly, the originals are clean
+const [rho, liruf] = await Promise.all(['Rho', 'Liruf'].map((name) => load(`/glb/originals/${name}.glb`)));
 
 const X = new THREE.Vector3(1, 0, 0);
 const Y = new THREE.Vector3(0, 1, 0);

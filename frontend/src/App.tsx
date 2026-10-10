@@ -11,6 +11,9 @@ import { releaseBootVeil } from '@/lib/boot';
 // Development only: the avatars alive. `import.meta.env.DEV` is false in a production build, so this chunk is not shipped.
 const DevAvatars = import.meta.env.DEV ? lazy(() => import('@/features/avatars/DevAvatars')) : null;
 
+// Development only: the loading window open. Not shipped, like the avatars page.
+const DevLoading = import.meta.env.DEV ? lazy(() => import('@/features/loading/DevLoading')) : null;
+
 const Landing = lazy(() => import('@/features/landing/Landing').then((module) => ({ default: module.Landing })));
 const NotFound = lazy(() => import('@/features/notFound/NotFound').then((module) => ({ default: module.NotFound })));
 
@@ -47,6 +50,7 @@ export function App() {
           <Route element={<AppShell />}>
             <Route index element={<Landing />} />
             {DevAvatars ? <Route path="dev/avatars" element={<DevAvatars />} /> : null}
+            {DevLoading ? <Route path="dev/loading" element={<DevLoading />} /> : null}
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

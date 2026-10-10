@@ -121,6 +121,12 @@ Date: 2026-10-10. Status: accepted.
 
 The owner defined eleven behaviors that every page has, not only the landing: smooth animation on scroll, button micro-interactions, hover states, a custom favicon, a back-to-top button, a loading screen and skeletons, transitions between pages, speed optimization, a custom 404 page, breadcrumbs and a fixed call to action on phones (Sign in, because it is the quickest). The favicon is the compact logo. The 404 page is a composition with Rho and Liruf kneeling back to back, small in the frame, heads low, under a small red "Error 404" with a warning mark, with a plain sentence and one button to `/`. The rules and where each lives are in [[FRONTEND-GUIDE]] ("Interaction, motion and page furniture"); the 404 scene is in [[CHARACTER-COMPOSITIONS]].
 
+### D-017: The loading window
+
+Date: 2026-10-10. Status: accepted.
+
+Inside the platform, a wait is shown in a window like the sign-in window (Cojeev's Dialog surface, the product's tokens; no glass, no percentage): a bar that fills from empty to 80 % in two seconds and holds, a character running on the bar's leading edge, and one word under it in bold capitals. The four characters run it. The runner is an AVIF sprite sheet per character and per color mode (8 files, 26 to 52 KB each), not 24 baked animations, because the word, the window and the colors are live. The owner chose the format after seeing the measurements and approved the four previews. Details, the measurements and the references: [[FRONTEND-GUIDE]], "The loading window".
+
 ## Related
 
 - [[RESEARCH-FOUNDATION]]

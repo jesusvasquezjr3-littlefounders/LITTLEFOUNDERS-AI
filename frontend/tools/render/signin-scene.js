@@ -287,7 +287,8 @@ function stand(model, height, x, z, facing) {
   return holder;
 }
 
-const [rhoGltf, dinaGltf, clipsGltf] = await Promise.all([load('/glb/Rho.glb'), load('/glb/Dina.glb'), load('/clips/clips-biped.glb')]);
+// Rho from the artist original: glb/Rho.glb has gaps along the vest in the rest pose (docs/design/CHARACTER-POSES.md)
+const [rhoGltf, dinaGltf, clipsGltf] = await Promise.all([load('/glb/originals/Rho.glb'), load('/glb/Dina.glb'), load('/clips/clips-biped.glb')]);
 
 if (DEBUG) {
   log('dina clips', dinaGltf.animations.map((a) => `${a.name} ${a.duration.toFixed(2)}s ${a.tracks.length}`).join('|'));

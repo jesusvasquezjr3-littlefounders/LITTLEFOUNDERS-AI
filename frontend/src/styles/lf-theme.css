@@ -205,3 +205,19 @@ html:root[data-mode] {
 
 /* The floating controls give the screen back to the cookie banner while it is open. */
 :root[data-consent-banner] [data-fab] { display: none; }
+
+/*
+ * The loading window's runner: the sprite sheet (12 frames side by side) steps one frame at a time. A still image stepped
+ * by a transform, so the browser decodes it once and the compositor does the rest; with reduced motion it stays on the
+ * first frame. This is the one CSS keyframe in the product that Motion does not replace: stepping a sheet is what CSS
+ * `steps()` is for.
+ */
+@keyframes lf-run {
+  to { transform: translateX(calc(var(--lf-frames) * var(--lf-frame) * -1)); }
+}
+
+.lf-run > img { animation: lf-run 600ms steps(var(--lf-frames)) infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lf-run > img { animation: none; }
+}

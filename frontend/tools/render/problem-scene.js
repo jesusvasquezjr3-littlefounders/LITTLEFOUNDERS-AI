@@ -325,7 +325,8 @@ for (let i = 0; i < SPARKS; i++) {
 // ---- the characters
 const loader = new GLTFLoader();
 const load = (url) => new Promise((resolve, reject) => loader.load(url, resolve, undefined, reject));
-const [liruf, dina, clips] = await Promise.all([load('/glb/Liruf.glb'), load('/glb/Dina.glb'), load('/clips/clips-biped.glb')]);
+// Liruf from the artist original: glb/Liruf.glb is torn at the belly in the rest pose (docs/design/CHARACTER-POSES.md)
+const [liruf, dina, clips] = await Promise.all([load('/glb/originals/Liruf.glb'), load('/glb/Dina.glb'), load('/clips/clips-biped.glb')]);
 
 let holderEnv = 1;
 
