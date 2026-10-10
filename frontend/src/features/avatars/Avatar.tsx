@@ -293,7 +293,18 @@ export const Avatar = forwardRef<AvatarHandle, AvatarProps>(function Avatar({ ch
 
       last = now;
 
-      const target: Frame = { ...NEUTRAL_FRAME, ...loaded?.spec.baseline, ...EXPRESSIONS[name] };
+      const target: Frame = { ...NEUTRAL_FRAME, ...loaded?.spec.baseline };
+      const strength = loaded?.spec.expressionScale ?? 1;
+
+      const wanted: Partial<Frame> = EXPRESSIONS[name];
+
+      for (const key of KEYS) {
+        const value = wanted[key];
+
+        if (value === undefined) continue;
+
+        target[key] = key === 'lookX' || key === 'lookY' ? value : target[key] + (value - NEUTRAL_FRAME[key]) * strength;
+      }
 
       // the expression: every number springs to its target (instantly when motion is reduced)
       for (const key of KEYS) {

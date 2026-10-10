@@ -115,15 +115,15 @@
    790
   ],
   "rest": {
-   "sx": 0.85,
-   "sy": 0.3
+   "sx": 0.9,
+   "sy": 0.4
   },
   "open": {
    "sx": 1.0,
-   "sy": 1.15
+   "sy": 1.05
   },
   "halfWidth": 110,
-  "reach": 54
+  "reach": 26
  },
  "cheeks": [
   "cheek-l",
@@ -163,5 +163,6 @@
    758
   ]
  },
- "gain": 1.7
+ "gain": 1.1,
+ "expressionScale": 0.85
 }

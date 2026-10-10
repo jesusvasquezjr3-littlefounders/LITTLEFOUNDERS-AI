@@ -203,9 +203,7 @@
       "rx": 140,
       "ry": 176,
       "angle": -10,
-      "fill": "#f9f9f9",
-      "outline": "#1d1d18",
-      "outline_width": 9
+      "fill": "#f9f9f9"
     },
     {
       "name": "eye-white-r",
@@ -244,9 +242,7 @@
             ]
           ]
         }
-      },
-      "outline": "#1d1d18",
-      "outline_width": 6
+      }
     },
     {
       "name": "iris-r",
@@ -286,6 +282,22 @@
     {
       "name": "glint-small-r",
       "mirror_of": "glint-small-l"
+    },
+    {
+      "name": "lid-l",
+      "kind": "ellipse",
+      "cx": 315,
+      "cy": 22,
+      "rx": 170,
+      "ry": 150,
+      "angle": 0,
+      "fill": "#587d5d",
+      "clip_to": "silhouette"
+    },
+    {
+      "name": "lid-r",
+      "mirror_of": "lid-l",
+      "clip_to": "silhouette"
     },
     {
       "name": "glint-r",
@@ -360,37 +372,38 @@
       "fill": "#7aa17b"
     },
     {
-      "name": "snout-top-edge",
-      "kind": "path",
-      "d": "M300 520 C360 462 470 440 577 440 C684 440 794 462 854 520",
-      "stroke": "#9cc298",
-      "width": 8
-    },
-    {
-      "name": "snout-front-edge",
-      "kind": "path",
-      "d": "M300 520 C354 566 464 584 577 584 C690 584 800 566 854 520",
-      "stroke": "#476b4f",
-      "width": 8
-    },
-    {
       "name": "mouth",
       "kind": "path",
       "d": "M330 930 C400 950 500 946 577 946 C654 946 754 950 824 930 C852 1005 812 1095 742 1128 C692 1152 462 1152 412 1128 C342 1095 302 1005 330 930 Z",
-      "fill": "#e9646c"
+      "fill": {
+        "gradient": {
+          "type": "linear",
+          "x1": 0,
+          "y1": 930,
+          "x2": 0,
+          "y2": 1330,
+          "stops": [
+            [
+              "0",
+              "#d9505d"
+            ],
+            [
+              "0.5",
+              "#ec6a74"
+            ],
+            [
+              "1",
+              "#f08a90"
+            ]
+          ]
+        }
+      }
     },
     {
       "name": "mouth-tongue",
       "kind": "path",
       "d": "M452 1096 C492 1056 662 1056 702 1096 C682 1140 482 1140 452 1096 Z",
       "fill": "#f28c92"
-    },
-    {
-      "name": "mouth-outline",
-      "kind": "path",
-      "d": "M330 930 C400 950 500 946 577 946 C654 946 754 950 824 930 C852 1005 812 1095 742 1128 C692 1152 462 1152 412 1128 C342 1095 302 1005 330 930 Z",
-      "stroke": "#7a2a30",
-      "width": 9
     },
     {
       "name": "fang-upper-l",
@@ -455,7 +468,8 @@
         "pupil": [
           "iris-l",
           "pupil-l"
-        ]
+        ],
+        "squash": false
       },
       {
         "parts": [
@@ -480,7 +494,8 @@
         "pupil": [
           "iris-r",
           "pupil-r"
-        ]
+        ],
+        "squash": false
       }
     ],
     "brows": [],
@@ -488,7 +503,6 @@
       {
         "parts": [
           "mouth",
-          "mouth-outline",
           "fang-upper-l",
           "fang-upper-r",
           "mouth-tongue"
@@ -500,9 +514,7 @@
           "snout",
           "snout-side-l",
           "snout-side-r",
-          "snout-top-plane",
-          "snout-top-edge",
-          "snout-front-edge"
+          "snout-top-plane"
         ],
         "depth": 1.3
       }
@@ -511,7 +523,6 @@
       "parts": [
         "mouth",
         "mouth-tongue",
-        "mouth-outline",
         "fang-upper-l",
         "fang-upper-r"
       ],
@@ -528,7 +539,7 @@
         "sy": 1.2
       },
       "halfWidth": 247,
-      "reach": 52
+      "reach": 64
     },
     "cheeks": [],
     "head": {
@@ -561,6 +572,27 @@
       "smile": 0.5,
       "cheek": 0.2
     },
-    "gain": 0.8
+    "gain": 1.0,
+    "lids": [
+      {
+        "part": "lid-l",
+        "center": [
+          315,
+          346
+        ],
+        "side": -1,
+        "height": 135
+      },
+      {
+        "part": "lid-r",
+        "center": [
+          839,
+          346
+        ],
+        "side": 1,
+        "height": 135
+      }
+    ],
+    "expressionScale": 1.0
   }
 }

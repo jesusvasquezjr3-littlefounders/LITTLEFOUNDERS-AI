@@ -27,6 +27,8 @@ export interface RigEye {
   /** How far the gaze parts may travel, in the avatar's own units. */
   range: number;
   side: -1 | 1;
+  /** Squash the eye when it narrows; off for characters whose eyelids do that. */
+  squash?: boolean;
 }
 
 export interface RigSpec {
@@ -38,6 +40,10 @@ export interface RigSpec {
   gain?: number;
   eyes: RigEye[];
   brows: { part: string; center: [number, number]; side: -1 | 1 }[];
+  /** Eyelids for faces with no brows (Liruf): a shape of the skin color that slides over the top of the eye, and tilts. */
+  lids?: { part: string; center: [number, number]; side: -1 | 1; height: number }[];
+  /** How much of an expression's brow, lid, mouth and head movement this character wears, 0 to 1; 1 by default. Faces with small features need less. */
+  expressionScale?: number;
   face: { parts: string[]; depth: number }[];
   nose?: { parts: string[]; lines: string[]; flare: string[]; center: [number, number] };
   mouth: {
@@ -272,7 +278,8 @@ export class AvatarRig {
       const open = Math.max(0.04, lid * (1 - blink * 0.96));
       const grow = wide > 1 ? 1 + (wide - 1) * 0.22 : 1;
       const slant = (-eye.side * frame.eyeTilt * 7).toFixed(2);
-      const squash = `translate(${cx} ${cy}) rotate(${slant}) scale(${grow.toFixed(3)} ${(open * grow).toFixed(3)}) translate(${-cx} ${-cy})`;
+      const flat = eye.squash === false ? Math.max(0.04, 1 - blink * 0.96) : open;
+      const squash = `translate(${cx} ${cy}) rotate(${eye.squash === false ? 0 : slant}) scale(${grow.toFixed(3)} ${(flat * grow).toFixed(3)}) translate(${-cx} ${-cy})`;
 
       for (const part of eye.parts) {
         this.add(part, shift(0.9));
@@ -299,6 +306,18 @@ export class AvatarRig {
 
       this.add(brow.part, shift(0.95));
       this.add(brow.part, `translate(${dx} ${dy}) rotate(${(-tilt * brow.side * 14).toFixed(2)} ${cx} ${cy})`);
+    }
+
+    // eyelids: they slide down over the eye when it narrows, frowns or is sad, and tilt with the brows
+    for (const lid of spec.lids ?? []) {
+      const [cx, cy] = lid.center;
+      const wide = lid.side < 0 ? frame.eyeOpenL : frame.eyeOpenR;
+      const lift = lid.side < 0 ? frame.browLiftL : frame.browLiftR;
+      const tilt = lid.side < 0 ? frame.browTiltL : frame.browTiltR;
+      const drop = Math.max(0, 1 - wide) * 0.95 + frame.browSqueeze * 0.3 + Math.max(0, tilt) * 0.22 + Math.max(0, -tilt) * 0.12 + Math.max(0, -lift) * 0.3 - Math.max(0, lift) * 0.12 - Math.max(0, wide - 1) * 0.5;
+
+      this.add(lid.part, shift(0.9));
+      this.add(lid.part, `translate(0 ${(drop * lid.height).toFixed(2)}) rotate(${(-tilt * lid.side * 16).toFixed(2)} ${cx} ${cy})`);
     }
 
     // nose: it lifts and folds when wrinkled; the nostrils flare
