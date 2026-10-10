@@ -245,11 +245,14 @@
     },
     {
       "name": "eye-white-l",
-      "kind": "circle",
-      "cx": 658,
-      "cy": 646,
+      "kind": "ellipse",
+      "cx": 653,
+      "cy": 632,
       "r": 62,
-      "fill": "#fbfaf8"
+      "fill": "#fbfaf8",
+      "rx": 73,
+      "ry": 62,
+      "angle": 0
     },
     {
       "name": "eye-white-r",
@@ -258,26 +261,38 @@
     {
       "name": "iris-l",
       "kind": "circle",
-      "cx": 666,
-      "cy": 644,
+      "cx": 661,
+      "cy": 640,
       "r": 47,
       "fill": {
         "radial": [
-          "#b5651f",
-          "#5b2c10",
+          "#a85a1e",
+          "#4e230d",
           1
         ]
-      }
+      },
+      "clip_ellipse": [
+        653,
+        632,
+        73,
+        62
+      ]
     },
     {
       "name": "iris-r",
-      "mirror_of": "iris-l"
+      "mirror_of": "iris-l",
+      "clip_ellipse": [
+        963,
+        632,
+        73,
+        62
+      ]
     },
     {
       "name": "pupil-l",
       "kind": "circle",
-      "cx": 668,
-      "cy": 648,
+      "cx": 663,
+      "cy": 643,
       "r": 21,
       "fill": "#1a0f0b"
     },
@@ -288,16 +303,16 @@
     {
       "name": "glint-l",
       "kind": "circle",
-      "cx": 644,
-      "cy": 622,
+      "cx": 638,
+      "cy": 619,
       "r": 9,
       "fill": "#ffffff"
     },
     {
       "name": "glint-small-l",
       "kind": "circle",
-      "cx": 681,
-      "cy": 652,
+      "cx": 676,
+      "cy": 651,
       "r": 4.5,
       "fill": "#ffffff"
     },
@@ -312,24 +327,12 @@
     {
       "name": "lash-l",
       "kind": "path",
-      "d": "M565 624 C591 596 635 580 677 583 C709 586 725 602 731 620 ",
-      "stroke": "#150d0b",
-      "width": 17
-    },
-    {
-      "name": "lash-wing-l",
-      "kind": "path",
-      "d": "M569 626 C579 640 587 646 595 650 ",
-      "stroke": "#150d0b",
-      "width": 10
+      "d": "M544 632 C554 598 606 565 662 565 C707 565 729 590 734 618 C718 602 696 595 662 595 C622 595 586 610 559 638 Z",
+      "fill": "#150d0b"
     },
     {
       "name": "lash-r",
       "mirror_of": "lash-l"
-    },
-    {
-      "name": "lash-wing-r",
-      "mirror_of": "lash-wing-l"
     },
     {
       "name": "brow-l",
@@ -417,8 +420,7 @@
           "pupil-l",
           "glint-l",
           "glint-small-l",
-          "lash-l",
-          "lash-wing-l"
+          "lash-l"
         ],
         "gaze": [
           "iris-l",
@@ -427,8 +429,8 @@
           "glint-small-l"
         ],
         "center": [
-          658,
-          646
+          653,
+          632
         ],
         "range": 13,
         "side": -1,
@@ -444,8 +446,7 @@
           "pupil-r",
           "glint-r",
           "glint-small-r",
-          "lash-r",
-          "lash-wing-r"
+          "lash-r"
         ],
         "gaze": [
           "iris-r",
@@ -454,8 +455,8 @@
           "glint-small-r"
         ],
         "center": [
-          958,
-          646
+          963,
+          632
         ],
         "range": 13,
         "side": 1,

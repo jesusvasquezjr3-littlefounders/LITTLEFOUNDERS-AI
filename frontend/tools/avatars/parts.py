@@ -227,6 +227,7 @@ def ring_of(piece_id):
 
 CLIPS = {}
 BLUR = {}
+CLIP_ELLIPSES = {}
 MIRRORED = {l["mirror_of"] for l in spec["layers"] if "mirror_of" in l}
 
 
@@ -239,6 +240,11 @@ def add(name, markup, bbox=None):
         group = f'<g id="{name}"><g id="{name}-art">{markup}</g></g>'
     else:
         group = f'<g id="{name}">{markup}</g>'
+    ellipse = CLIP_ELLIPSES.get(name)
+    if ellipse:
+        cid = f"clip-{name}"
+        defs.append(f'<clipPath id="{cid}"><ellipse cx="{ellipse[0]}" cy="{ellipse[1]}" rx="{ellipse[2]}" ry="{ellipse[3]}"/></clipPath>')
+        group = f'<g clip-path="url(#{cid})">{group}</g>'
     clip = CLIPS.get(name)
     if clip:
         # the clip sits OUTSIDE the group the rig moves, so a blush that slides with a turn can never leave the face
@@ -299,6 +305,8 @@ for layer in spec["layers"]:
         BLUR[name] = layer["blur"]
     if layer.get("clip_to"):
         CLIPS[name] = layer["clip_to"]
+    if layer.get("clip_ellipse"):
+        CLIP_ELLIPSES[name] = layer["clip_ellipse"]
 
     if "mirror_of" in layer:
         add(name, f'<use href="#{layer["mirror_of"]}-art" transform="translate({2 * axis:.1f} 0) scale(-1 1)"/>')
@@ -415,6 +423,8 @@ for layer in spec["layers"]:
         else:
             px, py = [float(v) for v in __import__("re").findall(r"-?\d+\.?\d*", layer["d"])][0::2], [float(v) for v in __import__("re").findall(r"-?\d+\.?\d*", layer["d"])][1::2]
             extra = f' fill="{paint(layer.get("fill", "#000"), [], (min(px), min(py), max(px), max(py)), name)}"'
+        if "opacity" in layer:
+            extra += f' opacity="{layer["opacity"]}"'
         add(name, f'<path d="{layer["d"]}"{extra}/>')
         nodes += layer["d"].count("C") + layer["d"].count("Q") + layer["d"].count("L")
 

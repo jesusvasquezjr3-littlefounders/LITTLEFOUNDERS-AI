@@ -14,8 +14,7 @@
     "pupil-l",
     "glint-l",
     "glint-small-l",
-    "lash-l",
-    "lash-wing-l"
+    "lash-l"
    ],
    "gaze": [
     "iris-l",
@@ -24,8 +23,8 @@
     "glint-small-l"
    ],
    "center": [
-    658,
-    646
+    653,
+    632
    ],
    "range": 13,
    "side": -1,
@@ -41,8 +40,7 @@
     "pupil-r",
     "glint-r",
     "glint-small-r",
-    "lash-r",
-    "lash-wing-r"
+    "lash-r"
    ],
    "gaze": [
     "iris-r",
@@ -51,8 +49,8 @@
     "glint-small-r"
    ],
    "center": [
-    958,
-    646
+    963,
+    632
    ],
    "range": 13,
    "side": 1,
