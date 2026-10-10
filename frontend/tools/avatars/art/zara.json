@@ -66,6 +66,45 @@
       "corner": 999
     },
     {
+      "name": "hair-light",
+      "kind": "ellipse",
+      "cx": 808,
+      "cy": 260,
+      "rx": 360,
+      "ry": 100,
+      "angle": 0,
+      "fill": "#6f3f2f",
+      "opacity": 0.75,
+      "blur": 48,
+      "clip_to": "hair"
+    },
+    {
+      "name": "hair-light-l",
+      "kind": "ellipse",
+      "cx": 470,
+      "cy": 800,
+      "rx": 46,
+      "ry": 420,
+      "angle": 12,
+      "fill": "#5c3428",
+      "opacity": 0.55,
+      "blur": 26,
+      "clip_to": "hair"
+    },
+    {
+      "name": "hair-light-r",
+      "kind": "ellipse",
+      "cx": 1146,
+      "cy": 800,
+      "rx": 46,
+      "ry": 420,
+      "angle": -12,
+      "fill": "#5c3428",
+      "opacity": 0.55,
+      "blur": 26,
+      "clip_to": "hair"
+    },
+    {
       "name": "shoulders",
       "select": {
         "near": "#fccaa4",
@@ -148,6 +187,32 @@
         27,
         29
       ]
+    },
+    {
+      "name": "shade-bangs",
+      "kind": "ellipse",
+      "cx": 808,
+      "cy": 505,
+      "rx": 270,
+      "ry": 34,
+      "angle": 0,
+      "fill": "#e6a083",
+      "opacity": 0.6,
+      "blur": 14,
+      "clip_to": "face"
+    },
+    {
+      "name": "shade-jaw",
+      "kind": "ellipse",
+      "cx": 808,
+      "cy": 930,
+      "rx": 230,
+      "ry": 38,
+      "angle": 0,
+      "fill": "#e8a688",
+      "opacity": 0.55,
+      "blur": 18,
+      "clip_to": "face"
     },
     {
       "name": "ear-l",

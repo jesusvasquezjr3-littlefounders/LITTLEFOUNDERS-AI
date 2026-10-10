@@ -164,6 +164,58 @@
       "clip_to": "head-skin"
     },
     {
+      "name": "shade-face-l",
+      "kind": "ellipse",
+      "cx": 300,
+      "cy": 980,
+      "rx": 110,
+      "ry": 260,
+      "angle": 0,
+      "fill": "#d9704c",
+      "opacity": 0.55,
+      "blur": 34,
+      "clip_to": "head-skin"
+    },
+    {
+      "name": "shade-face-r",
+      "kind": "ellipse",
+      "cx": 1020,
+      "cy": 980,
+      "rx": 110,
+      "ry": 260,
+      "angle": 0,
+      "fill": "#d9704c",
+      "opacity": 0.55,
+      "blur": 34,
+      "clip_to": "head-skin"
+    },
+    {
+      "name": "shade-forehead",
+      "kind": "ellipse",
+      "cx": 660,
+      "cy": 470,
+      "rx": 320,
+      "ry": 46,
+      "angle": 0,
+      "fill": "#d06a46",
+      "opacity": 0.5,
+      "blur": 22,
+      "clip_to": "head-skin"
+    },
+    {
+      "name": "shade-jaw",
+      "kind": "ellipse",
+      "cx": 660,
+      "cy": 1290,
+      "rx": 330,
+      "ry": 50,
+      "angle": 0,
+      "fill": "#d4724d",
+      "opacity": 0.55,
+      "blur": 28,
+      "clip_to": "lower-face"
+    },
+    {
       "name": "ear-inner-l",
       "pieces": [
         17
@@ -190,6 +242,19 @@
         ],
         "blur": 8
       }
+    },
+    {
+      "name": "hair-light-l",
+      "kind": "ellipse",
+      "cx": 200,
+      "cy": 520,
+      "rx": 40,
+      "ry": 150,
+      "angle": -20,
+      "fill": "#5b2d14",
+      "opacity": 0.6,
+      "blur": 24,
+      "clip_to": "hair-side-l"
     },
     {
       "name": "hair-side-r",
@@ -221,6 +286,32 @@
         "blur": 10,
         "max": 2
       }
+    },
+    {
+      "name": "cap-light",
+      "kind": "ellipse",
+      "cx": 520,
+      "cy": 200,
+      "rx": 230,
+      "ry": 70,
+      "angle": -18,
+      "fill": "#842a24",
+      "opacity": 0.7,
+      "blur": 44,
+      "clip_to": "cap"
+    },
+    {
+      "name": "cap-dark",
+      "kind": "ellipse",
+      "cx": 900,
+      "cy": 330,
+      "rx": 200,
+      "ry": 60,
+      "angle": 10,
+      "fill": "#3d0d0c",
+      "opacity": 0.5,
+      "blur": 40,
+      "clip_to": "cap"
     },
     {
       "name": "cap-brim",
@@ -259,6 +350,19 @@
       "angle": -20,
       "fill": "#ffc9a8",
       "opacity": 0.7
+    },
+    {
+      "name": "nose-shadow",
+      "kind": "ellipse",
+      "cx": 660,
+      "cy": 1040,
+      "rx": 120,
+      "ry": 26,
+      "angle": 0,
+      "fill": "#cf6e4c",
+      "opacity": 0.6,
+      "blur": 14,
+      "clip_to": "head-skin"
     },
     {
       "name": "brow-l",

@@ -212,12 +212,53 @@
       "mirror_of": "eye-white-l"
     },
     {
-      "name": "pupil-l",
+      "name": "iris-l",
       "kind": "ellipse",
       "cx": 334,
-      "cy": 372,
-      "rx": 72,
-      "ry": 80,
+      "cy": 378,
+      "rx": 84,
+      "ry": 92,
+      "angle": -8,
+      "fill": {
+        "gradient": {
+          "type": "radial",
+          "cx": 340,
+          "cy": 430,
+          "r": 120,
+          "stops": [
+            [
+              0,
+              "#ff7a5c"
+            ],
+            [
+              0.4,
+              "#c9372f"
+            ],
+            [
+              0.8,
+              "#7a1818"
+            ],
+            [
+              1,
+              "#3a0a0a"
+            ]
+          ]
+        }
+      },
+      "outline": "#2a0707",
+      "outline_width": 5
+    },
+    {
+      "name": "iris-r",
+      "mirror_of": "iris-l"
+    },
+    {
+      "name": "pupil-l",
+      "kind": "ellipse",
+      "cx": 336,
+      "cy": 366,
+      "rx": 52,
+      "ry": 60,
       "angle": -8,
       "fill": "#0c0d0e"
     },

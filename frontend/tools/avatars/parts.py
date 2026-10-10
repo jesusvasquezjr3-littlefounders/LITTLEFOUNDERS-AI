@@ -226,10 +226,13 @@ def ring_of(piece_id):
 
 
 CLIPS = {}
+BLUR = {}
 
 
 def add(name, markup, bbox=None):
     named[name] = markup
+    if BLUR.get(name):
+        markup = f'<g filter="url(#{blur_filter(BLUR[name])})">{markup}</g>'
     clip = CLIPS.get(name)
     if clip:
         cid = f"clip-{name}"
@@ -285,6 +288,8 @@ def shade_markup(name, mask, cfg):
 for layer in spec["layers"]:
     name = layer["name"]
     kind = layer.get("kind", "shape")
+    if layer.get("blur") and kind != "shape":
+        BLUR[name] = layer["blur"]
     if layer.get("clip_to"):
         CLIPS[name] = layer["clip_to"]
 
