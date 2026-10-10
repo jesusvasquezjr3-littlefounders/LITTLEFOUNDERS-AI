@@ -1,7 +1,7 @@
 ---
 title: Character avatars
 status: draft
-updated: 2026-10-09
+updated: 2026-10-10
 ---
 
 # Character avatars
@@ -116,6 +116,8 @@ Each step ends with something the owner can see and accept or stop.
 Results: Rho 10 KB with about 220 nodes, Zara 10 KB and 207, Liruf 5 KB and 94, Dina 7 KB and 108.
 
 Owner review of the busts: Rho and Zara are about 90 out of 100 with details to improve; Liruf had a green patch between the eyes (a stray highlight piece), now removed and replaced by a soft light band along the top of the snout; Dina's body looked like raised shoulders, and she is a sauropod, so she now keeps only a long, thick neck with a light belly stripe. The traces follow the original well ("calcar fielmente").
+
+Second review: Dina's neck looked like a stick, so it now starts thin at the head and widens toward the bottom, like the original; Liruf's face had places where the components seemed to come apart, so his head outline, jaw and snout are now single smooth shapes drawn through measured points, and the jaw is clipped to the head, which removed the joins and spikes.
 
 Honest assessment: much cleaner than before and symmetric, but not yet at the polish of the Brilliant or Duolingo mascots. Known gaps: Rho's hair, cap and shirt edges are still a little lumpy and his face has no soft shading; Zara's hair is a flat shape with one gradient and her hairline is simplified; Liruf's head is a stack of shapes and the join between snout and cheeks is hard; Dina's neck and chest are simplified from the original body; none has the soft rim light and shading of the originals. The next level is drawing more of the volume (shadows under the hair and cap, light along the jaw, rim lights) and checking every contour against the overlay.
 
