@@ -6,7 +6,7 @@ import { authOf, type AuthMiddleware } from '../middleware/auth.js';
 import { keyFor, type Limits } from '../services/limits.js';
 import type { Mailer } from '../services/mailer.js';
 import type { Unsubscribe } from '../services/unsubscribe.js';
-import type { Vault } from '../services/vault.js';
+import { MENTORS, type Vault } from '../services/vault.js';
 
 /*
  * What a signed-in person sets about their own account. Every handler acts on the account of the
@@ -15,6 +15,11 @@ import type { Vault } from '../services/vault.js';
 const AgeBody = z.object({ age: z.number().int(), guardianPermission: z.boolean().default(false) }).strict();
 const UsernameBody = z.object({ username: z.string().trim().toLowerCase().max(40) }).strict();
 const LocaleBody = z.object({ locale: z.enum(['en-US', 'es-MX', 'pt-BR']) }).strict();
+const ProfileBody = z.object({
+  displayName: z.string().trim().min(1).max(40).optional(),
+  mentor: z.enum(MENTORS).optional(),
+  parentIntent: z.boolean().optional(),
+}).strict();
 
 /** A refusal from a database function, as the error to answer with. */
 function refused(code: string | undefined): ApiError {
@@ -79,6 +84,27 @@ export function createAccountRouter(deps: { vault: Vault; limits: Limits; auth: 
     if (!outcome.ok) throw refused(outcome.error);
 
     sendData(res, { locale: body.data.locale });
+  });
+
+  /*
+   * What the onboarding collected before the account existed, and what a person may change later:
+   * the name they asked to be called, their mentor, and whether they came in as a parent (a
+   * statement, not the verified `parent` type). The database checks each value again.
+   */
+  router.put('/profile', async (req, res) => {
+    const { userId } = authOf(req);
+
+    await limits.consume('ipAccount', keyFor(req.ip ?? 'unknown'));
+
+    const body = ProfileBody.safeParse(req.body);
+
+    if (!body.success) throw new ApiError('BAD_REQUEST');
+
+    const outcome = await vault.setProfile(userId, body.data);
+
+    if (!outcome.ok) throw refused(outcome.error);
+
+    sendData(res, { saved: true });
   });
 
   router.put('/username', async (req, res) => {

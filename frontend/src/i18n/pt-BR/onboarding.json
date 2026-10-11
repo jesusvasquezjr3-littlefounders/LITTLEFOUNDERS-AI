@@ -1,0 +1,60 @@
+{
+  "pageTitle": "Comece",
+  "back": "Voltar",
+  "close": "Sair e ir para a página inicial",
+  "continue": "Continuar",
+  "progress": "Passo {step} de {total}",
+  "artGroup": "Liruf, Zara, o Dr. Rho e Dina, os quatro mentores, juntos",
+  "artMentor": "{mentor}, seu mentor",
+  "aiNote": "Zara, o Dr. Rho, Liruf e Dina são MentorIA: uma inteligência artificial, não uma pessoa.",
+  "mentors": {
+    "zara": { "name": "Zara", "line": "Curiosa e direta. Pergunta por quê até tudo ficar claro." },
+    "rho": { "name": "Dr. Rho", "line": "Paciente e organizado. Explica com exemplos do dia a dia." },
+    "liruf": { "name": "Liruf", "line": "Brincalhão e inquieto. Prefere testar as coisas a ler sobre elas." },
+    "dina": { "name": "Dina", "line": "Calma e atenta. Comemora cada passo, por menor que seja." }
+  },
+  "age": {
+    "label": "Sua idade",
+    "tooYoung": "O LittleFounders começa aos 6 anos. A gente se vê quando você fizer 6!",
+    "tooOld": "{age}? Você seria a pessoa fundadora mais velha da história. Qual é a sua idade de verdade?"
+  },
+  "name": {
+    "label": "Nome",
+    "invalid": "Use só letras, no máximo 40."
+  },
+  "mentor": {
+    "chosen": "Seu mentor"
+  },
+  "learner": {
+    "welcome": { "title": "Oi! Somos os seus mentores", "text": "A gente ajuda você a aprender como o dinheiro funciona, um passo pequeno de cada vez. Primeiro, vamos nos conhecer.", "button": "Começar" },
+    "age": { "title": "Quantos anos você tem?", "text": "Perguntamos para tudo combinar com a sua idade." },
+    "name": { "title": "Como a gente chama você?", "text": "Seu nome ou um apelido já basta." },
+    "mentor": { "title": "{name}, escolha seu mentor", "text": "Um de nós acompanha você em tudo. Dá para trocar depois." },
+    "lessons": { "title": "Prazer, {name}. É assim que se aprende aqui", "text": "Com lições curtas em que você faz coisas, não só lê: você move, escolhe e testa, e eu vou do seu lado." },
+    "games": { "title": "Você também joga", "text": "Minijogos para praticar o que aprendeu. Você se diverte e o aprendizado vem junto." },
+    "mentoria": { "title": "Pergunte o que quiser", "text": "Algo de uma lição que não ficou claro, algo que você ouviu e quer entender, uma ideia que quer montar. Eu acompanho o que você aprende e guio a partir daí." },
+    "seeds": { "title": "Você ganha Sementes", "text": "As Sementes são a moeda do LittleFounders. Você ganha aprendendo e jogando. Não são dinheiro de verdade." },
+    "tasks": { "title": "Tarefas e recompensas", "text": "Eu passo tarefas, e sua mãe, seu pai ou seu responsável também podem passar. Cada tarefa diz de quem veio. Se sua mãe, seu pai ou seu responsável entrar aqui com você, pode ver o seu progresso." },
+    "join": { "title": "{name}, guarde o seu progresso", "text": "Crie sua conta e o que você escolheu fica com você em qualquer aparelho. Criar a conta é grátis.", "now": "Criar minha conta", "later": "Depois", "done": "Concluir" }
+  },
+  "parent": {
+    "welcome": { "title": "Olá! Somos os mentores do LittleFounders", "text": "Acompanhamos seus filhos enquanto aprendem como o dinheiro funciona. Vamos mostrar o que você tem como mãe, pai ou responsável.", "button": "Começar" },
+    "age": { "title": "Quantos anos você tem?", "text": "Perguntamos para mostrar o que é para você." },
+    "minor": { "title": "Esta parte é para mães, pais e responsáveis", "text": "Sem problema. Tem um lugar feito para você, e nós também estamos lá.", "button": "Quero ir para lá" },
+    "name": { "title": "Como a gente chama você?", "text": "Seu primeiro nome já basta." },
+    "mentor": { "title": "{name}, escolha seu mentor", "text": "Ele acompanha você também. Cada filho escolhe o seu." },
+    "child": { "title": "Prazer, {name}. Isto é o que seu filho recebe", "text": "Lições para aprender fazendo, minijogos para praticar, MentorIA para cada dúvida e Sementes como recompensa." },
+    "family": { "title": "Controle familiar", "text": "Você cadastra seus filhos, passa tarefas e decide as recompensas." },
+    "progress": { "title": "Veja como eles aprendem", "text": "Acompanhe o avanço de cada filho: o que terminou, o que está praticando e onde precisa de uma ajuda." },
+    "suggestions": { "title": "Uma sugestão por dia", "text": "Ideias para falar de dinheiro em casa e para seu filho não perder o ritmo, com base no que seu filho aprende e pratica no LittleFounders." },
+    "join": { "title": "{name}, guarde o seu lugar", "text": "Crie sua conta agora. Cadastrar seus filhos é o próximo passo, e criar a conta é grátis.", "now": "Criar minha conta", "later": "Depois", "done": "Concluir" }
+  },
+  "saved": {
+    "text": "{name}, o que você escolheu está salvo neste aparelho.",
+    "textNoName": "O que você escolheu está salvo neste aparelho.",
+    "continue": "Continuar de onde parei",
+    "create": "Criar minha conta",
+    "clear": "Apagar",
+    "cleared": "Apagado. Não há nada salvo neste aparelho."
+  }
+}

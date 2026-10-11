@@ -1,7 +1,7 @@
 ---
 title: Build tasks
 status: scaffold
-updated: 2026-10-10
+updated: 2026-10-11
 ---
 
 # Build tasks
@@ -26,7 +26,7 @@ Gives agents and humans one place to see what to do next. Each task is small, ha
 
 ## Open tasks
 
-> **Scope decided by the owner on 2026-10-10.** The avatar work (T-022, T-023) waits until features need it: the foundations are built. Later the same day the owner opened the work on the platform itself, in this order: sign-in, sign-up and user types (built: [[F-001-authentication]]), then the emails (built: [[F-002-emails]]), then the onboarding. Other open tasks wait unless one of those needs them.
+> **Scope decided by the owner on 2026-10-10.** The avatar work (T-022, T-023) waits until features need it: the foundations are built. Later the same day the owner opened the work on the platform itself, in this order: sign-in, sign-up and user types (built: [[F-001-authentication]]), then the emails (built: [[F-002-emails]]), then the onboarding (flow built, compositions in approval: [[F-003-onboarding]]). Other open tasks wait unless one of those needs them.
 
 | ID | Task | Status | Notes |
 |---|---|---|---|
@@ -34,7 +34,7 @@ Gives agents and humans one place to see what to do next. Each task is small, ha
 | T-003 | Restore the legal pages (terms and privacy) before any production release | open | They were removed with the restart. |
 | T-004 | Decide how backups move off the `filebase` service, or keep that service running | open | The backup workflows depend on it. |
 | T-005 | Fix the GitHub ruleset on `main` that requires a check which no longer exists | open |  |
-| T-006 | Wire the landing calls to action once the first feature exists | open | They render and do nothing. |
+| T-006 | Wire the landing calls to action once the first feature exists | done | 2026-10-10: each starts the onboarding on its own walk ([[F-003-onboarding]]). |
 | T-009 | Bring Bencho blocks into the product one at a time as screens need them | open | Procedure and licence in [[UI-LIBRARIES]]; nothing to unblock. |
 | T-010 | Cut the frontend payload further, if it ever matters | open | Measured 2026-10-09: 289 KB gzip of JavaScript for the landing (React DOM 84, app 131, Motion 49, i18n 17.5, router 7, page 10) plus a lazy 77 KB chunk of icon data. React DOM and Motion are not reducible (Cojeev and Bklit import the full Motion). Stable libraries are now split into their own chunks for caching. Revisit with real pages and measured load times; see [[PERFORMANCE-AND-SCALING]]. |
 | T-011 | Run a real screen reader (NVDA on Windows, VoiceOver on a Mac or phone) and a phone pass over the landing | open | The axe and keyboard audit is done and recorded in [[UI-LIBRARIES]]; what only a person with that equipment can confirm is left. |
@@ -59,6 +59,9 @@ Gives agents and humans one place to see what to do next. Each task is small, ha
 | T-030 | Update `database/scripts/disposable-stack.sh` to the new local settings | open | It still writes the previous version's settings (automatic confirmation, anonymous accounts). Needed before any security tool is pointed at a disposable stack ([[ai-pentesting]]). |
 | T-031 | Decide how long a line of the mail delivery history is kept, and delete older ones | open | `email_logs` holds addresses, which are personal data, some of them minors'. With the owner ([[CHILD-SAFETY-AND-PRIVACY]]). |
 | T-032 | Footer of the emails: links for the social marks, and a postal address | open | The marks have no links by the owner's decision, for now. A postal address is required by anti-spam law for promotional email in several countries; needed before the first promotional email. [[F-002-emails]]. |
+| T-033 | Onboarding compositions: render the loops of the approved stills | done | Rendered 2026-10-10: 22 scenes, both color modes, shown by `StepArt.tsx`. [[F-003-onboarding]], [[CHARACTER-COMPOSITIONS]]. |
+| T-034 | Onboarding compositions for mini-games and Seeds, and the Seed's drawing | done | Approved by the owner on 2026-10-10 after one round of changes (D-043, D-044). Their loops are part of T-033. |
+| T-035 | Finish checking the onboarding | open | Done 2026-10-10 with `npm run audit:onboarding`: accessibility and keyboard on every screen of both walks, the sign-up under 13, every loop. Left: a screen reader and a real phone, by a person; Google's round trip at the last step waits for T-019. [[F-003-onboarding]]. |
 
 ## Related
 

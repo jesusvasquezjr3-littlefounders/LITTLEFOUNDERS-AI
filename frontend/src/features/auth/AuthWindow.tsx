@@ -12,6 +12,8 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp
 import { GoogleMark } from '@/components/icons/google';
 import { LoopVideo } from '@/features/landing/LoopVideo';
 import { useSession } from '@/features/auth/session';
+import { NO_PERMISSION_FROM } from '@/features/onboarding/Handoff';
+import { onboarding } from '@/features/onboarding/store';
 import { useCoreCopy, useLocale } from '@/i18n/useCopy';
 import { ApiFailure } from '@/lib/api';
 import { ENTER } from '@/lib/motionPresets';
@@ -70,13 +72,18 @@ export default function AuthWindow({ isOpen, onOpenChange, entry, opener }: Prop
 
   /** After a sign-in: the age step if it is still owed, otherwise done. */
   const finish = useCallback((needsAge: boolean) => {
-    if (needsAge) return setStep('age');
+    // An age given in the onboarding is used: recorded without asking when it needs no permission
+    // box (Handoff.tsx), or shown already filled in when it does.
+    const given = onboarding.get();
+    const ageIsComing = given?.finished === true && given.age !== undefined && given.age >= NO_PERMISSION_FROM;
+
+    if (needsAge && !ageIsComing) return setStep('age');
 
     onOpenChange(false);
     sileo.success({ title: copy.welcome });
   }, [copy.welcome, onOpenChange]);
 
-  const title = step === 'age' ? copy.ageTitle : step === 'code' ? copy.codeTitle : step === 'identifier' ? (mode === 'signUp' ? copy.signUpTitle : copy.signInTitle) : copy.title;
+  const title = step === 'age' ? copy.ageTitle : step === 'code' ? copy.codeTitle : step === 'identifier' ? (mode === 'signUp' ? copy.signUpTitle : copy.signInTitle) : mode === 'signUp' ? copy.signUpTitle : copy.title;
 
   return <Dialog open={isOpen} onOpenChange={onOpenChange}>
     <DialogContent className="!w-[min(420px,calc(100%-32px))] !gap-0 overflow-hidden !p-0 text-center"
@@ -97,6 +104,7 @@ export default function AuthWindow({ isOpen, onOpenChange, entry, opener }: Prop
         <AnimatePresence mode="wait" initial={false}>
           <motion.div key={step} className="grid gap-5" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2, ease: ENTER }}>
             {step === 'choose' ? <ChooseStep
+              isJoining={mode === 'signUp'}
               onEmail={() => setStep('identifier')}
               onSignUp={() => { setMode('signUp'); setStep('identifier'); }}
               onGoogle={finish}
@@ -105,7 +113,8 @@ export default function AuthWindow({ isOpen, onOpenChange, entry, opener }: Prop
               mode={mode}
               initial={identifier}
               locale={locale}
-              onBack={() => { setMode('signIn'); setStep('choose'); }}
+              // Back to the choice it came from: a person who is joining stays joining.
+              onBack={() => { setMode(entry.mode); setStep('choose'); }}
               onSent={(value, resendAfterSeconds) => { setIdentifier(value); setResendAt(Date.now() + resendAfterSeconds * 1000); setStep('code'); }}
             /> : null}
             {step === 'code' ? <CodeStep
@@ -162,7 +171,7 @@ function BackButton({ onClick, label }: { onClick: () => void; label: string }) 
   </Button>;
 }
 
-function ChooseStep({ onEmail, onSignUp, onGoogle }: { onEmail: () => void; onSignUp: () => void; onGoogle: (needsAge: boolean) => void }) {
+function ChooseStep({ isJoining, onEmail, onSignUp, onGoogle }: { isJoining: boolean; onEmail: () => void; onSignUp: () => void; onGoogle: (needsAge: boolean) => void }) {
   const copy = useCoreCopy().auth;
   const session = useSession();
   const [waiting, setWaiting] = useState(false);
@@ -197,14 +206,14 @@ function ChooseStep({ onEmail, onSignUp, onGoogle }: { onEmail: () => void; onSi
         <GoogleMark className="size-5 shrink-0" />{copy.google}
       </Button>
       <Button type="button" fullWidth onClick={onEmail}>
-        <MorphIcon icon={Mail} size={20} strokeWidth={2} reducedMotion="user" />{copy.emailOrUsername}
+        <MorphIcon icon={Mail} size={20} strokeWidth={2} reducedMotion="user" />{isJoining ? copy.continueWithEmail : copy.emailOrUsername}
       </Button>
     </div>
     <p role="status" className={`${lead} ${waiting || problem ? '' : 'sr-only'}`}>{waiting ? copy.googleWaiting : problem}</p>
-    <p className="m-0 flex flex-wrap items-center justify-center gap-x-2 text-[length:var(--fs-body)] text-[color:var(--v-text-2)]">
+    {isJoining ? null : <p className="m-0 flex flex-wrap items-center justify-center gap-x-2 text-[length:var(--fs-body)] text-[color:var(--v-text-2)]">
       {copy.newHere}
       <Button type="button" variant="ghost" size="sm" className={textLink} onClick={onSignUp}>{copy.createAccount}</Button>
-    </p>
+    </p>}
   </>;
 }
 
@@ -365,7 +374,7 @@ function AgeStep({ onDone }: { onDone: () => void }) {
   const copy = useCoreCopy().auth;
   const session = useSession();
   const failureText = useFailureText();
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(() => String(onboarding.get()?.age ?? ''));
   const [permission, setPermission] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);

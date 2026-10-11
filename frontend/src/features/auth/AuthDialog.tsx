@@ -1,6 +1,8 @@
 import { createContext, lazy, Suspense, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useSession } from '@/features/auth/session';
 import type { AuthEntry, Mode } from '@/features/auth/AuthWindow';
+import { NO_PERMISSION_FROM } from '@/features/onboarding/Handoff';
+import { useOnboardingAnswers } from '@/features/onboarding/store';
 
 /*
  * Lets anything open the sign-in window (`useAuthDialog().open()`), and opens it by itself at the
@@ -14,7 +16,8 @@ const loadWindow = () => import('@/features/auth/AuthWindow');
 
 const AuthWindow = lazy(loadWindow);
 
-type AuthDialogContext = { open: (mode?: Mode) => void; preload: () => void };
+/** `join` is creating an account with every way to do it on offer (Google or a code): where the onboarding ends. */
+type AuthDialogContext = { open: (mode?: Mode | 'join') => void; preload: () => void };
 
 const Context = createContext<AuthDialogContext | null>(null);
 
@@ -33,6 +36,10 @@ export function AuthDialogProvider({ children }: { children: ReactNode }) {
   // One visit to the window: where it starts, and a number that makes each visit start fresh.
   const [visit, setVisit] = useState<{ id: number; entry: AuthEntry } | null>(null);
   const askedAge = useRef(false);
+  const answers = useOnboardingAnswers();
+  // The person already gave an age in the onboarding that needs no permission box: it is recorded
+  // for them (features/onboarding/Handoff.tsx) and the window does not ask again.
+  const ageIsComing = answers?.finished === true && answers.age !== undefined && answers.age >= NO_PERMISSION_FROM;
   const opener = useRef<Element | null>(null);
 
   const start = useCallback((entry: AuthEntry) => {
@@ -43,19 +50,19 @@ export function AuthDialogProvider({ children }: { children: ReactNode }) {
 
   // An account that has not said its age yet: ask as soon as it is seen, once per page load.
   useEffect(() => {
-    if (session.status !== 'signedIn' || !session.account?.needsAge || askedAge.current || isOpen) return;
+    if (session.status !== 'signedIn' || !session.account?.needsAge || askedAge.current || isOpen || ageIsComing) return;
 
     askedAge.current = true;
     start({ mode: 'signIn', step: 'age' });
-  }, [session.status, session.account, isOpen, start]);
+  }, [session.status, session.account, isOpen, start, ageIsComing]);
 
   // The window asked the age itself at the end of a sign-in: do not ask again when it closes.
   useEffect(() => {
-    if (isOpen && session.status === 'signedIn') askedAge.current = true;
-  }, [isOpen, session.status]);
+    if (isOpen && session.status === 'signedIn' && !ageIsComing) askedAge.current = true;
+  }, [isOpen, session.status, ageIsComing]);
 
   const context = useMemo<AuthDialogContext>(() => ({
-    open: (mode = 'signIn') => start({ mode, step: mode === 'signUp' ? 'identifier' : 'choose' }),
+    open: (mode = 'signIn') => start(mode === 'join' ? { mode: 'signUp', step: 'choose' } : { mode, step: mode === 'signUp' ? 'identifier' : 'choose' }),
     preload: () => { void loadWindow(); },
   }), [start]);
 

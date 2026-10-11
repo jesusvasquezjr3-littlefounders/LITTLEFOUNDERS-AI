@@ -1,7 +1,7 @@
 ---
 title: Decision log
 status: scaffold
-updated: 2026-10-10
+updated: 2026-10-11
 ---
 
 # Decision log
@@ -231,9 +231,65 @@ Every email has, in this order: the logo, a picture of the characters, the messa
 
 ### D-035: "Unsubscribe" stops the optional emails, never the ones about the account
 
-Date: 2026-10-10. Status: accepted, with one part assumed.
+Date: 2026-10-10. Status: accepted.
 
-The owner asked for an "Unsubscribe" link in every email. What it stops was assumed while building and is to be confirmed: emails that are not about the account (the welcome, later news). Emails that are part of using the account, such as a sign-in code, always arrive. Details: [[F-002-emails]].
+The owner asked for an "Unsubscribe" link in every email, and confirmed what it stops after seeing it built: emails that are not about the account (the welcome, later news). Emails that are part of using the account, such as a sign-in code, always arrive. Details: [[F-002-emails]].
+
+### D-036: The AI is a mentor, "MentorIA"; a tutor is a child's parent or guardian
+
+Date: 2026-10-10. Status: accepted.
+
+The characters follow a mentor model: the one a person chooses accompanies them through the whole experience. The AI behind them is always called **MentorIA**, and is never called a tutor. "Tutor" means only the adult responsible for a child (parent or tutor, "padre o tutor"). The two words are never interchanged, in the interface, in the copy or in the documents: a task, for example, is given either by MentorIA or by the child's parent or tutor, and the text always says which. In English the name is written **MentorAI**: every language gets a professional translation, not a transliteration. The terms are in [[GLOSSARY]].
+
+### D-037: The onboarding is two walks, and the person chooses a mentor in it
+
+Date: 2026-10-10. Status: accepted.
+
+The home page's two buttons start the onboarding: "I'm a parent" for somebody who wants a parent or guardian's account, "I just want to learn" for an account that becomes a child's or a universal one by the age given. It presents the platform and its value step by step and collects the first data (name, age, the language automatically). The person chooses their mentor in it and can change it later; the four mentors are together at the start, and from the choice on the chosen one accompanies the person. At the end the person is offered to join, and decides whether to create the account now or later. What the screens say about lessons, mini-games, MentorIA, Seeds, tasks and the family functions is for the onboarding only and defines none of those features. Design: [[F-003-onboarding]].
+
+### D-038: What is answered before an account stays on the device
+
+Date: 2026-10-10. Status: accepted.
+
+If the person chooses "later", their answers are kept in the browser, so a later sign-up does not ask again. They are kept for 30 days and can be erased at any time with a visible control, because a device may be shared.
+
+### D-039: After "later" the person returns to the home page
+
+Date: 2026-10-10. Status: accepted, for now.
+
+There is no dashboard or application to arrive at yet. Until there is, "later" returns to the home page, with a discreet notice that what was chosen is saved on this device. Where the onboarding leads is decided when the application is started.
+
+### D-040: Somebody under 18 on the parent's walk is taken to the learner's
+
+Date: 2026-10-10. Status: accepted.
+
+A person who comes in through "I'm a parent" and gives an age under 18 is led kindly to the learner's walk. An account that comes in as a parent is an ordinary account with that intent recorded; the verification that makes it a `parent` comes later (D-030).
+
+### D-041: Compositions of the onboarding: one reusable set, approved as stills, loops afterwards
+
+Date: 2026-10-10. Status: accepted.
+
+Every step of the onboarding has a composition, delivered as a looping video. To keep the cost down the compositions are reusable: in most steps the mentor does something simple (agrees with a nod, looks toward the options up and down, leans in), and only the steps that need it (mini-games, Seeds) get a highly composed scene where the mentor does a specific thing in a specific setting. The opening composition, with the four together, is the same for both walks. The owner approves each composition one by one as a still image, and only then is its loop rendered. All of them are played on one reusable set with lamps and good light, built to the characters' sizes and proportions; the characters must look enthusiastic (the first drafts, standing and turning their heads, were rejected), cast shadows on the set, and have visual effects.
+
+### D-042: Rho and Liruf never raise their elbows or hands
+
+Date: 2026-10-10. Status: accepted.
+
+Because of a defect left by the program that generated their 3D models, which shows in renders, Rho and Liruf may not raise their elbows or hands in any composition made from now on. Everything else on them may move freely. The defect is not to be fixed, and the compositions that already exist are not regenerated. The rule is in [[CHARACTER-COMPOSITIONS]] and is enforced by the scene code.
+
+### D-043: A Seed is a sunflower seed
+
+Date: 2026-10-10. Status: accepted.
+
+The Seed of LittleFounders (D-024) is drawn as a sunflower seed, and it has to be styled well in 3D and in 2D (SVG or Lottie), because it is the product's currency and will be seen everywhere. The first drawing (a pointed teardrop, a deep indigo shell with cream stripes and a golden edge) is `frontend/src/components/icons/seed.tsx` in 2D and `frontend/tools/render/seed-model.js` in 3D; the owner approved it the same day, together with the Seeds composition.
+
+### D-044: The two special compositions of the onboarding
+
+Date: 2026-10-10. Status: accepted.
+
+Only two steps of the onboarding have a composition of their own; every other step uses the reusable poses on the studio (D-041). **Mini-games:** the mentor in an open sports car (no roof), driving flat out, or with the illusion of it, on a small cut-out piece of race track. **Seeds:** a composition that shows the Seeds themselves (D-043). After the owner approves these two, every screen of the onboarding is shown to the owner one by one, for both walks.
+
+On the same day the owner approved the eighteen stills made so far (the group's two, and the three poses and the portrait of each mentor), the four mentor lines, and the Portuguese words for Seeds ("Sementes") and for a guardian (as written in the Portuguese locale file).
 
 ## Related
 
@@ -246,6 +302,8 @@ The owner asked for an "Unsubscribe" link in every email. What it stops was assu
 - [[UI-LIBRARIES]]
 - [[F-001-authentication]]
 - [[F-002-emails]]
+- [[F-003-onboarding]]
+- [[CHARACTER-COMPOSITIONS]]
 - [[PRODUCT-REQUIREMENTS]]
 - [[ARCHITECTURE]]
 - [[SYSTEM-DESIGN]]

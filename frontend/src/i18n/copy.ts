@@ -1,8 +1,11 @@
 import enCore from './en-US/core.json';
+import enOnboarding from './en-US/onboarding.json';
 import enSite from './en-US/site.json';
 import esCore from './es-MX/core.json';
+import esOnboarding from './es-MX/onboarding.json';
 import esSite from './es-MX/site.json';
 import ptCore from './pt-BR/core.json';
+import ptOnboarding from './pt-BR/onboarding.json';
 import ptSite from './pt-BR/site.json';
 
 /*
@@ -13,11 +16,12 @@ import ptSite from './pt-BR/site.json';
  *
  *   core  the shell: navigation labels, theme and language controls
  *   site  the landing page and the cookie choice
+ *   onboarding  the walk before an account, and the notice of what it saved
  *
  * A key lives in exactly one namespace.
  */
 export const copy = {
-  'en-US': { core: enCore, site: enSite },
-  'es-MX': { core: esCore, site: esSite },
-  'pt-BR': { core: ptCore, site: ptSite },
+  'en-US': { core: enCore, site: enSite, onboarding: enOnboarding },
+  'es-MX': { core: esCore, site: esSite, onboarding: esOnboarding },
+  'pt-BR': { core: ptCore, site: ptSite, onboarding: ptOnboarding },
 } as const;

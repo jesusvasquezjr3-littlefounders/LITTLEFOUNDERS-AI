@@ -17,6 +17,8 @@ const Account = z.object({
   username: z.nullable(z.string()),
   displayName: z.string(),
   locale: z.enum(['en-US', 'es-MX', 'pt-BR']),
+  mentor: z.nullable(z.enum(['zara', 'rho', 'liruf', 'dina'])),
+  parentIntent: z.boolean(),
   roles: z.array(z.enum(['universal', 'child', 'parent', 'admin', 'superadmin'])),
   type: z.nullable(z.enum(['child', 'universal'])),
   needsAge: z.boolean(),
@@ -31,6 +33,8 @@ const CodeSent = z.object({ sent: z.boolean(), codeLength: z.number(), expiresIn
 const AgeRecorded = z.object({ type: z.nullable(z.enum(['child', 'universal'])), recorded: z.boolean() });
 
 const SignedOut = z.object({ signedOut: z.boolean() });
+
+const ProfileSaved = z.object({ saved: z.boolean() });
 
 const LocaleSaved = z.object({ locale: z.enum(['en-US', 'es-MX', 'pt-BR']) });
 
@@ -55,6 +59,8 @@ type Session = {
   requestCode: (identifier: string, locale: string) => Promise<z.infer<typeof CodeSent>>;
   verifyCode: (identifier: string, code: string) => Promise<Account>;
   declareAge: (age: number, guardianPermission: boolean) => Promise<Account>;
+  /** Sets the name the person asked to be called, their mentor, or that they came in as a parent. */
+  saveProfile: (profile: { displayName?: string; mentor?: 'zara' | 'rho' | 'liruf' | 'dina'; parentIntent?: boolean }) => Promise<Account>;
   /** Opens Google's account chooser in a small window (or in this tab when the browser blocks windows) and resolves when it is done. */
   signInWithGoogle: () => Promise<GoogleResult>;
   /** Asks Core for the session again, after something outside this page changed it. */
@@ -166,6 +172,18 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       // The welcome email goes out when the age is recorded: let the language reach the account first.
       await localeSaved.current;
       await api('/api/v1/account/age', AgeRecorded, { method: 'POST', body: { age, guardianPermission } });
+
+      const next = await fetchAccount();
+
+      if (!next) throw new ApiFailure('SESSION_EXPIRED', 401);
+
+      adopt(next);
+
+      return next;
+    },
+
+    async saveProfile(profile) {
+      await api('/api/v1/account/profile', ProfileSaved, { method: 'PUT', body: profile });
 
       const next = await fetchAccount();
 

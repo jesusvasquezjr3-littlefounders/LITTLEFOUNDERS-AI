@@ -1,7 +1,7 @@
 ---
 title: Child safety and privacy
 status: scaffold
-updated: 2026-10-10
+updated: 2026-10-11
 ---
 
 # Child safety and privacy
@@ -59,6 +59,10 @@ Nothing is collected from a visitor who has not signed in: no request reaches th
 - [ ] Consent for analytics and cookies.
 - [ ] Breach notification duties.
 - [ ] The rule that no real money is represented.
+
+## Before an account: answers kept on the device
+
+Current state (2026-10-10, [[F-003-onboarding]], D-038). The onboarding asks an age, a first name or nickname and a choice of mentor before any account exists. They are kept in the browser's `localStorage` (`lf.onboarding`) and nowhere else: no request carries them until the person creates an account, and then they go only to Core as that account's own profile. The age is asked before the name, in a neutral way. They are forgotten after 30 days and can be erased at any time. They must never appear in an analytics event, an address or a log. A child under 18 is told in the onboarding that a parent or guardian who joins them can see their progress. To raise with counsel before production: whether answers held only on the device count as collected in each jurisdiction, and whether the service is "mixed audience" under COPPA.
 
 ## Related
 

@@ -1,7 +1,7 @@
 ---
 title: Glossary
 status: scaffold
-updated: 2026-10-10
+updated: 2026-10-11
 ---
 
 # Glossary
@@ -35,8 +35,11 @@ Language models drift between synonyms. A fixed vocabulary keeps table names, id
 | universal | (not shown yet) | (not shown yet) | A user type: an account whose declared age is 18 or over. |
 | parent | (not shown yet) | (not shown yet) | A user type on top of `universal`: a verified parent. The verification is a later feature. |
 | admin, superadmin | (not shown yet) | (not shown yet) | Staff types on top of `universal`. `superadmin` is only for a `@littlefounders.ai` address and grants the others. |
+| MentorAI | MentorIA | MentorIA | The AI that accompanies a person, through the character they chose as their mentor ([[DECISIONS]] D-036). Always this word. Never "tutor", "AI tutor" or "assistant". Written MentorAI in English and MentorIA in Spanish and Portuguese (where the abbreviation is IA). The documents, which are in English, use either. |
+| mentor | mentor | mentor | The character (Zara, Rho, Liruf or Dina) a person chooses to accompany them; MentorIA speaks through it. Never "tutor". |
+| parent or tutor | padre o tutor | confirmed by the owner; written in `pt-BR/onboarding.json` (this document is ASCII English) | The adult responsible for a child. "Tutor" has only this meaning in the product; it never names the AI or a character. English copy shown to users says "parent or guardian". |
 | Core | | | The backend: the only server the browser calls ([[DECISIONS]] D-028). Not a word a user reads. |
-| Seeds | Semillas | to confirm with the owner ("Sementes" is the direct translation) | The official currency of LittleFounders ([[DECISIONS]] D-024). It never represents real money. How it is earned and used is not designed yet. |
+| Seeds | Semillas | Sementes | The official currency of LittleFounders ([[DECISIONS]] D-024). A Seed is a sunflower seed (D-043) and always looks the same: the icon `components/icons/seed.tsx` and the 3D model of the compositions. It never represents real money. How it is earned and used is not designed yet. |
 
 ## Related
 

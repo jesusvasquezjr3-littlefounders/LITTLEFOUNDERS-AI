@@ -48,6 +48,8 @@ function accountView(userId: string, account: AccountContext) {
     username: account.username,
     displayName: account.displayName,
     locale: account.locale,
+    mentor: account.mentor,
+    parentIntent: account.parentIntent,
     roles: account.roles,
     type,
     // An account without a declared age has no type yet and must go through the age step first.

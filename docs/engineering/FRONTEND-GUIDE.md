@@ -1,7 +1,7 @@
 ---
 title: Frontend guide
 status: draft
-updated: 2026-10-10
+updated: 2026-10-11
 ---
 
 # Frontend guide
@@ -156,6 +156,7 @@ Plausible, Umami and Google Analytics 4 load only after the visitor accepts the 
 
 Not decided; do not guess them. Raise each with the owner when a feature needs it.
 
+- Current state: two more routes exist outside the shell, `/onboarding` and `/onboarding/parent` ([[F-003-onboarding]]): one thing per screen, their own header (back, progress, close), and the step's name in the address. The answers given there are the second thing kept in `localStorage` (`lf.onboarding`, no token, erased after 30 days or on request).
 - [ ] Routing beyond `/` and the 404 page, a real HTTP 404 status for unknown paths, and the rule for splitting code per route.
 - [ ] State management and server-state rules beyond the session (which is a context, above).
 - [ ] Caching of server data: nothing is cached today, and the first feature that lists data will need a rule.

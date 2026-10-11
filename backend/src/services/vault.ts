@@ -10,12 +10,17 @@ import type { Config } from '../config.js';
 export const ROLES = ['universal', 'child', 'parent', 'admin', 'superadmin'] as const;
 export type Role = (typeof ROLES)[number];
 
+/** The four characters a person can choose as their mentor. */
+export const MENTORS = ['zara', 'rho', 'liruf', 'dina'] as const;
+
 const Context = z.object({
   active: z.boolean(),
   email: z.string().nullable(),
   username: z.string().nullable(),
   displayName: z.string(),
   locale: z.enum(['en-US', 'es-MX', 'pt-BR']),
+  mentor: z.enum(MENTORS).nullable(),
+  parentIntent: z.boolean(),
   ageDeclared: z.boolean(),
   roles: z.array(z.enum(ROLES)),
 });
@@ -114,6 +119,16 @@ export function createVault(config: Config) {
 
     async setProductEmails(userId: string, wanted: boolean) {
       return parse('core_set_product_emails', Outcome, await rpc('core_set_product_emails', { p_user: userId, p_wanted: wanted }));
+    },
+
+    /** What the onboarding collected. A value left out is not changed. */
+    async setProfile(userId: string, profile: { displayName?: string | undefined; mentor?: string | undefined; parentIntent?: boolean | undefined }) {
+      return parse('core_set_profile', Outcome, await rpc('core_set_profile', {
+        p_user: userId,
+        p_display_name: profile.displayName ?? null,
+        p_mentor: profile.mentor ?? null,
+        p_parent_intent: profile.parentIntent ?? null,
+      }));
     },
 
     async grantRole(actorId: string, targetId: string, role: string) {

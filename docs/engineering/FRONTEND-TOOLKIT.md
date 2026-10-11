@@ -1,7 +1,7 @@
 ---
 title: Frontend toolkit
 status: draft
-updated: 2026-10-10
+updated: 2026-10-11
 ---
 
 # Frontend toolkit
@@ -126,13 +126,14 @@ Every tool takes `--theme light|dark`, `--lang en-US|es-MX|pt-BR`, `--width <px>
 | `npm run audit:scene` | Where the visible scene sits inside each poster in `public/landing` | Information: a poster marked "off center" must be cropped where it is shown (the problem scene is) |
 | `npm run audit:color` | On the tokens the page uses, light and dark: the label color each fill needs, text and edge contrast, and the color-vision separation of the fills that sit together ([[RESEARCH-FOUNDATION]] section 9) | Labels at least 4.5:1; text 4.5:1; edges 3:1. Pairs under about 15 in the worst case are listed and need a second channel (icon and word), not a new color |
 | `npm run audit:shot` | Full-page screenshots to look at, into `frontend/audit-out/` | Not a check; it is how the page is looked at |
+| `npm run audit:onboarding` | Walks the onboarding with the keyboard only and checks every screen (axe-core, focus, target sizes, cut text, sideways scroll, the composition's video); `--walk parent`, `--matrix` for both walks at four widths in the three languages, `--account` to create an account at the end as a child of 9 (needs the whole local stack) | Screenshots in `audit-out/onboarding/` |
 | `npm run audit:signin` | Walks the sign-in window end to end in a real browser (choose, email, a wrong code, the right code read from the local mail catcher, an impossible age, the permission box, the account menu, sign out), runs axe-core on each step with the rule set of `audit:a11y`, and saves a screenshot of each step into `frontend/audit-out/signin/`. Takes `--width`, `--lang`, `--theme`, `--age`. Needs the local stack, Core and the dev server running ([[ENVIRONMENT-SETUP]]); it creates one synthetic account per run | Every step reached and no axe violation; then look at the screenshots |
 
 Typical use: `npm run audit:layout -- --matrix`, `npm run audit:a11y -- --matrix`, `npm run audit:keyboard -- --matrix --themes light,dark`, then `npm run audit:grid -- --width 390 --lang es-MX` and `npm run audit:shot -- --width 390` to see it. Run the matrix of a check after a change that could affect it. When a page or a component is added, extend the tool that would otherwise miss it (the sheet and the menu are opened by selectors in `lib.mjs`; the section structure is read from `main > div > section`).
 
 ## 6. The render tool
 
-For a scene with the characters (hero, problem, the sign-in window, the 404 page, and the still at the top of the emails: `npm run render:email`, which writes `public/email/v1/` and needs pngquant). To look at one character alone, add `--only rho --close` (and `--cam side`) to a `--still` run. `npm run render:signin`, `npm run render:problem` and `npm run render:notfound` render a scene to `public/landing/<scene>/` as an MP4 and a WebP poster for each color mode; `--still 0,3,6` writes PNGs to `audit-out/` to look at first; `--mode` and `--frames` narrow a run. Chrome and Blender are required (`BLENDER` and `CHROME_PATH` name them if they are elsewhere), and the artist models come from `glb/`. Method, rules and the scenes that exist: [[CHARACTER-COMPOSITIONS]]. `npm run render:loading` is the exception in shape: it renders the loading window's runners (12 frames of one stride each, transparent) and builds the AVIF sprite sheets with Python and Pillow 11.3 or later; see "The loading window" in [[FRONTEND-GUIDE]]. Like the audit tools these are run by hand and are not a gate.
+For a scene with the characters (hero, problem, the sign-in window, the 404 page, and the still at the top of the emails: `npm run render:email`, which writes `public/email/v1/` and needs pngquant; the onboarding's loops: `npm run render:onboarding -- --loops` (about an hour for all 22 scenes; `--scene <name>` for one), and without `--loops` a still, with `--draft` to look at it without writing it to `public/`). To look at one character alone, add `--only rho --close` (and `--cam side`) to a `--still` run. `npm run render:signin`, `npm run render:problem` and `npm run render:notfound` render a scene to `public/landing/<scene>/` as an MP4 and a WebP poster for each color mode; `--still 0,3,6` writes PNGs to `audit-out/` to look at first; `--mode` and `--frames` narrow a run. Chrome and Blender are required (`BLENDER` and `CHROME_PATH` name them if they are elsewhere), and the artist models come from `glb/`. Method, rules and the scenes that exist: [[CHARACTER-COMPOSITIONS]]. `npm run render:loading` is the exception in shape: it renders the loading window's runners (12 frames of one stride each, transparent) and builds the AVIF sprite sheets with Python and Pillow 11.3 or later; see "The loading window" in [[FRONTEND-GUIDE]]. Like the audit tools these are run by hand and are not a gate.
 
 ## 7. The avatar tools
 

@@ -1,7 +1,7 @@
 ---
 title: Database guide
 status: scaffold
-updated: 2026-10-10
+updated: 2026-10-11
 ---
 
 # Database guide
@@ -34,7 +34,7 @@ The database is the last line of defense for children's data. This guide holds t
 
 ## Current state
 
-- Self-hosted Supabase is pinned in `database/SUPABASE_VERSION`. `database/migrations/0001_identity.sql` is the first migration of the restart: profiles, user types, the age record and the audit trail ([[F-001-authentication]]). `0002_email.sql` adds what the emails need: whether an account takes the optional emails, the functions that read and set an account's language, and `email_logs`, the mail service's delivery history, which is the one table a service reads and writes directly (the mail service, with the service key and only the three privileges it uses) ([[F-002-emails]]).
+- Self-hosted Supabase is pinned in `database/SUPABASE_VERSION`. `database/migrations/0001_identity.sql` is the first migration of the restart: profiles, user types, the age record and the audit trail ([[F-001-authentication]]). `0002_email.sql` adds what the emails need: whether an account takes the optional emails, the functions that read and set an account's language, and `email_logs`, the mail service's delivery history, which is the one table a service reads and writes directly (the mail service, with the service key and only the three privileges it uses) ([[F-002-emails]]). `0003_onboarding.sql` adds the chosen mentor and the parent intent to the profile and the function that sets them and the name ([[F-003-onboarding]]).
 - The pattern it sets, to follow until the conventions above are written with the owner: every table has row-level security on and **no policy**, and `anon`, `authenticated` and `service_role` are revoked from it, so nothing reaches a table from outside; the backend works only through `SECURITY DEFINER` functions named `core_*`, with an empty `search_path` and fully qualified names, executable by `service_role` alone (Supabase's default privileges hand new functions to every API role, so each migration revokes them); a rule that matters is a trigger or a constraint, so it holds whoever writes; personal data is kept to what a feature needs (an age, not a birth date).
 - Migrations are applied by `npm run db:migrate` in `database/` (`scripts/local-stack.sh`), one transaction per file, recorded with a checksum in `public.schema_migrations`; an applied file is never edited. `npm run db:reset` rebuilds the local database from zero and deletes local data.
 - The local stack is closed like production (it mounts `database/railway/kong/kong.yml`) and has a mail catcher at `http://localhost:8025` where the emails arrive.

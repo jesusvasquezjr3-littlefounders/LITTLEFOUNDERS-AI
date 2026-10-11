@@ -29,7 +29,9 @@
     "render:notfound": "node tools/render/render-scene.mjs --scene notfound",
     "render:loading": "node tools/render/render-loading.mjs",
     "render:email": "node tools/render/render-email.mjs",
-    "audit:signin": "node tools/audit/signin.mjs"
+    "render:onboarding": "node tools/render/render-onboarding.mjs",
+    "audit:signin": "node tools/audit/signin.mjs",
+    "audit:onboarding": "node tools/audit/onboarding.mjs"
   },
   "dependencies": {
     "@number-flow/react": "^0.6.2",

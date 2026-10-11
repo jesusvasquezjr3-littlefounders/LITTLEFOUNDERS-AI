@@ -8,6 +8,7 @@ import { CookieConsentBanner } from '@/components/CookieConsentBanner';
 import { AppShell } from '@/components/AppShell';
 import { AuthDialogProvider } from '@/features/auth/AuthDialog';
 import { SessionProvider } from '@/features/auth/session';
+import { OnboardingHandoff } from '@/features/onboarding/Handoff';
 import { releaseBootVeil } from '@/lib/boot';
 
 // Development only: the avatars alive. `import.meta.env.DEV` is false in a production build, so this chunk is not shipped.
@@ -22,6 +23,8 @@ const NotFound = lazy(() => import('@/features/notFound/NotFound').then((module)
 
 const Unsubscribe = lazy(() => import('@/features/email/Unsubscribe').then((module) => ({ default: module.Unsubscribe })));
 
+const Onboarding = lazy(() => import('@/features/onboarding/Onboarding').then((module) => ({ default: module.Onboarding })));
+
 const AuthCallback = lazy(() => import('@/features/auth/AuthCallback').then((module) => ({ default: module.AuthCallback })));
 
 /** Toasts follow the visitor's theme (not the operating system's), drawn as the opposite surface so they stand off the page. */
@@ -33,7 +36,8 @@ function ThemedToaster() {
 
 /*
  * The whole app: the landing at `/` inside the site shell, the page a Google sign-in comes back to
- * (outside the shell: it often lives in a small window), the page the "Unsubscribe" link of an email
+ * (outside the shell: it often lives in a small window), the onboarding's two paths (outside the
+ * shell too: one thing per screen), the page the "Unsubscribe" link of an email
  * opens, and the not-found page for every other URL
  * (the shell shows a skeleton while a page's code loads). The session and the sign-in window are
  * provided here, above every page. Reduced motion is honored once, here,
@@ -58,7 +62,10 @@ export function App() {
         <ThemedToaster />
         <SessionProvider>
           <AuthDialogProvider>
+            <OnboardingHandoff />
             <Routes>
+              <Route path="onboarding" element={<Suspense fallback={null}><Onboarding path="learner" /></Suspense>} />
+              <Route path="onboarding/parent" element={<Suspense fallback={null}><Onboarding path="parent" /></Suspense>} />
               <Route path="auth/callback" element={<Suspense fallback={null}><AuthCallback /></Suspense>} />
               <Route element={<AppShell />}>
                 <Route index element={<Landing />} />

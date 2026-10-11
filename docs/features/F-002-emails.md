@@ -1,7 +1,7 @@
 ---
 title: F-002 Emails
 status: draft
-updated: 2026-10-10
+updated: 2026-10-11
 ---
 
 # F-002 Emails
@@ -154,7 +154,7 @@ Not checked: real mail programs (rendering differs in each), real delivery throu
 
 - [ ] Look at the emails in Gmail (web, Android, iOS), Outlook and Apple Mail before production, in both color modes.
 - [ ] The social marks have no links (T-032). A postal address in the footer is required by anti-spam law for promotional email in several countries: needed before the first promotional email.
-- [ ] What "Unsubscribe" stops was assumed: the optional emails, never the ones about the account. To confirm.
+- [x] What "Unsubscribe" stops: the optional emails, never the ones about the account. Confirmed by the owner (D-035).
 - [ ] How long `email_logs` lines are kept (T-031).
 - [ ] The words of the three emails nothing sends yet, when their features are designed (T-029).
 - [ ] A person who keeps receiving codes they did not ask for has no way to block them yet.

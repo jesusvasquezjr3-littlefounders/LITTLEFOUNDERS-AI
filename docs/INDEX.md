@@ -1,7 +1,7 @@
 ---
 title: Documentation index
 status: scaffold
-updated: 2026-10-10
+updated: 2026-10-11
 ---
 
 # Documentation index
@@ -96,6 +96,7 @@ Per-feature technical requirements (one document each).
 - [[FEATURE-TEMPLATE]]: The template every technical requirements document starts from. Copy it to `docs/features/<FEATURE-ID>-<name>.md`.
 - [[F-001-authentication]]: Sign-in, sign-up and user types: how a person gets an account and a session, what kinds of account exist, and what protects all of it.
 - [[F-002-emails]]: Every email LittleFounders sends: what it looks like, which ones exist, how one reaches a person in their language, and how the optional ones are stopped.
+- [[F-003-onboarding]]: What a person walks through after pressing one of the two buttons of the home page, before any account exists: who the mentors are, what the product gives them, and the choice to create the account now or later.
 
 ## Which documents to load for a task
 
@@ -107,6 +108,7 @@ Per-feature technical requirements (one document each).
 | Backend or API change | [[BACKEND-GUIDE]], [[API-GUIDE]], [[SECURITY-GUIDE]] |
 | Sign-in, sessions, accounts or user types | [[F-001-authentication]], [[SECURITY-GUIDE]], [[RATE-LIMITING-AND-ABUSE]] |
 | An email: its design, its words, how it is sent, unsubscribing | [[F-002-emails]], [[CHARACTER-COMPOSITIONS]] |
+| The onboarding, the mentors, or what is kept on the device before an account | [[F-003-onboarding]], [[CHARACTER-COMPOSITIONS]], [[CHILD-SAFETY-AND-PRIVACY]] |
 | Database change | [[DATABASE-GUIDE]], [[CHILD-SAFETY-AND-PRIVACY]], [[SECURITY-GUIDE]] |
 | Anything involving a minor's data or the tutor | [[CHILD-SAFETY-AND-PRIVACY]], [[SECURITY-GUIDE]], [[RATE-LIMITING-AND-ABUSE]] |
 | Deploy, workflow, environment | [[CI-CD-AND-VERSION-CONTROL]], [[INFRASTRUCTURE]], [[ENVIRONMENT-SETUP]] |

@@ -1,0 +1,60 @@
+{
+  "pageTitle": "Get started",
+  "back": "Back",
+  "close": "Leave and go to the home page",
+  "continue": "Continue",
+  "progress": "Step {step} of {total}",
+  "artGroup": "Liruf, Zara, Dr. Rho and Dina, the four mentors, together",
+  "artMentor": "{mentor}, your mentor",
+  "aiNote": "Zara, Dr. Rho, Liruf and Dina are MentorAI: an artificial intelligence, not a person.",
+  "mentors": {
+    "zara": { "name": "Zara", "line": "Curious and direct. She asks why until it all makes sense." },
+    "rho": { "name": "Dr. Rho", "line": "Patient and orderly. He explains with examples from everyday life." },
+    "liruf": { "name": "Liruf", "line": "Playful and restless. He would rather try things than read about them." },
+    "dina": { "name": "Dina", "line": "Calm and attentive. She celebrates every step, however small." }
+  },
+  "age": {
+    "label": "Your age",
+    "tooYoung": "LittleFounders starts at age 6. See you when you turn 6!",
+    "tooOld": "{age}? You would be the oldest founder in history. What is your real age?"
+  },
+  "name": {
+    "label": "Name",
+    "invalid": "Use letters only, 40 at most."
+  },
+  "mentor": {
+    "chosen": "Your mentor"
+  },
+  "learner": {
+    "welcome": { "title": "Hi! We are your mentors", "text": "We help you learn how money works, one small step at a time. First, let's get to know each other.", "button": "Let's start" },
+    "age": { "title": "How old are you?", "text": "We ask so that everything fits your age." },
+    "name": { "title": "What should we call you?", "text": "Your first name or a nickname is enough." },
+    "mentor": { "title": "{name}, choose your mentor", "text": "One of us goes with you everywhere. You can change later." },
+    "lessons": { "title": "Nice to meet you, {name}. This is how you learn here", "text": "With short lessons where you do things, not just read: you move, choose and try, and I am right beside you." },
+    "games": { "title": "You also play", "text": "Mini-games to practise what you learned. You have fun, and the learning comes along." },
+    "mentoria": { "title": "Ask me anything", "text": "Something in a lesson you did not get, something you heard and want to understand, an idea you want to build. I follow what you learn and guide you from there." },
+    "seeds": { "title": "You earn Seeds", "text": "Seeds are the currency of LittleFounders. You earn them by learning and playing. They are not real money." },
+    "tasks": { "title": "Tasks and rewards", "text": "I give you tasks, and so can your parent or guardian. Every task says who it comes from. If your parent or guardian joins you here, they can see your progress." },
+    "join": { "title": "{name}, save your progress", "text": "Create your account and what you chose stays with you on any device. Creating it is free.", "now": "Create my account", "later": "Later", "done": "Finish" }
+  },
+  "parent": {
+    "welcome": { "title": "Hello! We are the mentors of LittleFounders", "text": "We go with your children while they learn how money works. Let us show you what you get as a parent.", "button": "Let's start" },
+    "age": { "title": "How old are you?", "text": "We ask so that we show you the right things." },
+    "minor": { "title": "This part is for parents and guardians", "text": "No problem. There is a place made for you, and we are in it too.", "button": "Take me there" },
+    "name": { "title": "What should we call you?", "text": "Your first name is enough." },
+    "mentor": { "title": "{name}, choose your mentor", "text": "It goes with you too. Each of your children chooses their own." },
+    "child": { "title": "Nice to meet you, {name}. This is what your child gets", "text": "Lessons to learn by doing, mini-games to practise, MentorAI for every question, and Seeds as rewards." },
+    "family": { "title": "Family control", "text": "You add your children yourself, give them tasks and decide their rewards." },
+    "progress": { "title": "See how they learn", "text": "Follow each child's progress: what they finished, what they are practising and where they need a hand." },
+    "suggestions": { "title": "A suggestion every day", "text": "Ideas to talk about money at home and to keep your child going, based on what your child learns and practises on LittleFounders." },
+    "join": { "title": "{name}, save your place", "text": "Create your account now. Adding your children comes next, and creating it is free.", "now": "Create my account", "later": "Later", "done": "Finish" }
+  },
+  "saved": {
+    "text": "{name}, what you chose is saved on this device.",
+    "textNoName": "What you chose is saved on this device.",
+    "continue": "Pick up where I left off",
+    "create": "Create my account",
+    "clear": "Erase it",
+    "cleared": "Erased. Nothing is saved on this device."
+  }
+}

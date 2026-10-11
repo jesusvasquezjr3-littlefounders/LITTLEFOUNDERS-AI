@@ -1,7 +1,7 @@
 ---
 title: F-001 Sign-in, sign-up and user types
 status: draft
-updated: 2026-10-10
+updated: 2026-10-11
 ---
 
 # F-001 Sign-in, sign-up and user types
@@ -140,7 +140,7 @@ Not checked: Google end to end (the local stack has no Google keys; the start an
 ## Open points
 
 - [x] The emails that carry the code, in the three languages: [[F-002-emails]].
-- [ ] Onboarding, and where the username and the display name are asked (pending by the owner's decision).
+- [x] Onboarding: [[F-003-onboarding]]. It asks the name and gives the age to the new account, so the window's age step shows only when a permission box is owed or no onboarding was walked. Where the username is asked is still open. The window has a third way in, `join` (`useAuthDialog().open('join')`): creating an account with Google and the email code both on offer, used where the onboarding ends.
 - [ ] The migration of the production accounts (T-026), including child accounts without a real address (the owner decides at migration).
 - [ ] Whether the permission box appears under 13 (built) or under 18.
 - [ ] A second factor for `admin` and `superadmin` (T-027).

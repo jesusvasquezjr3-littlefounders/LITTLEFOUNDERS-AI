@@ -221,3 +221,32 @@ html:root[data-mode] {
 @media (prefers-reduced-motion: reduce) {
   .lf-run > img { animation: none; }
 }
+
+/*
+ * The Seed (components/icons/seed.tsx) when it is animated: it breathes, and a glint crosses it.
+ * It holds still for anybody who asked for less motion.
+ */
+@keyframes lf-seed-breathe {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.06) rotate(-3deg); }
+}
+
+@keyframes lf-seed-glint {
+  0%, 55%, 100% { stroke-opacity: 0.15; }
+  70% { stroke-opacity: 0.95; }
+}
+
+[data-seed='animated'] .lf-seed {
+  transform-box: fill-box;
+  transform-origin: 50% 62%;
+  animation: lf-seed-breathe 3.2s ease-in-out infinite;
+}
+
+[data-seed='animated'] .lf-seed-glint {
+  animation: lf-seed-glint 3.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-seed='animated'] .lf-seed,
+  [data-seed='animated'] .lf-seed-glint { animation: none; }
+}

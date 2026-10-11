@@ -42,13 +42,22 @@ const SCENE_SIZE = { hero: { width: 1000, height: 800 }, problem: { width: 1500,
 
 /** `priority` is for the scene above the fold (it loads at once); every other scene waits until the visitor scrolls near it. */
 export function LoopVideo({ name, className, priority = false }: { name: keyof typeof SCENE_SIZE; className?: string; priority?: boolean }) {
+  const { width, height } = SCENE_SIZE[name];
+
+  return <Loop src={`/landing/${name}/${name}`} width={width} height={height} className={className} priority={priority} />;
+}
+
+/**
+ * One looping scene, wherever its files are: `src` is their address without the ending, and the files are
+ * `<src>-light.mp4`, `<src>-dark.mp4` and a `-poster.webp` for each. The landing's scenes and the onboarding's are
+ * shown by this same element.
+ */
+export function Loop({ src, width, height, className, priority = false }: { src: string; width: number; height: number; className?: string | undefined; priority?: boolean }) {
   const { isDark } = useTheme();
   const mode = isDark ? 'dark' : 'light';
   const still = useStillOnly();
   const video = useRef<HTMLVideoElement>(null);
-  const base = `/landing/${name}`;
-  const poster = `${base}/${name}-${mode}-poster.webp`;
-  const { width, height } = SCENE_SIZE[name];
+  const poster = `${src}-${mode}-poster.webp`;
 
   useEffect(() => {
     const element = video.current;
@@ -63,12 +72,12 @@ export function LoopVideo({ name, className, priority = false }: { name: keyof t
     watch.observe(element);
 
     return () => watch.disconnect();
-  }, [mode, still]);
+  }, [src, mode, still]);
 
   if (still) return <img className={className} src={poster} alt="" width={width} height={height} decoding="async" loading={priority ? 'eager' : 'lazy'} fetchPriority={priority ? 'high' : 'auto'} />;
 
-  return <video key={mode} ref={video} className={className} poster={poster} width={width} height={height} autoPlay muted loop playsInline preload={priority ? 'auto' : 'none'}
+  return <video key={`${src}-${mode}`} ref={video} className={className} poster={poster} width={width} height={height} autoPlay muted loop playsInline preload={priority ? 'auto' : 'none'}
     aria-hidden="true" disablePictureInPicture>
-    <source src={`${base}/${name}-${mode}.mp4`} type="video/mp4" />
+    <source src={`${src}-${mode}.mp4`} type="video/mp4" />
   </video>;
 }

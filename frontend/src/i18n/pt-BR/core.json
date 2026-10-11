@@ -22,6 +22,7 @@
     "description": "Escolha como quer entrar.",
     "google": "Continuar com o Google",
     "emailOrUsername": "Continuar com e-mail ou nome de usuário",
+    "continueWithEmail": "Continuar com e-mail",
     "newHere": "Não tem uma conta?",
     "createAccount": "Crie uma conta",
     "close": "Fechar",

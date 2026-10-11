@@ -19,3 +19,8 @@ export function useCoreCopy() {
 export function useSiteCopy() {
   return copy[useLocale()].site;
 }
+
+/** The onboarding's copy in the application's language. */
+export function useOnboardingCopy() {
+  return copy[useLocale()].onboarding;
+}
