@@ -30,6 +30,7 @@
     "render:loading": "node tools/render/render-loading.mjs",
     "render:email": "node tools/render/render-email.mjs",
     "render:onboarding": "node tools/render/render-onboarding.mjs",
+    "render:home": "node tools/render/render-home.mjs",
     "audit:signin": "node tools/audit/signin.mjs",
     "audit:onboarding": "node tools/audit/onboarding.mjs"
   },

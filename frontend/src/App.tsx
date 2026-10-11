@@ -17,6 +17,9 @@ const DevAvatars = import.meta.env.DEV ? lazy(() => import('@/features/avatars/D
 // Development only: the loading window open. Not shipped, like the avatars page.
 const DevLoading = import.meta.env.DEV ? lazy(() => import('@/features/loading/DevLoading')) : null;
 
+// Development only: the prototype of the signed-in application's structure. Not shipped.
+const DevAppShell = import.meta.env.DEV ? lazy(() => import('@/features/appShell/DevAppShell')) : null;
+
 const Landing = lazy(() => import('@/features/landing/Landing').then((module) => ({ default: module.Landing })));
 
 const NotFound = lazy(() => import('@/features/notFound/NotFound').then((module) => ({ default: module.NotFound })));
@@ -66,6 +69,7 @@ export function App() {
             <Routes>
               <Route path="onboarding" element={<Suspense fallback={null}><Onboarding path="learner" /></Suspense>} />
               <Route path="onboarding/parent" element={<Suspense fallback={null}><Onboarding path="parent" /></Suspense>} />
+              {DevAppShell ? <Route path="dev/app" element={<Suspense fallback={null}><DevAppShell /></Suspense>} /> : null}
               <Route path="auth/callback" element={<Suspense fallback={null}><AuthCallback /></Suspense>} />
               <Route element={<AppShell />}>
                 <Route index element={<Landing />} />

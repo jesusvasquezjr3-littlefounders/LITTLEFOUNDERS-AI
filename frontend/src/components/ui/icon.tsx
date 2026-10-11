@@ -351,8 +351,23 @@ function organicPath(d:string,bend:number){
   return d;
 }
 function organicMotionPath(d:string,amount:number){
-  if(!amount)return d;let index=0;
-  return d.replace(/-?\d*\.?\d+/g,value=>{index++;const delta=index%5===0?amount:index%7===0?-amount*.6:0;return delta?(Number(value)+delta).toFixed(3).replace(/\.?(?:0+)$/," ").trim():value});
+  if(!amount)return d;
+  // Walk the path so arc flags (parameters 4 and 5 of each A/a group) stay exactly 0 or 1,
+  // whether written apart or packed like "0 01 1". Every number still advances the shared counter.
+  const number=/-?\d*\.?\d+/y;let out="",index=0,command="",slot=0;
+  for(let at=0;at<d.length;){
+    const char=d[at];
+    if(/[A-Za-z]/.test(char)){command=char;slot=0;out+=char;at++;continue}
+    number.lastIndex=at;const match=number.exec(d);
+    if(!match){out+=char;at++;continue}
+    const value=match[0],flag=(command==="A"||command==="a")&&(slot%7===3||slot%7===4);
+    index++;slot++;
+    if(flag&&(char==="0"||char==="1")){out+=char;at++;continue}
+    at+=value.length;
+    const delta=flag?0:index%5===0?amount:index%7===0?-amount*.6:0;
+    out+=delta?(Number(value)+delta).toFixed(3).replace(/\.?(?:0+)$/," ").trim():value;
+  }
+  return out;
 }
 function renderNode(node:IconNode,key:number,organic=false):React.ReactNode{
   const attrs={...node.attrs,key};

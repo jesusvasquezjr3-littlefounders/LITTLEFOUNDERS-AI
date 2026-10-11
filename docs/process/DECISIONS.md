@@ -327,6 +327,24 @@ Date: 2026-10-10. Status: accepted (the owner's rule).
 
 What the security review of 2026-10-10 left open is kept as one list, T-036 in [[BUILD-TASKS]], and every line of it is a blocker: no push and no deployment until it is closed.
 
+### D-051: The home is a pile of playing cards beside a stage
+
+Date: 2026-10-11. Status: accepted (the owner's choice among prototypes).
+
+After three rounds of prototypes of the signed-in application (`/dev/app`, only in the dev server) the owner chose its structure. The home page is a stage (a composition of the mentors) beside a pile of real playing cards, face down, with its top card turned over: the top card is what comes next and holds its one button, and passing it turns over the next one. Around it: on a desktop a sidebar that can be collapsed, on a phone a dock of icons with no words. Every shape is round and soft, with no vertices, and that holds for the whole platform. The destinations are Learn (the games live inside it), Mentor (the place to see and set up MentorIA, not the conversation), Wallet, Tasks, and Family for an adult's account; administration is a later session. Their paths are `/home`, `/learn`, `/mentor`, `/wallet`, `/tasks` and `/family`, and a person with a session lands on `/home`. A card is shown only when the feature behind it exists, so the home grows one feature at a time and never shows what does not work. There is one design, for people aged 13 and over (D-027); younger people are admitted but nothing is redrawn for them. It is built in steps the owner approves one by one (T-037 in [[BUILD-TASKS]]); each feature is its own later session.
+
+### D-052: The home shows a different composition every day
+
+Date: 2026-10-11. Status: accepted (the owner's decision).
+
+The stage of the home page shows one composition a day: the first time a person comes in on a day one is drawn at random for them and stays for 24 hours, and the next day another one is drawn. There are thirty to start with, each rendered for both color modes, and the catalog is made to grow (seasons and special dates later). Every one shows the four mentors together doing something in a setting of its own, highly produced, with effects. Core chooses the composition, not the browser, so it is the same on every device of a person and does not repeat until all have been seen. For this family the limit of "about six elements" in [[CHARACTER-COMPOSITIONS]] does not apply; that nothing collides and nothing touches a character still does. Each is approved as a still first (D-041): a pilot of three sets the level, then batches of five or six. The list and the state of each are in T-038 of [[BUILD-TASKS]].
+
+### D-053: Nods to popular culture are generic
+
+Date: 2026-10-11. Status: accepted (proposed by the agent, approved by the owner with the plan of compositions).
+
+A composition may wink at a famous film or game through its setting and its action (a car that travels in time, a school of magic with floating candles). It never shows a recognizable character, logo, costume or name: those are somebody's property, and this is a commercial product for minors. Anything closer than a generic homage goes to counsel first.
+
 ## Related
 
 - [[F-001-authentication]]
