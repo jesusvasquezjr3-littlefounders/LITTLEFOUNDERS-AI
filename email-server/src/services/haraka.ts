@@ -20,7 +20,8 @@ export function harakaDir(): string {
  * Render the two config files that carry env/secrets into Haraka, so nothing
  * secret is ever committed. Called once at boot before the engine spawns.
  *   - config/me               → the HELO/hostname Haraka announces.
- *   - config/smtp_forward.ini  → the Amazon SES smarthost + SMTP AUTH creds.
+ *   - config/smtp_forward.ini  → the Amazon SES smarthost + SMTP AUTH creds, and
+ *                                 the rule that its certificate is verified.
  * Both are git-ignored (see email-server/.gitignore).
  */
 export async function renderHarakaConfig(config: Config): Promise<void> {
@@ -39,6 +40,11 @@ export async function renderHarakaConfig(config: Config): Promise<void> {
     `auth_pass=${config.SES_SMTP_PASS}`,
     'enable_outbound=true',
     '',
+    '; The smarthost must prove who it is: its certificate is checked against the',
+    '; system authorities. plugins/forward_secure.js refuses to send without TLS.',
+    '[tls]',
+    'rejectUnauthorized=true',
+    '',
   ].join('\n');
   fs.writeFileSync(path.join(configDir, 'smtp_forward.ini'), smtpForward, { encoding: 'utf8', mode: 0o600 });
 
@@ -51,8 +57,8 @@ export async function renderHarakaConfig(config: Config): Promise<void> {
  * and logs ERRORs if absent — noise that could mask a real fault during the live
  * test. A boot-generated self-signed cert silences it and seeds the future
  * internal-TLS hardening. It does NOT enable inbound STARTTLS (the `tls` plugin,
- * which advertises it, is not loaded), so GoTrue's plaintext internal hop is
- * unaffected. Regenerated on each fresh container; git-ignored.
+ * which advertises it, is not loaded): the only inbound hop is localhost.
+ * Regenerated on each fresh container; git-ignored.
  */
 async function ensureTlsCert(configDir: string, hostname: string): Promise<void> {
   const keyPath = path.join(configDir, 'tls_key.pem');
@@ -86,16 +92,29 @@ function harakaBin(): string {
   return path.join(path.dirname(pkgJson), 'bin', 'haraka');
 }
 
+/** What the engine reads from its environment: where to report a delivery, and with which key. */
+const ENGINE_ENV = ['PATH', 'HOME', 'TMPDIR', 'TEMP', 'TMP', 'TZ', 'LANG', 'NODE_ENV', 'NODE_OPTIONS', 'NODE_EXTRA_CA_CERTS', 'SystemRoot', 'PORT', 'INTERNAL_API_KEY'];
+
 /**
  * Spawn the Haraka engine as a child process, inheriting stdio so its logs land
  * in the container's stdout (Railway logs). The caller owns the lifecycle: if
  * this child exits, the supervisor exits non-zero so Railway restarts the service.
+ *
+ * The child gets only the variables it uses, not this process's whole environment: the engine
+ * runs third-party plugins and has no use for the database key or the SES password (which it
+ * reads from the file rendered above).
  */
 export function startHaraka(config: Config): ChildProcess {
   const dir = harakaDir();
+  const env: NodeJS.ProcessEnv = {};
+
+  for (const name of ENGINE_ENV) {
+    if (process.env[name] !== undefined) env[name] = process.env[name];
+  }
+
   const child = spawn(process.execPath, [harakaBin(), '-c', dir], {
     stdio: 'inherit',
-    env: process.env,
+    env,
   });
   console.log(
     `[email-server] haraka engine spawned (pid=${child.pid}) → relays to ${config.SES_RELAY_HOST}:${config.SES_RELAY_PORT}`,

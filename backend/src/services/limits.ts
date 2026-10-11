@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { isIPv6 } from 'node:net';
 import { Redis } from 'ioredis';
 import { RateLimiterMemory, RateLimiterRedis, RateLimiterRes, type RateLimiterAbstract } from 'rate-limiter-flexible';
 import type { Config } from '../config.js';
@@ -31,6 +32,14 @@ const SPECS = {
   codeHourly: { points: 5, seconds: 60 * 60, onStoreFailure: 'closed' },
   attemptsPerCode: { points: 5, seconds: 15 * 60, onStoreFailure: 'closed' },
   attemptsDaily: { points: 30, seconds: 24 * 60 * 60, onStoreFailure: 'closed' },
+  // For the whole service. Codes sent to addresses that have no account yet, in an hour: the
+  // number comes from the configuration (it must stay under the authentication service's own
+  // ceiling, so that people who already have an account can always get their code).
+  newAddressHourly: { points: 300, seconds: 60 * 60, onStoreFailure: 'closed' },
+  // Things that may happen once: a challenge is spent by the request that solves it, and the
+  // authentication service's hook is acted on once per call id.
+  challengeOnce: { points: 1, seconds: 3 * 60, onStoreFailure: 'closed' },
+  hookOnce: { points: 1, seconds: 10 * 60, onStoreFailure: 'open' },
 } as const satisfies Record<string, Spec>;
 
 export type LimitName = keyof typeof SPECS;
@@ -38,6 +47,33 @@ export type LimitName = keyof typeof SPECS;
 /** Counter keys never hold an address or a username, only a digest of one. */
 export function keyFor(value: string): string {
   return createHash('sha256').update(value, 'utf8').digest('hex').slice(0, 32);
+}
+
+/*
+ * What a visitor is counted by. An IPv4 address counts as itself. An IPv6 visitor is counted by
+ * its /64 network: a home or a phone is handed a whole /64, so counting each of its addresses
+ * apart would give one visitor billions of fresh counters.
+ */
+function networkOf(ip: string): string {
+  const mapped = /^::ffff:(\d{1,3}(?:\.\d{1,3}){3})$/i.exec(ip);
+
+  if (mapped?.[1]) return mapped[1];
+
+  const address = ip.split('%')[0] ?? ip;
+
+  if (!isIPv6(address)) return ip;
+
+  const [head = '', tail] = address.split('::');
+  const left = head === '' ? [] : head.split(':');
+  const right = tail === undefined || tail === '' ? [] : tail.split(':');
+  const groups = tail === undefined ? left : [...left, ...Array.from({ length: Math.max(0, 8 - left.length - right.length) }, () => '0'), ...right];
+
+  return `${groups.slice(0, 4).map((group) => parseInt(group, 16).toString(16)).join(':')}::/64`;
+}
+
+/** The counter key of the visitor behind a request. */
+export function visitorKey(ip: string | undefined): string {
+  return keyFor(networkOf(ip ?? 'unknown'));
 }
 
 export type Limits = Awaited<ReturnType<typeof createLimits>>;
@@ -60,7 +96,8 @@ export async function createLimits(config: Config) {
   const limiters = new Map<LimitName, RateLimiterAbstract>();
 
   for (const [name, spec] of Object.entries(SPECS)) {
-    const options = { keyPrefix: `lf:core:${name}`, points: spec.points, duration: spec.seconds };
+    const points = name === 'newAddressHourly' ? config.newAddressCodesPerHour : spec.points;
+    const options = { keyPrefix: `lf:core:${name}`, points, duration: spec.seconds };
 
     limiters.set(name as LimitName, redis ? new RateLimiterRedis({ ...options, storeClient: redis }) : new RateLimiterMemory(options));
   }

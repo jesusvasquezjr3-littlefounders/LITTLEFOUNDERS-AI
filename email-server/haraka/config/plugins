@@ -1,24 +1,29 @@
 # Courier engine — Haraka plugin list (order matters).
 # This is a SEND-ONLY outbound relay to Amazon SES; no inbound mail.
 
-# CONNECT — mark connections from the Railway private network (and localhost)
-# as relaying, so their mail is forwarded outbound to the SES smarthost.
-# Custom plugin (email-server/haraka/plugins/relay_internal.js). No AUTH/TLS on
-# the internal hop by design — see auth_base.js TLS-before-AUTH gate.
+# CONNECT — mark connections from this machine (loopback) as relaying, so the
+# mail of the Courier HTTP API is forwarded outbound to the SES smarthost. Every
+# other source is refused. Custom plugin (email-server/haraka/plugins/relay_internal.js).
 relay_internal
 
 # RCPT TO — required so recipients are accepted. For relaying connections this
 # returns OK; for non-relaying (untrusted) connections it rejects, which keeps
-# us from being an open relay even though the listener is private-only.
+# us from being an open relay even though the listener is loopback-only.
 rcpt_to.in_host_list
 
 # QUEUE — forward every relaying message to the Amazon SES smarthost over
 # TLS + SMTP AUTH. Config (secrets) rendered at boot into config/smtp_forward.ini.
-queue/smtp_forward
+# forward_secure is Haraka's queue/smtp_forward plus one rule: nothing is sent
+# unless the connection is encrypted (email-server/haraka/plugins/forward_secure.js).
+forward_secure
+
+# QUEUE, last resort — there is none. If the smarthost did not take the message,
+# it is deferred: Courier never delivers straight to a recipient's mail server.
+# Must stay AFTER forward_secure (email-server/haraka/plugins/no_direct_delivery.js).
+no_direct_delivery
 
 # QUEUE OK — report each successfully relayed message to Courier's HTTP API on
-# localhost, which writes it to the delivery history. This is the ONLY way
-# GoTrue's auth mail reaches the delivery history: it arrives over SMTP and never
-# touches POST /api/v1/send. Fire-and-forget; a logging failure never affects
-# delivery. Custom plugin (email-server/haraka/plugins/log_delivery.js).
+# localhost, which turns the email's `queued` line in the delivery history into
+# `relayed`. Fire-and-forget; a logging failure never affects delivery. Custom
+# plugin (email-server/haraka/plugins/log_delivery.js).
 log_delivery

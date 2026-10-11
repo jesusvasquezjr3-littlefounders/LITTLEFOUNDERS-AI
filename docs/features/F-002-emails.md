@@ -97,10 +97,10 @@ D-035. `profiles.product_emails`, true by default.
 | Object | Holds | Personal data |
 |---|---|---|
 | `profiles.product_emails` | Whether the account takes optional emails | no |
-| `email_logs` | One line per email: address, subject, which email, language, account, status (`queued`, then `relayed` once Amazon SES accepted it). Never the body, so never a code | the address; how long a line is kept is open (T-031) |
+| `email_logs` | One line per email: address, subject, which email, language, account, status (`queued`, then `relayed` once Amazon SES accepted it). Never the body, so never a code | the address; a line is kept 90 days, and an account that is deleted takes its lines with it (`0004_mail_least_privilege.sql`) |
 | `core_mail_context`, `core_set_locale`, `core_set_product_emails` | Functions for Core, executable by `service_role` only | |
 
-`email_logs` has row-level security with no policy; `service_role` may read, add a line and update a line's status, nothing else.
+`email_logs` has row-level security with policies for one role, `mail_service`, which may read, add a line and update a line's status, and can do nothing else in the database: no other table, no function. It is the mail service's own role (`0004_mail_least_privilege.sql`); the service key has no privilege on the table any more and is not given to the mail service. The key is a token that names the role, minted with `database/scripts/mint-role-key.mjs`, and the gateway lets it through to the REST routes only (`MAIL_SERVICE_KEY` on the gateway and on the mail service). The first code of a brand-new account is sent while the account is still being created, so its line is written without the link to the account and leaves with the 90-day rule.
 
 ## API
 
@@ -119,13 +119,17 @@ Mail service: `POST /api/v1/send` with `{ to, template, locale, data, userId?, u
 
 ## Security review
 
-- **A forged hook call** could make Core send a code-shaped email to any address. Refused without the signature; the signature covers the body, and a captured call is useless after five minutes (within them it can only repeat the same email to the same person).
+- **A forged hook call** could make Core send a code-shaped email to any address. Refused without the signature; the signature covers the body, a captured call is useless after five minutes, and within them it does nothing either: a call is acted on once per `webhook-id`, and a copy gets the answer of a call that went well and sends no email.
 - **The code** is in the email body only. Not in the subject, the preview, a log line or `email_logs`.
 - **Injection into an email.** Every value is escaped before it enters the HTML; the code must be six digits and the addresses must parse, or the mail service refuses.
-- **The mail service as an open relay.** It builds only its own emails, and only for a caller with the internal key.
-- **Unsubscribe links.** The token cannot be forged without the key, grants one switch, and tells nothing about the account; a token for an account that no longer exists gets the same answer.
+- **The mail service as an open relay.** It builds only its own emails, and only for a caller with the internal key. The SMTP relay behind it listens on `127.0.0.1` only and refuses every source that is not this machine. Until the security review of 2026-10-10 it also listened on the private network and trusted every private address, from the time when the authentication service submitted its mail over SMTP: any service on that network could have sent any words from our domain without the key. That listener is removed (`haraka/config/smtp.ini`, `haraka/plugins/relay_internal.js`).
+- **The hop to Amazon SES.** The relay sends nothing over a connection that is not encrypted and verifies the smarthost's certificate; a message the smarthost does not take is deferred, never delivered straight to the recipient's mail server (`haraka/plugins/forward_secure.js`, `no_direct_delivery.js`).
+- **An old link.** An unsubscribe token carries the day it was made and stops working 180 days later; a newer email carries a newer one.
+- **Addresses in logs.** The relay logs at `warn` and the mail service logs the kind of a failure, so no address is written to a log.
+- **The mail service's reach into the database.** It holds a key that can touch the delivery history and nothing else; the relay's child process receives only the variables it uses, not the service's whole environment.
+- **Unsubscribe links.** The token cannot be forged without the key, grants one switch, and tells nothing about the account; a token for an account that no longer exists gets the same answer. The token is in the page's address, so no analytics script is loaded on `/unsubscribe` and no tracker is ever given an address's query string (`frontend/src/lib/analytics.tsx`); the site's referrer policy keeps it out of requests to other sites.
 - **Language tampering.** Only the signed-in person changes their account's language.
-- **Children's data.** The emails hold no name, age or account detail. `email_logs` holds addresses: retention is T-031, and a closed account's lines lose their link to it.
+- **Children's data.** The emails hold no name, age or account detail. `email_logs` holds addresses: a line is removed after 90 days (a nightly job in the database, `purge_email_logs`), and when an account is deleted its lines are deleted with it.
 - **Images** load from the site when an email is opened, so the site's host sees that request like any other. No tracking pixel and no link tracking are used.
 
 ## Rollout
@@ -133,12 +137,13 @@ Mail service: `POST /api/v1/send` with `{ to, template, locale, data, userId?, u
 With the deployment of F-001 (T-025), in this order:
 
 1. **Frontend first**: the images under `/email/v1/` and the typeface's cross-origin header (`frontend/vercel.json`) must be live before an email is sent.
-2. **Database**: `0002_email.sql`.
-3. **Mail service** (Railway `email-server`): deploy; optional `FRONTEND_URL` (default `https://littlefounders.ai`). The Amazon SES keys are not touched.
-4. **Core** (Railway `littlefounders-backend`): `EMAIL_SERVER_URL` and `INTERNAL_API_KEY` are there already; add `SEND_EMAIL_HOOK_SECRET`.
-5. **Authentication service** (Railway `auth`): add `GOTRUE_HOOK_SEND_EMAIL_ENABLED=true`, `GOTRUE_HOOK_SEND_EMAIL_URI=https://api-b2c.littlefounders.ai/api/v1/hooks/send-email` (it must be https) and `GOTRUE_HOOK_SEND_EMAIL_SECRETS` with the same secret (`v1,whsec_` followed by a base64 key of 32 random bytes). From then on its `GOTRUE_MAILER_TEMPLATES_*` and `GOTRUE_MAILER_SUBJECTS_*` are not used and can be removed.
+2. **Database**: `0002_email.sql` and `0004_mail_least_privilege.sql`. Check that the nightly job exists (`SELECT jobname FROM cron.job`); where `pg_cron` is not installed the migration says so, and `SELECT public.purge_email_logs(90)` has to be scheduled another way.
+3. **The mail service's key**: mint it once with `database/scripts/mint-role-key.mjs mail_service` (it reads the JWT secret from the environment and prints the key; it goes straight into the two services' variables and nowhere else). Set it as `MAIL_SERVICE_KEY` on the **gateway** (Railway `kong`) and on the **mail service**, and remove `SUPABASE_SERVICE_ROLE_KEY` from the mail service: it is not read any more, and the service says so at boot while it is still there.
+4. **Mail service** (Railway `email-server`): deploy; optional `FRONTEND_URL` (default `https://littlefounders.ai`). The Amazon SES keys are not touched. `NODE_ENV` must be exactly `production`. **This version has no SMTP listener on the private network**, so it is deployed only once the authentication service hands its emails to Core (step 6): deployed earlier, the authentication service would have nowhere to submit its mail.
+5. **Core** (Railway `littlefounders-backend`): `EMAIL_SERVER_URL` and `INTERNAL_API_KEY` are there already; add `SEND_EMAIL_HOOK_SECRET`.
+6. **Authentication service** (Railway `auth`): add `GOTRUE_HOOK_SEND_EMAIL_ENABLED=true`, `GOTRUE_HOOK_SEND_EMAIL_URI=https://api-b2c.littlefounders.ai/api/v1/hooks/send-email` (it must be https) and `GOTRUE_HOOK_SEND_EMAIL_SECRETS` with the same secret (`v1,whsec_` followed by a base64 key of 32 random bytes). From then on its `GOTRUE_MAILER_TEMPLATES_*` and `GOTRUE_MAILER_SUBJECTS_*` are not used and can be removed.
 
-Rollback: switch `GOTRUE_HOOK_SEND_EMAIL_ENABLED` off and the authentication service sends its own mail over SMTP again.
+Rollback: the previous deployment of the mail service (which still has the network listener), then switch `GOTRUE_HOOK_SEND_EMAIL_ENABLED` off, and the authentication service sends its own mail over SMTP again. Switching the hook off alone is not enough any more.
 
 ## How it was checked
 
@@ -147,6 +152,8 @@ Rollback: switch `GOTRUE_HOOK_SEND_EMAIL_ENABLED` off and the authentication ser
 - Every email looked at in a browser: the three languages, light and dark, 320 to 700 px; and one as delivered to the mail catcher.
 - `/unsubscribe` walked in the three languages, light and dark, 320, 390 and 1440 px; `audit:a11y` clean.
 - `type-check`, `lint` and `build` in `backend/`, `email-server/` and `frontend/`.
+- After the second round of the review: the real relay against three smarthosts. One that offers no TLS: nothing is sent, not the password and not the email. One whose certificate nobody vouches for: nothing arrives, and nothing is delivered another way. One with a trusted certificate: the email arrives. No address and no password in the relay's log in any of the three. A signed hook call sent twice sends one email. An unsubscribe token works at 179 days and is refused at 181.
+- After the security review of 2026-10-10, on the local stack: with the mail service's own key the history is read, a line is added and its status changed, while changing who an email went to, deleting a line, reading profiles, running a backend function, purging the history and the auth and database-admin routes are all refused (403); the service key and the anon key are refused on the history. Deleting an account removes its lines; `purge_email_logs(90)` removes a line of 91 days and keeps one of 89; the nightly job is scheduled. The real relay (Haraka) was booted locally with the mail catcher as its smarthost: it listens on `127.0.0.1:2525` and nowhere else, port 587 is closed on every address, and an email sent through it with the updated mail library arrives. `npm audit --omit=dev` in `email-server/`: 0 vulnerabilities (it was 1 critical, 3 high, 1 moderate). The 31 cases above were run again.
 
 Not checked: real mail programs (rendering differs in each), real delivery through Amazon SES, the hook over https between the production services.
 

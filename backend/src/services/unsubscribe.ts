@@ -11,17 +11,26 @@ import type { Config } from '../config.js';
  *
  * The key is derived from the session secret for this one purpose, so a token can never be taken
  * for a session token or the other way around, and production needs no new secret.
+ *
+ * A token also carries the day it was made and stops working 180 days later: a link in an email
+ * forwarded or leaked years ago should not still switch somebody's emails. A newer email carries a
+ * newer link.
  */
 const Id = z.uuid();
+const LIFETIME_DAYS = 180;
+const DAY_MS = 24 * 60 * 60 * 1000;
+const today = (): number => Math.floor(Date.now() / DAY_MS);
 
 export type Unsubscribe = ReturnType<typeof createUnsubscribe>;
 
 export function createUnsubscribe(config: Config) {
   const key = Buffer.from(hkdfSync('sha256', config.supabaseJwtSecret, 'littlefounders', 'unsubscribe-link-v1', 32));
-  const mac = (userId: string): Buffer => createHmac('sha256', key).update(userId, 'utf8').digest();
+  const mac = (userId: string, day: string): Buffer => createHmac('sha256', key).update(`${userId}.${day}`, 'utf8').digest();
 
   function token(userId: string): string {
-    return `${Buffer.from(userId.replaceAll('-', ''), 'hex').toString('base64url')}.${mac(userId).toString('base64url')}`;
+    const day = today().toString(36);
+
+    return `${Buffer.from(userId.replaceAll('-', ''), 'hex').toString('base64url')}.${day}.${mac(userId, day).toString('base64url')}`;
   }
 
   return {
@@ -37,9 +46,9 @@ export function createUnsubscribe(config: Config) {
 
     /** The account a token names, or null when Core did not write it. */
     verify(value: string): string | null {
-      const [idPart, macPart, ...rest] = value.split('.');
+      const [idPart, dayPart, macPart, ...rest] = value.split('.');
 
-      if (!idPart || !macPart || rest.length > 0) return null;
+      if (!idPart || !dayPart || !macPart || rest.length > 0 || !/^[0-9a-z]{1,8}$/.test(dayPart)) return null;
 
       const hex = Buffer.from(idPart, 'base64url').toString('hex');
 
@@ -50,9 +59,13 @@ export function createUnsubscribe(config: Config) {
       if (!userId.success) return null;
 
       const given = Buffer.from(macPart, 'base64url');
-      const expected = mac(userId.data);
+      const expected = mac(userId.data, dayPart);
 
-      return given.length === expected.length && timingSafeEqual(given, expected) ? userId.data : null;
+      if (given.length !== expected.length || !timingSafeEqual(given, expected)) return null;
+
+      const age = today() - parseInt(dayPart, 36);
+
+      return age >= 0 && age <= LIFETIME_DAYS ? userId.data : null;
     },
   };
 }

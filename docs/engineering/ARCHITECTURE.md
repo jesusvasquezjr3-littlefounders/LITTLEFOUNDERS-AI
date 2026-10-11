@@ -1,7 +1,7 @@
 ---
 title: Architecture
 status: scaffold
-updated: 2026-10-10
+updated: 2026-10-11
 ---
 
 # Architecture
@@ -32,7 +32,7 @@ The map an agent consults before adding code, so each piece goes in the right pl
 
 ## Current state
 
-- Independent packages in one repository: `frontend/` (React 19, Vite, TypeScript, Tailwind CSS v4), `database/` (pinned self-hosted Supabase and local-stack scripts), `backend/` (Core: the only server the browser calls; Node 24, TypeScript, Express 5 and Zod; today it holds sign-in, sessions, the account's age and username, and staff grants of user types: [[F-001-authentication]]), `pulse/` (observability: Plausible CE, ClickHouse, PostgreSQL, Umami, Uptime Kuma), `email-server/` (Courier, outgoing mail: an Express HTTP API with a Haraka SMTP relay to Amazon SES; Supabase's authentication service submits its mail to it over SMTP, and other services call its HTTP API with a service key).
+- Independent packages in one repository: `frontend/` (React 19, Vite, TypeScript, Tailwind CSS v4), `database/` (pinned self-hosted Supabase and local-stack scripts), `backend/` (Core: the only server the browser calls; Node 24, TypeScript, Express 5 and Zod; today it holds sign-in, sessions, the account's age and username, and staff grants of user types: [[F-001-authentication]]), `pulse/` (observability: Plausible CE, ClickHouse, PostgreSQL, Umami, Uptime Kuma), `email-server/` (Courier, outgoing mail: an Express HTTP API with a Haraka SMTP relay to Amazon SES; Core calls its HTTP API with an internal key, and the relay listens on its own machine only; the authentication service hands its emails to Core, signed).
 
 - Request path: browser -> Core (`/api/v1`, cookies) -> the Supabase gateway (Kong, service key) -> the authentication service (`/auth/v1`) or the database's functions (`/rest/v1/rpc`). The browser never reaches the gateway, except for the two redirects of a Google sign-in. Core holds no database connection of its own and no privilege on any table (D-028 in [[DECISIONS]]).
 - Trust boundaries: everything the browser sends is untrusted and parsed in Core; everything another service answers is parsed in Core too; the database re-checks the identity rules whoever writes.

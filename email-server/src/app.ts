@@ -24,11 +24,11 @@ const LogsSummaryQuery = z.object({
 });
 
 /*
- * What the Haraka SMTP plugin reports for mail it relayed: our own emails once
- * Amazon SES accepted them, and anything another internal service submitted
- * over SMTP. `to` is NOT z.string().email() here on purpose: this records what the relay
+ * What the Haraka SMTP plugin reports for mail it relayed: our own emails, once
+ * Amazon SES accepted them. `to` is NOT z.string().email() here on purpose: this records what the relay
  * actually accepted, and refusing to log an address the SMTP layer already
- * delivered to would put a hole in the audit trail.
+ * delivered to would put a hole in the audit trail. `detail` takes one known
+ * field and nothing else, so no body or code can be stored through this route.
  */
 const DeliveryBody = z.object({
   messageId: z.string().min(1).max(998),
@@ -38,7 +38,7 @@ const DeliveryBody = z.object({
   templateType: z.string().min(1).max(64).default('auth'),
   locale: z.string().min(2).max(10).optional(),
   userId: z.string().uuid().optional(),
-  detail: z.record(z.string(), z.unknown()).default({}),
+  detail: z.object({ source: z.literal('smtp').optional() }).strict().default({}),
 });
 
 /*
@@ -159,7 +159,10 @@ export function createApp(adapter: EmailAdapter = new NoopAdapter(), options: { 
     const status = malformedBody ? 400 : 500;
     const code = malformedBody ? 'VALIDATION_ERROR' : 'INTERNAL_ERROR';
     const message = malformedBody ? 'Malformed JSON body' : 'Unexpected server error';
-    console.error(`[${SERVICE}] ${code}:`, err);
+    // The kind of failure and its code, never its text: a mail library's message can quote the address.
+    const failure = err instanceof Error ? { name: err.name, code: 'code' in err ? String(err.code) : undefined } : { name: 'unknown' };
+
+    console.error(`[${SERVICE}] ${code}:`, JSON.stringify(failure));
     res.status(status).json({ data: null, error: { code, message } });
   });
 

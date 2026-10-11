@@ -25,7 +25,8 @@ export class NoopAdapter implements EmailAdapter {
   async send(req: SendRequest): Promise<SendResult> {
     this.counter += 1;
     const id = `noop-${this.counter}`;
-    console.log(`[courier] no-op queued ${id} → ${req.to}: "${req.subject}"`);
+    // Never the address: a log line is kept longer, and read by more people, than the email.
+    console.log(`[courier] no-op queued ${id}: "${req.subject}"`);
     return { id, status: 'queued' };
   }
 }

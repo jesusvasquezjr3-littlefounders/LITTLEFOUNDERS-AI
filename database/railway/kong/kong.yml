@@ -18,6 +18,13 @@
 # is by a one-time code that only Core may check, so nobody can guess codes
 # against the gateway. The SAML routes are removed because SAML is not used.
 # The local stack mounts this same file (database/scripts/local-stack.sh).
+#
+# One more key gets through, to the REST routes only: the mail service's
+# (consumer `mail_service`, ACL group `mail`). It is a token that names the
+# database role `mail_service`, which can touch the delivery history and nothing
+# else (database/migrations/0004_mail_least_privilege.sql). It opens neither the
+# auth routes nor any other. Set MAIL_SERVICE_KEY on the gateway, or the mail
+# service keeps its history in memory only.
 _format_version: '2.1'
 _transform: true
 
@@ -34,6 +41,9 @@ consumers:
     keyauth_credentials:
       - key: $SUPABASE_SERVICE_KEY
       - key: $SUPABASE_SECRET_KEY
+  - username: mail_service
+    keyauth_credentials:
+      - key: $MAIL_SERVICE_KEY
 
 ###
 ### Access Control List
@@ -43,6 +53,8 @@ acls:
     group: anon
   - consumer: service_role
     group: admin
+  - consumer: mail_service
+    group: mail
 
 ###
 ### Dashboard credentials
@@ -168,8 +180,10 @@ services:
       - name: acl
         config:
           hide_groups_header: true
+          # `mail` is the mail service's key: the database decides what it may do (its role's grants).
           allow:
             - admin
+            - mail
 
   ## Secure GraphQL routes
   - name: graphql-v1

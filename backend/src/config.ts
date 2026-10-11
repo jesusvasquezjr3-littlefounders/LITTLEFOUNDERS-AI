@@ -7,9 +7,10 @@ import { z } from 'zod';
  * keys configured there keep working. The optional ones at the end are new and have safe defaults.
  */
 const Env = z.object({
-  // The platform may inject a value outside the enum (or none); anything that is not a valid
-  // 'production' or 'test' counts as development.
-  NODE_ENV: z.enum(['development', 'test', 'production']).catch('development'),
+  // Fails closed: only the exact words 'development' and 'test' relax anything. A missing value, a
+  // typo or whatever the platform injects counts as production, so a mistake here can only make
+  // Core stricter (Secure cookies, https, shared counters), never weaker. Local: backend/.env sets it.
+  NODE_ENV: z.string().optional().transform((value) => (value === 'development' || value === 'test' ? value : 'production')),
   PORT: z.coerce.number().int().positive().default(4000),
 
   // The one browser origin allowed to call Core, and where a person lands after signing in.
@@ -41,6 +42,10 @@ const Env = z.object({
   SUPABASE_JWT_ISSUER: z.string().min(1).optional(),
   // How many proxies sit between the visitor and Core, so the visitor's address is read correctly.
   TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(1),
+  // Codes an hour that may go to addresses with no account yet, for the whole service. Keep it
+  // well under the authentication service's GOTRUE_RATE_LIMIT_EMAIL_SENT: the difference is what
+  // stays reserved for people who already have an account.
+  NEW_ADDRESS_CODES_PER_HOUR: z.coerce.number().int().min(1).max(100000).default(300),
 });
 
 export type Config = Readonly<{
@@ -59,6 +64,7 @@ export type Config = Readonly<{
   internalApiKey: string | undefined;
   sendEmailHookSecret: string | undefined;
   trustProxyHops: number;
+  newAddressCodesPerHour: number;
 }>;
 
 /** An origin is scheme, host and port: no path, no trailing slash. */
@@ -104,5 +110,6 @@ export function loadConfig(source: NodeJS.ProcessEnv = process.env): Config {
     internalApiKey: parsed.INTERNAL_API_KEY,
     sendEmailHookSecret: parsed.SEND_EMAIL_HOOK_SECRET,
     trustProxyHops: parsed.TRUST_PROXY_HOPS,
+    newAddressCodesPerHour: parsed.NEW_ADDRESS_CODES_PER_HOUR,
   });
 }

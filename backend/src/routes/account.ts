@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { ApiError, isErrorCode, sendData } from '../lib/http.js';
 import { describeError, log, toError } from '../lib/log.js';
 import { authOf, type AuthMiddleware } from '../middleware/auth.js';
-import { keyFor, type Limits } from '../services/limits.js';
+import { visitorKey, type Limits } from '../services/limits.js';
 import type { Mailer } from '../services/mailer.js';
 import type { Unsubscribe } from '../services/unsubscribe.js';
 import { MENTORS, type Vault } from '../services/vault.js';
@@ -49,7 +49,7 @@ export function createAccountRouter(deps: { vault: Vault; limits: Limits; auth: 
   router.post('/age', async (req, res) => {
     const { userId } = authOf(req);
 
-    await limits.consume('ipAccount', keyFor(req.ip ?? 'unknown'));
+    await limits.consume('ipAccount', visitorKey(req.ip));
 
     const body = AgeBody.safeParse(req.body);
 
@@ -68,12 +68,13 @@ export function createAccountRouter(deps: { vault: Vault; limits: Limits; auth: 
   /*
    * The account's language is the one the person uses the site in: the frontend reports it when it
    * differs from what the account has (after signing in, and when the person changes it). Emails
-   * are written in it.
+   * are written in it. It is the one thing an account may set before it has said its age: the age
+   * step itself has to be shown in the person's language, and the welcome email is written in it.
    */
   router.put('/locale', async (req, res) => {
     const { userId } = authOf(req);
 
-    await limits.consume('ipAccount', keyFor(req.ip ?? 'unknown'));
+    await limits.consume('ipAccount', visitorKey(req.ip));
 
     const body = LocaleBody.safeParse(req.body);
 
@@ -92,9 +93,12 @@ export function createAccountRouter(deps: { vault: Vault; limits: Limits; auth: 
    * statement, not the verified `parent` type). The database checks each value again.
    */
   router.put('/profile', async (req, res) => {
-    const { userId } = authOf(req);
+    const { userId, account } = authOf(req);
 
-    await limits.consume('ipAccount', keyFor(req.ip ?? 'unknown'));
+    // No name is kept for an account that has not said its age: under 13 it also owes the permission box.
+    if (!account.ageDeclared) throw new ApiError('AGE_REQUIRED');
+
+    await limits.consume('ipAccount', visitorKey(req.ip));
 
     const body = ProfileBody.safeParse(req.body);
 
@@ -108,9 +112,12 @@ export function createAccountRouter(deps: { vault: Vault; limits: Limits; auth: 
   });
 
   router.put('/username', async (req, res) => {
-    const { userId } = authOf(req);
+    const { userId, account } = authOf(req);
 
-    await limits.consume('ipAccount', keyFor(req.ip ?? 'unknown'));
+    // A username is public. An account without an age record does not get one.
+    if (!account.ageDeclared) throw new ApiError('AGE_REQUIRED');
+
+    await limits.consume('ipAccount', visitorKey(req.ip));
 
     const body = UsernameBody.safeParse(req.body);
 

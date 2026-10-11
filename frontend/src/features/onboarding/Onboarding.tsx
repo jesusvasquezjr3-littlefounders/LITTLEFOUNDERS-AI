@@ -11,7 +11,7 @@ import { useSession } from '@/features/auth/session';
 import { body, heading } from '@/features/landing/type';
 import { StepArt } from '@/features/onboarding/StepArt';
 import { furthest, sceneFor, stepsFor, type StepId } from '@/features/onboarding/steps';
-import { MAX_AGE, MENTORS, MIN_AGE, NAME, onboarding, useOnboardingAnswers, type Answers, type Mentor, type Path } from '@/features/onboarding/store';
+import { isReservedName, MAX_AGE, MENTORS, MIN_AGE, NAME, onboarding, useOnboardingAnswers, type Answers, type Mentor, type Path } from '@/features/onboarding/store';
 
 /** The words of one screen. Which of the optional ones exist depends on the step. */
 type Screen = { title: string; text: string; button?: string; now?: string; later?: string; done?: string };
@@ -207,7 +207,8 @@ function NameForm({ initial, onAnswer }: { initial: string | undefined; onAnswer
   const copy = useOnboardingCopy();
   const [value, setValue] = useState(initial ?? '');
   const name = value.trim().replace(/\s+/g, ' ');
-  const isValid = NAME.test(name);
+  const isWritten = NAME.test(name);
+  const isValid = isWritten && !isReservedName(name);
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
@@ -221,7 +222,7 @@ function NameForm({ initial, onAnswer }: { initial: string | undefined; onAnswer
       <FieldControl>
         <Input autoFocus type="text" autoComplete="given-name" autoCapitalize="words" spellCheck={false} maxLength={40} value={value} onChange={(event) => setValue(event.target.value)} />
       </FieldControl>
-      {name.length > 0 && !isValid ? <FieldDescription role="status">{copy.name.invalid}</FieldDescription> : null}
+      {name.length > 0 && !isValid ? <FieldDescription role="status">{isWritten ? copy.name.notAllowed : copy.name.invalid}</FieldDescription> : null}
     </Field>
     <Button type="submit" size="lg" fullWidth disabled={!isValid}>{copy.continue}</Button>
   </form>;

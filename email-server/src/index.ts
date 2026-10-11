@@ -9,8 +9,8 @@ import { renderHarakaConfig, startHaraka } from './services/haraka.js';
  * Courier entrypoint / supervisor.
  *
  * With EMAIL_ENGINE=haraka it runs TWO cooperating processes in one container:
- *   1. the Haraka SMTP engine (email-server/haraka) — the private SMTP endpoint
- *      GoTrue talks to, and the outbound relay to Amazon SES;
+ *   1. the Haraka SMTP engine (email-server/haraka) — the outbound relay to
+ *      Amazon SES, listening on localhost only;
  *   2. this Express HTTP API — /health (Railway healthcheck) and POST
  *      /api/v1/send, which builds an email from its templates (src/mail) and
  *      whose SmtpAdapter submits it into Haraka on localhost.

@@ -38,7 +38,7 @@ Node 24. Everything below is run from `frontend/`.
 
 | Piece | What is used |
 |---|---|
-| UI | React 19, TypeScript 5 in strict mode, React Router 6 |
+| UI | React 19, TypeScript 5 in strict mode, React Router 7 |
 | Build | Vite 6; `npm run build` type-checks, builds, then prerenders the SEO shell (`scripts/seo/`) |
 | Styling | Tailwind CSS v4 (`@tailwindcss/vite`), tokens in `src/styles/lf-theme.css` on top of Cojeev's token layer |
 | Components | shadcn registries `@cojeev` and `@bklit`, plus Motion, Sileo, Morphicons and Thinking Orbs: [[UI-LIBRARIES]] |
@@ -131,6 +131,7 @@ Built on 2026-10-10 ([[F-001-authentication]]); it settles three of the open dec
 - **No token in the page.** The session is two `HttpOnly` cookies the page cannot read. Nothing in `src/` stores, reads or sends a token, and nothing may start to ([[SECURITY-GUIDE]]). The only thing kept in `localStorage` is the flag `lf.session` (the character `1`), so a visitor who never signed in makes no request to the backend at all.
 - **The session** is `SessionProvider` and `useSession()` in `features/auth/session.tsx`: `status` (`loading`, `signedOut`, `signedIn`), `account`, and the actions (`requestCode`, `verifyCode`, `declareAge`, `signInWithGoogle`, `signOut`, `reload`). It is provided once, in `App.tsx`, above every page.
 - **The window** is opened through `AuthDialogProvider` in `features/auth/AuthDialog.tsx`, also provided once; anything opens it with `useAuthDialog().open()` (or `open('signUp')`). The window itself, with its fields, is `features/auth/AuthWindow.tsx`: its own chunk (12.7 KB compressed), downloaded the first time it is opened and fetched early when the pointer or the focus reaches a Sign in button, so the landing does not carry a form most visitors never see. It is a Cojeev Dialog with the scene on top and one step at a time: choose, identifier, code, age. Fields are Cojeev's Field, Input, InputOTP and Checkbox. Each step has one primary button, disabled until there is an answer (D-020); a step change is a 200 ms fade on `ENTER`; a failure is a sentence in the window (`role="alert"`), and the focus goes back to the field. Closing the window returns the focus to what opened it. The window opens by itself at the age step for an account that has not said its age.
+- **Asking for a code** does a small piece of work first (`lib/proofOfWork.ts`, called by `requestCode` in the session): Core hands out a challenge and sends a code only to a caller that solved it. It takes about a tenth of a second and the person sees nothing; the search pauses every few thousand tries so the page does not freeze. Core no longer says when an email could not be sent, so there is no sentence for it.
 - **Errors are codes.** Core answers with a code; `useFailureText` in the window maps it to a sentence from `auth.errors` in the locale files. A new code needs its sentence in the three languages.
 - **Forms.** A form is a `<form noValidate>` whose submit handler checks the value and shows our own sentence; the browser's validation bubbles are not used (they are not ours to translate or style). The same rule is checked again by Core, which is the one that counts.
 - **Google** opens a small window on Core (`signInWithGoogle`); the page `/auth/callback` (`features/auth/AuthCallback.tsx`, outside the shell) tells the waiting page how it went over a `BroadcastChannel` and closes. When the browser refuses windows, the same trip happens in the tab.
@@ -142,7 +143,7 @@ Measured on 2026-10-09: about 289 KB of JavaScript, compressed, for the landing 
 
 ## Analytics, consent and the 3D scenes
 
-Plausible, Umami and Google Analytics 4 load only after the visitor accepts the optional cookies (`lib/analytics.tsx`, `lib/visitor.ts`, [[OBSERVABILITY]]). The hero and problem scenes are looping videos with a poster that stays for reduced motion and less data (`features/landing/LoopVideo.tsx`); the interactive 3D character files are Git LFS and are not loaded by the landing.
+Plausible, Umami and Google Analytics 4 load only after the visitor accepts the optional cookies (`lib/analytics.tsx`, `lib/visitor.ts`, [[OBSERVABILITY]]). A tracker is given a page's path and never its query string, and no tracker is loaded or told anything on a page whose address carries something private: `/unsubscribe` (the token of the link) and `/auth/callback`. A new page of that kind is added to `PRIVATE_PATHS`. The hero and problem scenes are looping videos with a poster that stays for reduced motion and less data (`features/landing/LoopVideo.tsx`); the interactive 3D character files are Git LFS and are not loaded by the landing.
 
 ## How a change is checked before it is called done
 
@@ -160,7 +161,7 @@ Not decided; do not guess them. Raise each with the owner when a feature needs i
 - [ ] Routing beyond `/` and the 404 page, a real HTTP 404 status for unknown paths, and the rule for splitting code per route.
 - [ ] State management and server-state rules beyond the session (which is a context, above).
 - [ ] Caching of server data: nothing is cached today, and the first feature that lists data will need a rule.
-- [ ] Client security still open: a content security policy for the pages. Token and storage handling is settled above.
+- Settled on 2026-10-10: the site's content security policy and the other security headers are in `frontend/vercel.json`, and `scripts/security-headers.mjs` (the last step of `npm run build`) fails the build when the policy no longer matches it; `--fix` rewrites the hash of the inline boot script after `index.html` changes. A new host the page loads from or talks to is added to the policy in the same change. No inline script is added to a page, and nothing uses `eval`. Details: [[SECURITY-GUIDE]].
 - [ ] Performance budgets and bundle limits ([[PERFORMANCE-AND-SCALING]]).
 - [ ] The product's own icons: format, grid, review, registry (T-012).
 - [ ] Which surfaces are young-child surfaces and the age bands (T-013).

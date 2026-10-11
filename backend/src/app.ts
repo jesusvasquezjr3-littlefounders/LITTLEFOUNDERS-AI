@@ -4,6 +4,7 @@ import type { Config } from './config.js';
 import { ApiError, sendData, sendError } from './lib/http.js';
 import { describeError, log, toError } from './lib/log.js';
 import { createAuthMiddleware } from './middleware/auth.js';
+import { createChallenges } from './services/challenge.js';
 import { cors, noStore, requireOwnOrigin } from './middleware/security.js';
 import { createAccountRouter } from './routes/account.js';
 import { createAdminRouter } from './routes/admin.js';
@@ -12,7 +13,8 @@ import { createEmailRouter, createOneClickRouter } from './routes/email.js';
 import { createHooksRouter } from './routes/hooks.js';
 import { createCookies } from './services/cookies.js';
 import { createGotrue } from './services/gotrue.js';
-import { keyFor, type Limits } from './services/limits.js';
+import { createKnownDevices } from './services/knownDevice.js';
+import { visitorKey, type Limits } from './services/limits.js';
 import { createMailer } from './services/mailer.js';
 import { createUnsubscribe } from './services/unsubscribe.js';
 import { createTokenVerifier } from './services/tokens.js';
@@ -35,6 +37,8 @@ export function createApp(config: Config, limits: Limits): express.Express {
   const gotrue = createGotrue(config);
   const vault = createVault(config);
   const cookies = createCookies(config);
+  const knownDevices = createKnownDevices(config, cookies);
+  const challenges = createChallenges(config);
   const verifyToken = createTokenVerifier(config);
   const auth = createAuthMiddleware({ cookies, verifyToken, vault });
   const mailer = createMailer(config);
@@ -59,18 +63,18 @@ export function createApp(config: Config, limits: Limits): express.Express {
   app.get('/health', (_req, res) => sendData(res, { service: SERVICE, version: VERSION, status: 'ok' }));
 
   // Before the per-address capacity limit: every call comes from the authentication service's one address.
-  app.use('/api/v1/hooks', createHooksRouter({ config, vault, mailer, unsubscribe }));
+  app.use('/api/v1/hooks', createHooksRouter({ config, vault, mailer, unsubscribe, limits }));
 
   app.use(cors(config));
   app.use(async (req, _res, next) => {
-    await limits.consume('ipGlobal', keyFor(req.ip ?? 'unknown'));
+    await limits.consume('ipGlobal', visitorKey(req.ip));
     next();
   });
   app.use('/api/v1/email', createOneClickRouter({ vault, limits, unsubscribe }));
   app.use(requireOwnOrigin(config));
   app.use(express.json({ limit: '10kb', type: 'application/json' }));
 
-  app.use('/api/v1/auth', createAuthRouter({ config, gotrue, vault, cookies, limits, auth, verifyToken }));
+  app.use('/api/v1/auth', createAuthRouter({ config, gotrue, vault, cookies, knownDevices, challenges, limits, auth, verifyToken }));
   app.use('/api/v1/account', createAccountRouter({ vault, limits, auth, mailer, unsubscribe }));
   app.use('/api/v1/email', createEmailRouter({ vault, limits, unsubscribe }));
   app.use('/api/v1/admin', createAdminRouter({ vault, auth }));

@@ -19,3 +19,8 @@ auth_pass=__SES_SMTP_PASS__
 ; Deliver outbound (relaying) mail via this smarthost. Registers the
 ; queue_outbound hook — see node_modules/Haraka/config/smtp_forward.ini.
 enable_outbound=true
+
+; The smarthost's certificate is verified, and plugins/forward_secure.js sends
+; nothing when the connection is not encrypted.
+[tls]
+rejectUnauthorized=true

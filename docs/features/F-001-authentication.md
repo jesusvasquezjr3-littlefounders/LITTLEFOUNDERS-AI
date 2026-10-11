@@ -61,11 +61,12 @@ Core, base path `/api/v1`. Every answer is `{ "data": ..., "error": null }` or `
 
 | Method and path | Signed in | Body | Answers |
 |---|---|---|---|
-| `POST /auth/code` | no | `{ identifier, locale? }` | `{ sent, codeLength, expiresInSeconds, resendAfterSeconds }`. Same answer whether or not the identifier has an account. `locale` is the language a new account starts with; the email itself is described in [[F-002-emails]] |
-| `POST /auth/code/verify` | no | `{ identifier, code }` | `{ account }` and the session cookies; `CODE_INVALID`, `TOO_MANY_ATTEMPTS` |
+| `GET /auth/challenge` | no | | `{ challenge, difficulty }`: the piece of work to do before asking for a code ([[RATE-LIMITING-AND-ABUSE]]) |
+| `POST /auth/code` | no | `{ identifier, locale?, challenge, solution }` | `{ sent, codeLength, expiresInSeconds, resendAfterSeconds }`. Same answer, in the same time, whether or not the identifier has an account: the email is sent after the answer. `PROOF_REQUIRED` when the work is missing, wrong, old or already used. `locale` is the language a new account starts with; the email itself is described in [[F-002-emails]] |
+| `POST /auth/code/verify` | no | `{ identifier, code }` | `{ account }`, the session cookies and the known-browser cookie `lf_kd`; `CODE_INVALID`, `TOO_MANY_ATTEMPTS` |
 | `GET /auth/session` | yes | | `{ account }` |
 | `POST /auth/refresh` | refresh cookie | `{}` | `{ account }` and new cookies; `SESSION_EXPIRED` |
-| `POST /auth/sign-out` | optional | `{}` | `{ signedOut }`; always clears the cookies |
+| `POST /auth/sign-out` | optional | `{}` | `{ signedOut }`; always clears the session cookies, and ends the session at the authentication service with the access token or, when that cookie has expired, through the refresh token |
 | `GET /auth/providers` | no | | `{ google }` |
 | `GET /auth/google/start?mode=popup\|redirect` | no | | A redirect to Google |
 | `GET /auth/google/callback` | no | | Sets the cookies; a redirect to `/auth/callback?mode=&result=` |
@@ -90,10 +91,15 @@ Read against the attacker's checklists in `.claude/skills/strix-security-referen
 | A forged or altered token | HS256 pinned, issuer, audience, expiry and role checked; a token says who is asking, never what they may do |
 | A stolen token used after sign-out, a ban or a deletion | Every request asks the database whether that session is alive and the account usable |
 | A stolen refresh token | Refresh tokens are used once; using an old one ends the session |
+| A stranger locking somebody out by guessing at their account on purpose | The counters per identifier exist twice: a browser that has signed in to the account before counts in a set nobody else can spend (`lf_kd`, D-045, [[RATE-LIMITING-AND-ABUSE]]) |
+| A copy of the refresh token outliving the person's sign-out | Signing out ends the session at the authentication service even when the access cookie has expired: Core refreshes first and ends the session with the new token |
+| A production service running with development settings because of a missing or misspelled `NODE_ENV` | Only the exact words `development` and `test` relax anything; anything else is production, and production does not boot without Redis, https and its secrets |
 | Being signed in to somebody else's Google account by a prepared link | The sign-in is bound to the browser that started it (PKCE; the secret stays in a short-lived cookie) |
 | Giving oneself a role | Types are read from the database on every request; the tables are closed; the database checks every grant again |
 | Reading or changing another account | No handler takes a user id from the request, except the two superadmin routes |
-| Flooding sign-in or the mail | Limits per visitor address and per identifier; one email a minute and five an hour per address |
+| Flooding sign-in or the mail | A piece of work before each code; limits per visitor (an IPv6 visitor by its /64 network) and per mailbox; one email a minute and five an hour per address; an hourly allowance for new addresses that leaves the rest to existing accounts |
+| Learning by timing which address a username belongs to, or whether an address just got a code | Core answers first and sends afterwards, whatever was typed |
+| A name or a public username on an account with no age record | `PUT /account/profile` and `/username` answer `AGE_REQUIRED` until the age is declared; only the language can be set before |
 | Personal data in logs | Core logs the method, the route pattern, the status and a failure's kind. Never an address, a username, a code, a token or a cookie; counter keys are digests |
 
 For minors: no birth date is stored, only a whole-number age; under 13 the permission box is required and recorded; nothing here is shown to another user; the only third parties that receive an address are the authentication service's mail route (Courier to Amazon SES) and, for a person who chooses it, Google. What a self-declared box does and does not satisfy legally is in [[CHILD-SAFETY-AND-PRIVACY]].
@@ -106,7 +112,7 @@ For minors: no birth date is stored, only a whole-number age; under 13 the permi
 
 - Wrong code: a sentence in the window, the boxes are emptied and keep the focus. After five wrong codes the code stops working and the window says to ask for a new one.
 - A second request for a code inside a minute: refused with the wait in seconds; the window shows a countdown before "send a new code" appears.
-- The mail cannot be sent: `EMAIL_NOT_SENT`, and the person stays on the identifier step.
+- The mail cannot be sent: the person is not told (Core answers before it sends, so that the answer says nothing about the address); the failure is logged, and the person can ask for a new code after a minute.
 - The counter store is unreachable: a limit that protects an account refuses the request (`UNAVAILABLE`); the capacity limit lets it through. Production does not boot without `REDIS_URL`.
 - The database or the authentication service is unreachable: `UNAVAILABLE`, never a half-made session.
 - The Google window is closed without choosing: the waiting page keeps offering the other ways to sign in and stops waiting after ten minutes.
@@ -119,7 +125,7 @@ For minors: no birth date is stored, only a whole-number age; under 13 the permi
 Nothing is deployed. Before the first deployment:
 
 1. **Authentication service** (Railway `auth`): add `GOTRUE_MAILER_OTP_EXP=900`, `GOTRUE_MAILER_OTP_LENGTH=6`, `GOTRUE_SMTP_MAX_FREQUENCY=60s`, `GOTRUE_RATE_LIMIT_EMAIL_SENT` (the ceiling for the whole service: size it to the expected sign-ins), `GOTRUE_SECURITY_REFRESH_TOKEN_ROTATION_ENABLED=true`, `GOTRUE_SECURITY_REFRESH_TOKEN_REUSE_INTERVAL=10`; set `GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED=false`; add Core's callback to `GOTRUE_URI_ALLOW_LIST` (`https://api-b2c.littlefounders.ai/api/v1/auth/google/callback`). The Google and SMTP keys are not touched.
-2. **Core** (Railway `littlefounders-backend`): the existing variables are reused as they are; add `PUBLIC_API_ORIGIN=https://api-b2c.littlefounders.ai`. Confirm `TRUST_PROXY_HOPS` against the real proxy chain.
+2. **Core** (Railway `littlefounders-backend`): the existing variables are reused as they are; add `PUBLIC_API_ORIGIN=https://api-b2c.littlefounders.ai`, and make sure `NODE_ENV` is exactly `production` (any other value is treated as production too, but then Core refuses to boot without Redis, https and its secrets, which is the point). Confirm `TRUST_PROXY_HOPS` against the real proxy chain.
 3. **Gateway** (Railway `kong`): deploy the closed `kong.yml`. From that moment nothing but Core can call the auth and REST routes, so it goes out together with the new Core and the new frontend, not before.
 4. **Emails**: the code reaches the person in our own emails, which replace the service's templates. What that needs on each service is the rollout section of [[F-002-emails]].
 5. **Data**: the production database holds the previous version's accounts. Moving them (renaming `kid` to `child`, giving minors who are `universal` today the `child` type, dropping `bigfounder`, and what to do with child accounts that have no real address) is its own piece of work: T-026.

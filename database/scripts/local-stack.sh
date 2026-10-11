@@ -85,6 +85,13 @@ ensure_env() {
     printf '\nSEND_EMAIL_HOOK_SECRET=v1,whsec_%s\n' "$(openssl rand -base64 32)" >> "$DOCKER_DIR/.env"
     echo "Generated SEND_EMAIL_HOOK_SECRET in docker/.env: copy it to backend/.env"
   fi
+  # The mail service's own key: a token that names the database role
+  # `mail_service` (migrations/0004). The gateway needs it (overlay below) and
+  # the mail service needs the same value as MAIL_SERVICE_KEY in email-server/.env.
+  if ! grep -q '^MAIL_SERVICE_KEY=' "$DOCKER_DIR/.env"; then
+    printf '\nMAIL_SERVICE_KEY=%s\n' "$(JWT_SECRET="$(env_var JWT_SECRET)" node "$DB_DIR/scripts/mint-role-key.mjs" mail_service)" >> "$DOCKER_DIR/.env"
+    echo "Generated MAIL_SERVICE_KEY in docker/.env: copy it to email-server/.env"
+  fi
   ensure_port_override
 }
 
@@ -151,6 +158,7 @@ services:
       KONG_STORAGE_HOST: storage
       KONG_META_HOST: meta
       KONG_STUDIO_HOST: studio
+      MAIL_SERVICE_KEY: "\${MAIL_SERVICE_KEY}"
   mailpit:
     container_name: supabase-mailpit
     image: axllent/mailpit:v1.31.4

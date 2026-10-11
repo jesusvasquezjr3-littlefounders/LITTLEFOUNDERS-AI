@@ -65,7 +65,6 @@
       "codeInvalid": "That code did not work. Check the numbers, or ask for a new one.",
       "tooManyAttempts": "That was too many tries with this code. Ask for a new one.",
       "rateLimited": "Wait a moment before you try again.",
-      "emailNotSent": "We could not send the email. Try again in a minute.",
       "permissionRequired": "Ask your parent or guardian first, then tick the box.",
       "googleCancelled": "You closed Google before signing in.",
       "googleFailed": "Google could not sign you in. Try again.",

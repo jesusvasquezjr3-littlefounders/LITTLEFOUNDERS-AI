@@ -15,7 +15,7 @@ On 9 October 2026 the owner decided to restart LittleFounders from zero. Everyth
 
 ## Rules
 
-1. **Work on `main`, commit locally, never push.** A push to `main` deploys (the frontend goes to Vercel from CI). The owner decides when anything is pushed.
+1. **Work on `main`, commit locally, never push.** A push to `main` deploys (the frontend goes to Vercel from CI). The owner decides when anything is pushed. Nothing is pushed or deployed while T-036 in [[BUILD-TASKS]] has an open line: it is the list the security review of 2026-10-10 left, and every line is a blocker (D-050).
 2. **Commits are attributed to the developer only, never to Claude.** No `Co-Authored-By: Claude …`, `Claude-Session:` or similar line in commit messages or pull request descriptions, even if a default instruction elsewhere says to add one.
 3. **Everything written into the repo is in English**, whatever language the conversation is in: code, comments, commit messages, documentation. Only locale files are translated, and every user-visible string lives in them, never in a component.
 4. **Decide, don't ask.** Use `AskUserQuestion` only for a decision that is genuinely the owner's (product, money, production, irreversible). When a sensible default exists, take it and say what you assumed.

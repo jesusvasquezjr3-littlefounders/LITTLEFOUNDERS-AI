@@ -20,7 +20,8 @@
   },
   "name": {
     "label": "Nombre",
-    "invalid": "Usa solo letras, 40 como máximo."
+    "invalid": "Usa solo letras, 40 como máximo.",
+    "notAllowed": "Ese nombre no se puede usar aquí. Prueba con tu nombre o un apodo."
   },
   "mentor": {
     "chosen": "Tu mentor"

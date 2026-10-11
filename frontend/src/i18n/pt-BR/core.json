@@ -65,7 +65,6 @@
       "codeInvalid": "Esse código não funcionou. Confira os números ou peça outro.",
       "tooManyAttempts": "Foram tentativas demais com este código. Peça outro.",
       "rateLimited": "Espere um pouco antes de tentar de novo.",
-      "emailNotSent": "Não conseguimos mandar o e-mail. Tente de novo em um minuto.",
       "permissionRequired": "Peça permissão para sua mãe, seu pai ou seu responsável e depois marque a caixa.",
       "googleCancelled": "Você fechou o Google antes de entrar.",
       "googleFailed": "O Google não conseguiu fazer seu login. Tente de novo.",

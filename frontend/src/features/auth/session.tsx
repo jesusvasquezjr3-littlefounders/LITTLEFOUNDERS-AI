@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import * as z from 'zod/mini';
 import { useLocale } from '@/i18n/useCopy';
 import { api, ApiFailure, apiUrl } from '@/lib/api';
+import { solveChallenge } from '@/lib/proofOfWork';
 
 /*
  * Who is signed in, for the whole app. The session itself is two HttpOnly cookies that this code
@@ -27,6 +28,9 @@ const Account = z.object({
 export type Account = z.infer<typeof Account>;
 
 const WithAccount = z.object({ account: Account });
+
+/** The piece of work Core asks for before it sends a code (lib/proofOfWork.ts). */
+const Challenge = z.object({ challenge: z.string(), difficulty: z.number() });
 
 const CodeSent = z.object({ sent: z.boolean(), codeLength: z.number(), expiresInSeconds: z.number(), resendAfterSeconds: z.number() });
 
@@ -158,7 +162,23 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     account,
     reload,
 
-    requestCode: (identifier, locale) => api('/api/v1/auth/code', CodeSent, { method: 'POST', body: { identifier, locale } }),
+    async requestCode(identifier, locale) {
+      // Core sends a code only to a caller that did a small piece of work first. A challenge is good
+      // for one request and for two minutes, so a refused one is replaced once and tried again.
+      const ask = async () => {
+        const { challenge, difficulty } = await api('/api/v1/auth/challenge', Challenge);
+
+        return api('/api/v1/auth/code', CodeSent, { method: 'POST', body: { identifier, locale, challenge, solution: await solveChallenge(challenge, difficulty) } });
+      };
+
+      try {
+        return await ask();
+      } catch (thrown) {
+        if (!(thrown instanceof ApiFailure) || thrown.code !== 'PROOF_REQUIRED') throw thrown;
+
+        return ask();
+      }
+    },
 
     async verifyCode(identifier, code) {
       const answer = await api('/api/v1/auth/code/verify', WithAccount, { method: 'POST', body: { identifier, code } });

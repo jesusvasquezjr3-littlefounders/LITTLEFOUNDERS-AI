@@ -7,8 +7,10 @@ import { describeError, log, toError } from '../lib/log.js';
 import { authOf, type AuthMiddleware } from '../middleware/auth.js';
 import type { Cookies } from '../services/cookies.js';
 import type { Gotrue, Session } from '../services/gotrue.js';
+import type { KnownDevices } from '../services/knownDevice.js';
 import type { TokenVerifier } from '../services/tokens.js';
-import { keyFor, type Limits } from '../services/limits.js';
+import type { Challenges } from '../services/challenge.js';
+import { keyFor, visitorKey, type Limits } from '../services/limits.js';
 import type { AccountContext, Vault } from '../services/vault.js';
 
 /*
@@ -18,7 +20,8 @@ import type { AccountContext, Vault } from '../services/vault.js';
  * signing up are the same two steps.
  *
  * Two rules shape every handler here:
- *   - an answer never tells whether an address or a username has an account;
+ *   - an answer never tells whether an address or a username has an account, by what it says or by
+ *     how long it takes;
  *   - every counter is taken before the thing it protects is attempted.
  */
 export const CODE_LENGTH = 6;
@@ -31,12 +34,31 @@ const USERNAME = /^[a-z0-9_]{3,20}$/;
 // An identifier is an email address or a username. It is trimmed and lower-cased before anything else.
 const Identifier = z.string().trim().toLowerCase().min(3).max(254);
 
-const CodeRequestBody = z.object({ identifier: Identifier, locale: z.enum(LOCALES).default('en-US') }).strict();
+const CodeRequestBody = z.object({
+  identifier: Identifier,
+  locale: z.enum(LOCALES).default('en-US'),
+  // The work done before asking (services/challenge.ts).
+  challenge: z.string().min(20).max(120),
+  solution: z.string().regex(/^[0-9a-z]{1,16}$/),
+}).strict();
 const CodeVerifyBody = z.object({ identifier: Identifier, code: z.string().regex(/^\d{6}$/) }).strict();
 const GoogleStartQuery = z.object({ mode: z.enum(['popup', 'redirect']).default('redirect') });
 const GoogleCallbackQuery = z.object({ code: z.string().min(8).max(512).optional() });
 
 type Target = { kind: 'email'; email: string } | { kind: 'username'; email: string | null; username: string };
+
+/*
+ * The mailbox an address delivers to, for counting only (the email still goes to what was typed).
+ * `name+anything@` reaches the mailbox of `name@` at most providers, and Gmail also ignores the
+ * dots, so without this one mailbox would have as many counters as it has spellings.
+ */
+function mailbox(email: string): string {
+  const at = email.lastIndexOf('@');
+  const domain = email.slice(at + 1);
+  const name = email.slice(0, at).split('+')[0] ?? '';
+
+  return `${domain === 'gmail.com' || domain === 'googlemail.com' ? name.replaceAll('.', '') : name}@${domain === 'googlemail.com' ? 'gmail.com' : domain}`;
+}
 
 /** What the frontend may know about the signed-in account. */
 function accountView(userId: string, account: AccountContext) {
@@ -57,11 +79,11 @@ function accountView(userId: string, account: AccountContext) {
   };
 }
 
-export function createAuthRouter(deps: { config: Config; gotrue: Gotrue; vault: Vault; cookies: Cookies; limits: Limits; auth: AuthMiddleware; verifyToken: TokenVerifier }): Router {
-  const { config, gotrue, vault, cookies, limits, auth, verifyToken } = deps;
+export function createAuthRouter(deps: { config: Config; gotrue: Gotrue; vault: Vault; cookies: Cookies; knownDevices: KnownDevices; challenges: Challenges; limits: Limits; auth: AuthMiddleware; verifyToken: TokenVerifier }): Router {
+  const { config, gotrue, vault, cookies, knownDevices, challenges, limits, auth, verifyToken } = deps;
   const router = Router();
 
-  const clientKey = (req: Request): string => keyFor(req.ip ?? 'unknown');
+  const clientKey = (req: Request): string => visitorKey(req.ip);
 
   async function resolve(identifier: string): Promise<Target | null> {
     if (identifier.includes('@')) {
@@ -79,12 +101,33 @@ export function createAuthRouter(deps: { config: Config; gotrue: Gotrue; vault: 
    * whichever way it was named: its limits hold silently. If a refusal on one identifier could be
    * seen through the other, filling a username's counter and probing an address would tell which
    * address the username belongs to.
+   *
+   * Both come in two sets, `stranger` and `known`. A browser that has signed in to the account
+   * before (services/knownDevice.ts) counts in the `known` set, which nobody else can spend. Without
+   * that, somebody who knows a child's username could use up the account's guesses and emails on
+   * purpose and lock the child out for a day without the child being told why.
    */
-  const typedKey = (target: Target): string => keyFor(target.kind === 'email' ? `email:${target.email}` : `username:${target.username}`);
-  const accountKey = (target: Target): string | null => (target.email ? keyFor(`account:${target.email}`) : null);
+  type Scope = 'stranger' | 'known';
+
+  const SCOPES: readonly Scope[] = ['stranger', 'known'];
+
+  const scopeOf = (req: Request, target: Target): Scope => (target.email && knownDevices.knows(req, target.email) ? 'known' : 'stranger');
+  const typedKey = (target: Target, scope: Scope): string => keyFor(`${scope}:${target.kind === 'email' ? `email:${mailbox(target.email)}` : `username:${target.username}`}`);
+  const accountKey = (target: Target, scope: Scope): string | null => (target.email ? keyFor(`${scope}:account:${mailbox(target.email)}`) : null);
+
+  /** A new code replaces the old one for everybody, so the attempts on it start again in both sets. */
+  async function resetAttemptsPerCode(target: Target): Promise<void> {
+    for (const scope of SCOPES) {
+      await limits.reset('attemptsPerCode', typedKey(target, scope));
+
+      const account = accountKey(target, scope);
+
+      if (account) await limits.reset('attemptsPerCode', account);
+    }
+  }
 
   /** Stores the session in cookies and answers with the account. */
-  async function startSession(res: Response, session: Session, sessionId: string): Promise<void> {
+  async function startSession(req: Request, res: Response, session: Session, sessionId: string): Promise<void> {
     await vault.syncBaseType(session.userId);
 
     const account = await vault.sessionContext(session.userId, sessionId);
@@ -92,12 +135,22 @@ export function createAuthRouter(deps: { config: Config; gotrue: Gotrue; vault: 
     if (!account?.active) throw new ApiError('SESSION_EXPIRED');
 
     cookies.setSession(res, session);
+    if (account.email) knownDevices.remember(req, res, account.email);
     sendData(res, { account: accountView(session.userId, account) });
   }
 
   // ---------------------------------------------------------------------------------------------
   // One-time code by email
   // ---------------------------------------------------------------------------------------------
+
+  /*
+   * The piece of work a browser does before it asks for a code (services/challenge.ts). Handing
+   * one out costs Core nothing and stores nothing.
+   */
+  router.get('/challenge', async (req, res) => {
+    await limits.consume('ipSession', clientKey(req));
+    sendData(res, { challenge: challenges.issue(), difficulty: challenges.difficulty });
+  });
 
   router.post('/code', async (req, res) => {
     await limits.consume('ipCodeRequest', clientKey(req));
@@ -106,61 +159,55 @@ export function createAuthRouter(deps: { config: Config; gotrue: Gotrue; vault: 
 
     if (!body.success) throw new ApiError('BAD_REQUEST');
 
+    // The work is checked first and the challenge is spent, whatever comes next: one request, one challenge.
+    if (!challenges.accepts(body.data.challenge, body.data.solution) || !(await limits.allow('challengeOnce', keyFor(body.data.challenge)))) {
+      throw new ApiError('PROOF_REQUIRED');
+    }
+
     const target = await resolve(body.data.identifier);
 
     if (!target) throw new ApiError('BAD_REQUEST');
 
-    const typed = typedKey(target);
+    const scope = scopeOf(req, target);
+    const typed = typedKey(target, scope);
 
     // One email a minute and five an hour per identifier, whoever asks. They apply to an identifier
     // nobody owns too, so they say nothing about whether it exists.
     await limits.consume('codeCooldown', typed);
     await limits.consume('codeHourly', typed);
 
-    const answer = { sent: true, codeLength: CODE_LENGTH, expiresInSeconds: CODE_LIFETIME_SECONDS, resendAfterSeconds: RESEND_AFTER_SECONDS };
-    const account = accountKey(target);
+    // Answer first, send afterwards, whatever was typed. A username that exists and one that does
+    // not, an address with an account and one without, an address that just got a code through its
+    // username and one that did not: all take the same time and get the same answer. The price is
+    // that a failure to send is not told to the person; it is logged, and they can ask again.
+    sendData(res, { sent: true, codeLength: CODE_LENGTH, expiresInSeconds: CODE_LIFETIME_SECONDS, resendAfterSeconds: RESEND_AFTER_SECONDS });
 
-    if (target.kind === 'username') {
-      // Answer first, send afterwards: a username that exists and one that does not take the same
-      // time to answer, and get the same answer.
-      sendData(res, answer);
+    const { email } = target;
+    const account = accountKey(target, scope);
 
-      const { email } = target;
+    if (!email || !account) return;
 
-      if (email && account) {
-        void (async () => {
-          if (!(await limits.allow('codeCooldown', account)) || !(await limits.allow('codeHourly', account))) return;
+    void (async () => {
+      // The address already got a code less than a minute ago (asked for another way): that code
+      // is still good, so nothing new is sent.
+      if (!(await limits.allow('codeCooldown', account)) || !(await limits.allow('codeHourly', account))) return;
 
-          const result = await gotrue.sendCode(email, { createAccount: false, locale: body.data.locale });
+      // Only an address typed in full can open an account; a username never does.
+      const createAccount = target.kind === 'email';
 
-          if (!result.ok) return log.warn('auth.code.send_failed', { failure: result.failure, by: 'username' });
-
-          // A new code starts with a clean set of attempts; the old code no longer works.
-          await limits.reset('attemptsPerCode', typed);
-          await limits.reset('attemptsPerCode', account);
-        })().catch((thrown: unknown) => log.error('auth.code.send_failed', describeError(toError(thrown))));
+      // New addresses share one allowance an hour for the whole service, so a flood of made-up
+      // addresses cannot use up the emails of people who already have an account.
+      if (createAccount && !(await vault.accountExists(email)) && !(await limits.allow('newAddressHourly', 'all'))) {
+        return log.warn('auth.code.new_address_ceiling');
       }
 
-      return;
-    }
+      const result = await gotrue.sendCode(email, { createAccount, locale: body.data.locale });
 
-    // The address already got a code less than a minute ago (asked for by username): that code is
-    // still good, so nothing new is sent and the answer is the same.
-    if (account && (!(await limits.allow('codeCooldown', account)) || !(await limits.allow('codeHourly', account)))) {
-      return sendData(res, answer);
-    }
+      if (!result.ok) return log.warn('auth.code.send_failed', { failure: result.failure, by: target.kind });
 
-    const result = await gotrue.sendCode(target.email, { createAccount: true, locale: body.data.locale });
-
-    if (!result.ok) {
-      log.warn('auth.code.send_failed', { failure: result.failure, by: 'email' });
-
-      throw new ApiError(result.failure === 'rate_limited' ? 'RATE_LIMITED' : 'EMAIL_NOT_SENT', result.failure === 'rate_limited' ? RESEND_AFTER_SECONDS : undefined);
-    }
-
-    await limits.reset('attemptsPerCode', typed);
-    if (account) await limits.reset('attemptsPerCode', account);
-    sendData(res, answer);
+      // A new code starts with a clean set of attempts; the old code no longer works.
+      await resetAttemptsPerCode(target);
+    })().catch((thrown: unknown) => log.error('auth.code.send_failed', describeError(toError(thrown))));
   });
 
   router.post('/code/verify', async (req, res) => {
@@ -174,8 +221,9 @@ export function createAuthRouter(deps: { config: Config; gotrue: Gotrue; vault: 
 
     if (!target) throw new ApiError('CODE_INVALID');
 
-    const typed = typedKey(target);
-    const account = accountKey(target);
+    const scope = scopeOf(req, target);
+    const typed = typedKey(target, scope);
+    const account = accountKey(target, scope);
 
     // Count the attempt before making it. Two requests racing with the same code cannot both slip
     // under the limit, because taking a point is atomic.
@@ -186,6 +234,9 @@ export function createAuthRouter(deps: { config: Config; gotrue: Gotrue; vault: 
     // Once they are used up the code is simply wrong, whatever is typed.
     const exhausted = account !== null
       && (!(await limits.allow('attemptsPerCode', account)) || !(await limits.allow('attemptsDaily', account)));
+
+    // Worth seeing in the logs: somebody is guessing at one account. No address, no username.
+    if (exhausted) log.warn('auth.code.attempts_exhausted', { scope });
 
     // An identifier nobody owns, or an address out of attempts, is still checked against the
     // authentication service with an address that cannot exist, so it fails the same way and in the
@@ -204,7 +255,7 @@ export function createAuthRouter(deps: { config: Config; gotrue: Gotrue; vault: 
       await limits.refund('attemptsDaily', key);
     }
 
-    await startSession(res, result.value, await sessionIdOf(result.value.accessToken));
+    await startSession(req, res, result.value, await sessionIdOf(result.value.accessToken));
   });
 
   // ---------------------------------------------------------------------------------------------
@@ -235,14 +286,26 @@ export function createAuthRouter(deps: { config: Config; gotrue: Gotrue; vault: 
       throw new ApiError('SESSION_EXPIRED');
     }
 
-    await startSession(res, result.value, await sessionIdOf(result.value.accessToken));
+    await startSession(req, res, result.value, await sessionIdOf(result.value.accessToken));
   });
 
   router.post('/sign-out', async (req, res) => {
-    const accessToken = cookies.accessToken(req);
+    let accessToken = cookies.accessToken(req);
+    const refreshToken = cookies.refreshToken(req);
 
     // The cookies go whatever happens next: signing out must always work from the person's side.
     cookies.clearSession(res);
+
+    // The access cookie leaves the browser when its token expires (about an hour), while the session
+    // and its refresh token live on at the authentication service. Ending the session needs a
+    // token that is still good, so one is obtained with the refresh token and used at once: a copy
+    // of the refresh token taken earlier must not outlive the person's sign-out.
+    if (!accessToken && refreshToken) {
+      const refreshed = await gotrue.refresh(refreshToken);
+
+      if (refreshed.ok) accessToken = refreshed.value.accessToken;
+      else if (refreshed.failure === 'unavailable') log.warn('auth.sign_out.unavailable');
+    }
 
     if (accessToken) {
       const result = await gotrue.signOut(accessToken);

@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build && node scripts/seo/build-seo.mjs",
+    "build": "tsc --noEmit && vite build && node scripts/seo/build-seo.mjs && node scripts/security-headers.mjs",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
@@ -55,7 +55,7 @@
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-i18next": "^15.4.0",
-    "react-router-dom": "^6.28.0",
+    "react-router-dom": "^7.18.4",
     "sileo": "^0.1.5",
     "tailwind-merge": "^3.7.0",
     "thinking-orbs": "^0.3.2",

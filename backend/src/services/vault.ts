@@ -102,6 +102,11 @@ export function createVault(config: Config) {
       return parse('core_email_for_username', z.string().nullable(), await rpc('core_email_for_username', { p_username: username }));
     },
 
+    /** Whether an address already has an account. For Core's own bookkeeping only: never tell a caller. */
+    async accountExists(email: string): Promise<boolean> {
+      return parse('core_account_exists', z.boolean(), await rpc('core_account_exists', { p_email: email }));
+    },
+
     async setUsername(userId: string, username: string) {
       return parse('core_set_username', UsernameOutcome, await rpc('core_set_username', { p_user: userId, p_username: username }));
     },

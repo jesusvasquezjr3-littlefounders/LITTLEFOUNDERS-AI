@@ -2,7 +2,7 @@ import { createContext, lazy, Suspense, useCallback, useContext, useEffect, useM
 import { useSession } from '@/features/auth/session';
 import type { AuthEntry, Mode } from '@/features/auth/AuthWindow';
 import { NO_PERMISSION_FROM } from '@/features/onboarding/Handoff';
-import { useOnboardingAnswers } from '@/features/onboarding/store';
+import { onboarding, useOnboardingAnswers } from '@/features/onboarding/store';
 
 /*
  * Lets anything open the sign-in window (`useAuthDialog().open()`), and opens it by itself at the
@@ -37,9 +37,9 @@ export function AuthDialogProvider({ children }: { children: ReactNode }) {
   const [visit, setVisit] = useState<{ id: number; entry: AuthEntry } | null>(null);
   const askedAge = useRef(false);
   const answers = useOnboardingAnswers();
-  // The person already gave an age in the onboarding that needs no permission box: it is recorded
-  // for them (features/onboarding/Handoff.tsx) and the window does not ask again.
-  const ageIsComing = answers?.finished === true && answers.age !== undefined && answers.age >= NO_PERMISSION_FROM;
+  // The person gave an age in the onboarding a moment ago, in this tab, and it needs no permission
+  // box: it is recorded for them (features/onboarding/Handoff.tsx) and the window does not ask again.
+  const ageIsComing = answers?.finished === true && answers.age !== undefined && answers.age >= NO_PERMISSION_FROM && onboarding.isSameSitting();
   const opener = useRef<Element | null>(null);
 
   const start = useCallback((entry: AuthEntry) => {

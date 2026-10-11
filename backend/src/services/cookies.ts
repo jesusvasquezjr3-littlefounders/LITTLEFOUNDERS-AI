@@ -16,6 +16,8 @@ import type { Session } from './gotrue.js';
  */
 const REFRESH_MAX_AGE_SECONDS = 30 * 24 * 60 * 60;
 const OAUTH_MAX_AGE_SECONDS = 10 * 60;
+// Browsers keep a cookie 400 days at most. It is renewed every time a session starts.
+const KNOWN_DEVICE_MAX_AGE_SECONDS = 400 * 24 * 60 * 60;
 
 const OAuthState = z.object({
   verifier: z.string().min(43).max(128),
@@ -28,7 +30,7 @@ export type Cookies = ReturnType<typeof createCookies>;
 
 export function createCookies(config: Config) {
   const prefix = config.isProduction ? '__Host-' : '';
-  const names = { access: `${prefix}lf_at`, refresh: `${prefix}lf_rt`, oauth: `${prefix}lf_oauth` };
+  const names = { access: `${prefix}lf_at`, refresh: `${prefix}lf_rt`, oauth: `${prefix}lf_oauth`, known: `${prefix}lf_kd` };
   const base: CookieOptions = { httpOnly: true, secure: config.isProduction, path: '/' };
   const strict: CookieOptions = { ...base, sameSite: 'strict' };
   const lax: CookieOptions = { ...base, sameSite: 'lax' };
@@ -79,6 +81,13 @@ export function createCookies(config: Config) {
 
     clearOAuthState(res: Response): void {
       res.clearCookie(names.oauth, lax);
+    },
+
+    /** The marks of the accounts this browser has signed in to (services/knownDevice.ts). Signing out keeps it. */
+    knownDevice: (req: Request) => read(req, names.known),
+
+    setKnownDevice(res: Response, value: string): void {
+      res.cookie(names.known, value, { ...strict, maxAge: KNOWN_DEVICE_MAX_AGE_SECONDS * 1000 });
     },
   };
 }

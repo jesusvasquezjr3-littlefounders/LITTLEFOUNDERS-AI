@@ -291,6 +291,42 @@ Only two steps of the onboarding have a composition of their own; every other st
 
 On the same day the owner approved the eighteen stills made so far (the group's two, and the three poses and the portrait of each mentor), the four mentor lines, and the Portuguese words for Seeds ("Sementes") and for a guardian (as written in the Portuguese locale file).
 
+### D-045: A browser that has signed in to an account has its own allowance of guesses
+
+Date: 2026-10-10. Status: accepted (taken in the security review the owner ordered fixed; the numbers are the starting values).
+
+The counters that protect a one-time code are kept per account, whoever is guessing. Alone, that let a stranger who knows a child's username spend the account's guesses and emails on purpose and lock the child out for a day, silently. Every such counter now exists twice: a browser that has signed in to the account before proves it with a cookie the page cannot read (`lf_kd`, a keyed hash that names nobody and grants no access) and counts in a set nobody else can spend. The alternatives were a longer code, which changes the approved window and emails, and counting per visitor address, which a guesser with many addresses defeats. A new device is still in the strangers' set. Details: [[RATE-LIMITING-AND-ABUSE]].
+
+### D-046: Onboarding answers reach a new account without asking only in the same sitting
+
+Date: 2026-10-10. Status: accepted (taken in the security review; it changes D-038 in one point).
+
+The answers given before an account exists stay in the browser for 30 days (D-038), and a computer may be shared. An age of 13 or more was recorded for whoever created an account next, with no question: an 8-year-old signing up after an older sibling would have been recorded as that age, with no permission box. Now the answers are handed over without asking only in the tab where the onboarding was finished, within half an hour. Later, the sign-up asks the age with an empty field, and the answers are used only when the age typed is the one they hold; otherwise they are erased. The cost is one question for a person who comes back another day. [[F-003-onboarding]].
+
+### D-047: The mail delivery history is kept 90 days
+
+Date: 2026-10-10. Status: accepted by default, change it if the owner wants (it closes T-031).
+
+A line of `email_logs` holds an address, some of them minors'. A line is removed 90 days after it was written, by a nightly job in the database, and an account that is deleted takes its lines with it at once. Ninety days is long enough to answer "did my code arrive?" and to see a delivery problem build up. The mail service reaches the table with a role of its own that can do nothing else; the service key is not given to it. [[F-002-emails]].
+
+### D-048: Google Analytics collects
+
+Date: 2026-10-10. Status: accepted (the owner's decision, asked by the security review).
+
+Google Analytics 4 stays next to Plausible and Umami (D-004) and collects for every visitor who accepts the optional cookies, whatever their age. The review had asked whether it should load at all on a site children use. What limits it: it loads only after consent, it is never given a query string, and it does not load on the pages whose address carries something private. Counsel's reading of consent given by a child is open with the age step (T-020).
+
+### D-049: A code is sent after a piece of work, and after the answer
+
+Date: 2026-10-10. Status: accepted by default in the second round of the security review, change it if the owner wants.
+
+Two things about asking for a code by email. A browser does a small piece of work first (a hash puzzle of about a tenth of a second), so that asking by the thousand costs a script computing time; it was chosen over a CAPTCHA because it puts no third party on a page children use and asks nothing of the person, knowing it is weaker. And Core answers before it sends, whatever was typed, so that the time an answer takes says nothing about an address or a username; the cost is that a failure to send is no longer told to the person. With it, codes to addresses that have no account share an hourly allowance, so a flood of made-up addresses cannot stop existing accounts from signing in. [[RATE-LIMITING-AND-ABUSE]].
+
+### D-050: Nothing is pushed or deployed until the security list is closed
+
+Date: 2026-10-10. Status: accepted (the owner's rule).
+
+What the security review of 2026-10-10 left open is kept as one list, T-036 in [[BUILD-TASKS]], and every line of it is a blocker: no push and no deployment until it is closed.
+
 ## Related
 
 - [[F-001-authentication]]

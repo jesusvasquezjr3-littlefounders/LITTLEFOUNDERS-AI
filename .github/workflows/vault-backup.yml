@@ -27,15 +27,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 24
 
       - name: Write backup encryption key
+        env:
+          BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
         run: |
           set -euo pipefail
-          printf '%s' "${{ secrets.BACKUP_ENCRYPTION_KEY }}" > "$RUNNER_TEMP/backup.key"
+          printf '%s' "$BACKUP_ENCRYPTION_KEY" > "$RUNNER_TEMP/backup.key"
           chmod 600 "$RUNNER_TEMP/backup.key"
           # No key, no backup: an unencrypted dump is never stored.
           test -s "$RUNNER_TEMP/backup.key"
@@ -44,9 +46,11 @@ jobs:
         run: npm i -g @railway/cli@5.43.1
 
       - name: Write SSH key
+        env:
+          RAILWAY_SSH_PRIVATE_KEY: ${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}
         run: |
           mkdir -p ~/.ssh
-          printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_backup_key
+          printf '%s\n' "$RAILWAY_SSH_PRIVATE_KEY" > ~/.ssh/railway_backup_key
           chmod 600 ~/.ssh/railway_backup_key
           # Railway's SSH proxy host is ephemeral per-session, not a fixed
           # host worth pinning — a fresh runner has no cached host key, so

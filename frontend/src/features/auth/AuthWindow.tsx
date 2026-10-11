@@ -72,10 +72,10 @@ export default function AuthWindow({ isOpen, onOpenChange, entry, opener }: Prop
 
   /** After a sign-in: the age step if it is still owed, otherwise done. */
   const finish = useCallback((needsAge: boolean) => {
-    // An age given in the onboarding is used: recorded without asking when it needs no permission
-    // box (Handoff.tsx), or shown already filled in when it does.
+    // An age given in the onboarding in this sitting is used: recorded without asking when it needs
+    // no permission box (Handoff.tsx), or shown already filled in when it does.
     const given = onboarding.get();
-    const ageIsComing = given?.finished === true && given.age !== undefined && given.age >= NO_PERMISSION_FROM;
+    const ageIsComing = given?.finished === true && given.age !== undefined && given.age >= NO_PERMISSION_FROM && onboarding.isSameSitting();
 
     if (needsAge && !ageIsComing) return setStep('age');
 
@@ -150,8 +150,6 @@ function useFailureText() {
     if (failure.code === 'TOO_MANY_ATTEMPTS') return errors.tooManyAttempts;
 
     if (failure.code === 'RATE_LIMITED') return errors.rateLimited;
-
-    if (failure.code === 'EMAIL_NOT_SENT') return errors.emailNotSent;
 
     if (failure.code === 'BAD_REQUEST') return errors.identifier;
 
@@ -374,7 +372,9 @@ function AgeStep({ onDone }: { onDone: () => void }) {
   const copy = useCoreCopy().auth;
   const session = useSession();
   const failureText = useFailureText();
-  const [value, setValue] = useState(() => String(onboarding.get()?.age ?? ''));
+  // The age given in the onboarding is filled in only in the sitting in which it was given. Later,
+  // on a computer that may be shared, the field starts empty: the person says their own age.
+  const [value, setValue] = useState(() => (onboarding.isSameSitting() ? String(onboarding.get()?.age ?? '') : ''));
   const [permission, setPermission] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -391,6 +391,13 @@ function AgeStep({ onDone }: { onDone: () => void }) {
 
     setBusy(true);
     setProblem(null);
+
+    // Answers kept from an onboarding belong to somebody of another age: they are not this person's,
+    // and are erased before the account could receive them (onboarding/Handoff.tsx).
+    const kept = onboarding.get();
+
+    if (kept && kept.age !== age) onboarding.clear();
+    else if (kept) onboarding.confirmAge();
 
     try {
       await session.declareAge(age, needsPermission && permission);

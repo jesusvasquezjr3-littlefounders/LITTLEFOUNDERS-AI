@@ -1,7 +1,7 @@
 ---
 title: Environment setup
 status: scaffold
-updated: 2026-10-10
+updated: 2026-10-11
 ---
 
 # Environment setup
@@ -40,7 +40,7 @@ Three things, each in its own terminal, after measuring free memory (the Supabas
 
 1. `database/`: `npm run db:up` (Docker Desktop running). The first run creates `database/supabase/docker/.env` with generated secrets; every run applies the local settings (no automatic email confirmation, no anonymous or phone sign-in, the "send email" hook pointed at Core, the closed gateway) and, the first time, generates `SEND_EMAIL_HOOK_SECRET` there. `npm run db:migrate` applies the migrations; `npm run db:reset` rebuilds from zero and deletes local data.
 2. `backend/`: copy `.env.example` to `.env`, fill `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_JWT_SECRET` from `ANON_KEY`, `SERVICE_ROLE_KEY` and `JWT_SECRET` in `database/supabase/docker/.env`, and `SEND_EMAIL_HOOK_SECRET` from the same file, choose any `INTERNAL_API_KEY` of 16 characters or more, then `npm install` and `npm run dev` (port 4000).
-3. `email-server/`: a `.env` with `EMAIL_ENGINE=smtp`, `FRONTEND_URL=http://localhost:5173` and the same `INTERNAL_API_KEY` (and, to keep the delivery history in the database, `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`), then `npm ci` and `npm run dev` (port 4005). It delivers to the mail catcher and no further.
+3. `email-server/`: a `.env` with `EMAIL_ENGINE=smtp`, `FRONTEND_URL=http://localhost:5173` and the same `INTERNAL_API_KEY` (and, to keep the delivery history in the database, `SUPABASE_URL` and `MAIL_SERVICE_KEY`, which `npm run db:up` generates in `database/supabase/docker/.env`; never the service key), and `NODE_ENV=development`, then `npm ci` and `npm run dev` (port 4005). It delivers to the mail catcher and no further.
 4. `frontend/`: `VITE_BACKEND_URL=http://localhost:4000` in `frontend/.env`, then `npm run dev` (port 5173).
 
 The emails arrive in the mail catcher at `http://localhost:8025`, in their real design (the images come from the frontend's dev server). `npm run preview` in `email-server/` writes every email in every language to `email-server/preview/` without sending anything ([[F-002-emails]]). `npm run audit:signin` in `frontend/` walks the whole window and saves a screenshot of each step. Google sign-in is off locally unless `GOTRUE_EXTERNAL_GOOGLE_ENABLED=true`, `GOTRUE_EXTERNAL_GOOGLE_CLIENT_ID` and `GOTRUE_EXTERNAL_GOOGLE_SECRET` are added to `database/supabase/docker/.env` (a test client whose redirect address is `http://localhost:8000/auth/v1/callback`; never the production secret).
@@ -54,7 +54,7 @@ Production's names are kept (D-031 in [[DECISIONS]]): the new version reads what
 | Name | For | In production today |
 |---|---|---|
 | `PORT` | The port Core listens on (4000) | yes |
-| `NODE_ENV` | `production` turns on Secure, host-bound cookies, HSTS and the Redis requirement | yes |
+| `NODE_ENV` | `production` turns on Secure, host-bound cookies, HSTS and the Redis requirement. Only the exact words `development` and `test` relax anything: a missing or misspelled value is treated as production (the same rule in the mail service). Local `.env` files set `development` | yes |
 | `FRONTEND_URL` | The one browser origin allowed to call Core | yes |
 | `SUPABASE_URL` | The gateway | yes |
 | `SUPABASE_ANON_KEY` | The bearer of a call made for somebody not signed in | yes |
@@ -65,6 +65,7 @@ Production's names are kept (D-031 in [[DECISIONS]]): the new version reads what
 | `SEND_EMAIL_HOOK_SECRET` | New. The secret the authentication service signs its "send email" hook with (`v1,whsec_` and a base64 key); the same value as its `GOTRUE_HOOK_SEND_EMAIL_SECRETS`. Core does not boot in production without it | to add |
 | `PUBLIC_API_ORIGIN` | New. The address a browser reaches Core at: `https://api-b2c.littlefounders.ai` | to add |
 | `TRUST_PROXY_HOPS` | New, optional (1). Proxies between the visitor and Core | confirm at deployment |
+| `NEW_ADDRESS_CODES_PER_HOUR` | New, optional (300). Codes an hour that may go to addresses with no account yet, for the whole service. Keep it well under the authentication service's `GOTRUE_RATE_LIMIT_EMAIL_SENT` | confirm at deployment |
 | `SUPABASE_JWT_ISSUER` | New, optional. Unset: `SUPABASE_URL` + `/auth/v1` | no |
 
 The production service also holds variables of features that do not exist yet in the new version (`TUTOR_SESSION_SECRET`, `LESSON_ATTEMPT_SECRET`, `ORACLE_*`, `FILEBASE_*`, `DATAINTEL_*`, `PARENT_ID_CHECK_URL`, `PLAUSIBLE_*`, `UMAMI_*`, `KUMA_*`, `COURSE_PATHWAY_ENGINE`) and a few nothing read at the restart (`ACCESS_TOKEN_EXPIRE_MINUTES`, `ALGORITHM`, `CORS_ORIGINS`, `DATABASE_*`, `SECRET_KEY`, `SUPABASE_KEY`). They stay where they are: a feature that returns reads its variable under the same name.
@@ -85,7 +86,7 @@ The production service also holds variables of features that do not exist yet in
 | `GOTRUE_SMTP_MAX_FREQUENCY` (60s), `GOTRUE_RATE_LIMIT_EMAIL_SENT` | One email a minute per address; the ceiling for the whole service | to add |
 | `GOTRUE_SECURITY_REFRESH_TOKEN_ROTATION_ENABLED` (true), `GOTRUE_SECURITY_REFRESH_TOKEN_REUSE_INTERVAL` (10) | A refresh token is used once | to add |
 
-**Gateway** (`kong`): `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_KEY` (the service key under the gateway's own name), `DASHBOARD_USERNAME`, `DASHBOARD_PASSWORD`, `KONG_*_HOST`. **Mail service** (`email-server`): `SES_RELAY_HOST`, `SES_RELAY_PORT`, `SES_SMTP_USER`, `SES_SMTP_PASS`, `MAIL_FROM`, `EMAIL_ENGINE`, `HARAKA_*`, `INTERNAL_API_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and the new, optional `FRONTEND_URL` (where the emails take their images from; default `https://littlefounders.ai`) and, for development only, `SMTP_HOST` and `SMTP_PORT` (`email-server/.env.example`). **Database** (`db`): `JWT_SECRET`, `JWT_EXP`, `POSTGRES_PASSWORD`. **REST** (`rest`): `PGRST_JWT_SECRET` and its `PGRST_*` settings.
+**Gateway** (`kong`): `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_KEY` (the service key under the gateway's own name), the new `MAIL_SERVICE_KEY` (the mail service's own key, the same value the mail service has: [[F-002-emails]]), `DASHBOARD_USERNAME`, `DASHBOARD_PASSWORD`, `KONG_*_HOST`. **Mail service** (`email-server`): `SES_RELAY_HOST`, `SES_RELAY_PORT`, `SES_SMTP_USER`, `SES_SMTP_PASS`, `MAIL_FROM`, `EMAIL_ENGINE`, `HARAKA_*`, `INTERNAL_API_KEY`, `SUPABASE_URL`, the new `MAIL_SERVICE_KEY` (to add; it replaces `SUPABASE_SERVICE_ROLE_KEY`, which is removed from this service: the service key stays in Core), `NODE_ENV`, and the new, optional `FRONTEND_URL` (where the emails take their images from; default `https://littlefounders.ai`) and, for development only, `SMTP_HOST` and `SMTP_PORT` (`email-server/.env.example`). **Database** (`db`): `JWT_SECRET`, `JWT_EXP`, `POSTGRES_PASSWORD`. **REST** (`rest`): `PGRST_JWT_SECRET` and its `PGRST_*` settings.
 
 **Frontend, `frontend/.env`** (Vercel)
 
@@ -95,7 +96,7 @@ The production service also holds variables of features that do not exist yet in
 | `VITE_PLAUSIBLE_SRC`, `VITE_UMAMI_SRC`, `VITE_UMAMI_WEBSITE_ID`, `VITE_GA4_MEASUREMENT_ID` | Analytics, after consent | yes |
 | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_SCENE_ASSET_BASE` | Not read by the new version: the browser no longer talks to Supabase | yes, unused |
 
-The same value has different names on different services; do not "fix" one to match another. The JWT secret is `SUPABASE_JWT_SECRET` on Core, `GOTRUE_JWT_SECRET` on `auth`, `PGRST_JWT_SECRET` on `rest`, `JWT_SECRET` on `db` and in the local `docker/.env`. The service key is `SUPABASE_SERVICE_ROLE_KEY` on Core and the mail service, `SUPABASE_SERVICE_KEY` on the gateway, `SERVICE_ROLE_KEY` in the local `docker/.env`.
+The same value has different names on different services; do not "fix" one to match another. The JWT secret is `SUPABASE_JWT_SECRET` on Core, `GOTRUE_JWT_SECRET` on `auth`, `PGRST_JWT_SECRET` on `rest`, `JWT_SECRET` on `db` and in the local `docker/.env`. The service key is `SUPABASE_SERVICE_ROLE_KEY` on Core, `SUPABASE_SERVICE_KEY` on the gateway, `SERVICE_ROLE_KEY` in the local `docker/.env`; no other service has it. The mail service's own key is `MAIL_SERVICE_KEY` on the mail service, on the gateway and in the local `docker/.env`.
 
 ## Related
 

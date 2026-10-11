@@ -13,7 +13,10 @@ export const NO_PERMISSION_FROM = 13;
  *
  * It only acts once the person finished the onboarding, and only on an account that has neither a
  * name nor a mentor yet. Answers left on a shared computer are never written into somebody else's
- * account: for an account that already has its own, they are simply erased.
+ * account: for an account that already has its own, they are simply erased, and the age is recorded
+ * without asking only in the sitting in which it was given (`onboarding.isSameSitting`). Later than
+ * that the sign-in window asks the age with an empty field, and erases these answers when the age
+ * typed is another one (AuthWindow.tsx), so they never reach this code.
  *
  * It renders nothing. It lives above every page because the account can be created from any of
  * them (the last step, or "Sign in" weeks later).
@@ -32,8 +35,13 @@ export function OnboardingHandoff() {
 
     const { age } = answers;
 
-    // The age is still owed and needs the permission box: the sign-in window is asking. Wait for it.
-    if (account.needsAge && (age === undefined || age < NO_PERMISSION_FROM)) return;
+    // The age is still owed and the sign-in window is asking for it (it needs the permission box, or
+    // the answers were not given in this sitting). Wait for it.
+    if (account.needsAge && (age === undefined || age < NO_PERMISSION_FROM || !onboarding.isSameSitting())) return;
+
+    // Nothing says the person signed in is the one who answered (another day, and the account already
+    // had its age): the answers stay where they are and are not written into this account.
+    if (!onboarding.isOwnerPresent()) return;
 
     working.current = true;
 

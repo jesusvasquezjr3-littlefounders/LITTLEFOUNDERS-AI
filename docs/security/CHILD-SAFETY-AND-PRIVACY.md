@@ -56,13 +56,13 @@ Nothing is collected from a visitor who has not signed in: no request reaches th
 - [ ] AI tutor safeguards: content limits, no personal data sent to model providers, logging and human review.
 - [ ] Retention, export and erasure.
 - [ ] Third-party processors and the data each receives.
-- [ ] Consent for analytics and cookies.
+- [ ] Consent for analytics and cookies. Built: trackers load only after consent, are never given a query string, and are not loaded on `/unsubscribe` or `/auth/callback`. Decided by the owner (D-048): Google Analytics collects, for everybody who accepts. Open: counsel's reading of that for children, with the age step (T-020, T-036).
 - [ ] Breach notification duties.
 - [ ] The rule that no real money is represented.
 
 ## Before an account: answers kept on the device
 
-Current state (2026-10-10, [[F-003-onboarding]], D-038). The onboarding asks an age, a first name or nickname and a choice of mentor before any account exists. They are kept in the browser's `localStorage` (`lf.onboarding`) and nowhere else: no request carries them until the person creates an account, and then they go only to Core as that account's own profile. The age is asked before the name, in a neutral way. They are forgotten after 30 days and can be erased at any time. They must never appear in an analytics event, an address or a log. A child under 18 is told in the onboarding that a parent or guardian who joins them can see their progress. To raise with counsel before production: whether answers held only on the device count as collected in each jurisdiction, and whether the service is "mixed audience" under COPPA.
+Current state (2026-10-10, [[F-003-onboarding]], D-038). The onboarding asks an age, a first name or nickname and a choice of mentor before any account exists. They are kept in the browser's `localStorage` (`lf.onboarding`) and nowhere else: no request carries them until the person creates an account, and then they go only to Core as that account's own profile. The age is asked before the name, in a neutral way. They are forgotten after 30 days and can be erased at any time. They must never appear in an analytics event, an address or a log. A child under 18 is told in the onboarding that a parent or guardian who joins them can see their progress. To raise with counsel before production: whether answers held only on the device count as collected in each jurisdiction, and whether the service is "mixed audience" under COPPA. Answers are given to a new account without asking only in the sitting in which they were given; later the sign-up asks the age itself, and answers that hold another age are erased (D-046), so one person's age and name are not written into another person's account on a shared computer.
 
 ## Related
 

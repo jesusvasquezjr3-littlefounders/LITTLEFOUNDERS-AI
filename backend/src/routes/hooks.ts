@@ -3,6 +3,7 @@ import express, { Router, type Request } from 'express';
 import { z } from 'zod';
 import type { Config } from '../config.js';
 import { describeError, log, toError } from '../lib/log.js';
+import { keyFor, type Limits } from '../services/limits.js';
 import type { Mailer } from '../services/mailer.js';
 import type { Unsubscribe } from '../services/unsubscribe.js';
 import type { Vault } from '../services/vault.js';
@@ -47,8 +48,8 @@ function isKnownAction(action: string): action is keyof typeof TEMPLATE {
 /** The answer shape the authentication service understands for a refusal. */
 const refusal = (status: number, message: string) => ({ error: { http_code: status, message } });
 
-export function createHooksRouter(deps: { config: Config; vault: Vault; mailer: Mailer; unsubscribe: Unsubscribe }): Router {
-  const { config, vault, mailer, unsubscribe } = deps;
+export function createHooksRouter(deps: { config: Config; vault: Vault; mailer: Mailer; unsubscribe: Unsubscribe; limits: Limits }): Router {
+  const { config, vault, mailer, unsubscribe, limits } = deps;
   const router = Router();
   // "v1,whsec_<base64>" is how the authentication service is given the secret; the key is the base64 part.
   const key = config.sendEmailHookSecret ? Buffer.from(config.sendEmailHookSecret.replace(/^v1,/, '').replace(/^whsec_/, ''), 'base64') : null;
@@ -101,6 +102,12 @@ export function createHooksRouter(deps: { config: Config; vault: Vault; mailer: 
       return res.status(422).json(refusal(422, 'this email is not sent'));
     }
 
+    // A call is acted on once. A copy of a signed call, sent again inside the five minutes its
+    // signature is good for, gets the answer of a call that went well and sends nothing.
+    const callKey = keyFor(`hook:${req.get('webhook-id') ?? ''}`);
+
+    if (!(await limits.allow('hookOnce', callKey))) return res.status(200).json({});
+
     try {
       // A brand-new account may not be readable yet (it is being created by the request that
       // triggered this call): then the language it was opened in travels with the call itself.
@@ -111,11 +118,17 @@ export function createHooksRouter(deps: { config: Config; vault: Vault; mailer: 
         { to: user.email, locale, userId: user.id, unsubscribe: unsubscribe.links(user.id) },
       );
 
-      if (!sent) return res.status(502).json(refusal(502, 'the email could not be sent'));
+      if (!sent) {
+        // The authentication service may try this same call again: let it.
+        await limits.reset('hookOnce', callKey);
+
+        return res.status(502).json(refusal(502, 'the email could not be sent'));
+      }
 
       res.status(200).json({});
     } catch (thrown) {
       log.error('hook.send_email.failed', describeError(toError(thrown)));
+      await limits.reset('hookOnce', callKey);
       res.status(500).json(refusal(500, 'the email could not be sent'));
     }
   });

@@ -2,8 +2,10 @@ import { getConfig } from '../config.js';
 import type { EmailLogEntry, EmailLogSummary, EmailLogPage } from '../services/emailLog.js';
 
 /*
- * Service-role PostgREST access to `email_logs`
- * — the DURABLE delivery history (database/migrations/0002_email.sql).
+ * PostgREST access to `email_logs`, the DURABLE delivery history
+ * (database/migrations/0002_email.sql), with this service's own key: the role
+ * `mail_service` of 0004_mail_least_privilege.sql, which can add a line, read
+ * the history and change a line's status, and nothing else in the database.
  *
  * Before this, Courier's history was a 1000-entry in-process ring buffer that
  * was wiped by every redeploy, every Railway restart, and every Haraka
@@ -12,13 +14,12 @@ import type { EmailLogEntry, EmailLogSummary, EmailLogPage } from '../services/e
  * all of the time.
  *
  * The ring buffer survives as the development fallback: SUPABASE_URL and
- * SUPABASE_SERVICE_ROLE_KEY are optional, so `npm run dev` and `npm test` need
- * no database and behave exactly as before. A configured Vault outage is
+ * MAIL_SERVICE_KEY are optional, so `npm run dev` needs no database. A configured Vault outage is
  * returned to the caller instead of being hidden by partial in-memory data.
  *
- * Posture: RLS on with ZERO client policies, so the service role is the only
- * access path and a browser must reach this data only through an authenticated
- * server route.
+ * Posture: row-level security on, with policies for the role `mail_service`
+ * alone, so this service is the only access path and a browser can reach this
+ * data only through an authenticated server route.
  */
 
 /** A row as stored. snake_case — this is the wire shape of the table. */
@@ -48,9 +49,9 @@ const SELECT = 'id,message_id,to_address,subject,template_type,locale,user_id,st
  */
 function vaultCreds(): { url: string; key: string } | null {
   try {
-    const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = getConfig();
-    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return null;
-    return { url: SUPABASE_URL, key: SUPABASE_SERVICE_ROLE_KEY };
+    const { SUPABASE_URL, MAIL_SERVICE_KEY } = getConfig();
+    if (!SUPABASE_URL || !MAIL_SERVICE_KEY) return null;
+    return { url: SUPABASE_URL, key: MAIL_SERVICE_KEY };
   } catch {
     return null;
   }
@@ -152,12 +153,17 @@ export async function insertEmailLog(entry: EmailLogEntry): Promise<boolean> {
     detail: entry.detail ?? {},
     created_at: entry.createdAt,
   };
-  const res = await rest<unknown>('/email_logs', {
+  const write = (body: typeof row) => rest<unknown>('/email_logs', {
     method: 'POST',
     headers: { Prefer: 'return=minimal' },
-    body: JSON.stringify(row),
+    body: JSON.stringify(body),
   });
-  return res.ok;
+  const res = await write(row);
+  if (res.ok || row.user_id === null) return res.ok;
+  // The first code of a brand-new account is sent while that account is still being created, so
+  // the database cannot see it yet and refuses the link to it. The line is written without the
+  // link rather than lost: it then leaves with the 90-day rule instead of with the account.
+  return (await write({ ...row, user_id: null })).ok;
 }
 
 /**

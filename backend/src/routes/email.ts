@@ -1,7 +1,7 @@
 import { Router, type Request } from 'express';
 import { z } from 'zod';
 import { ApiError, sendData } from '../lib/http.js';
-import { keyFor, type Limits } from '../services/limits.js';
+import { visitorKey, type Limits } from '../services/limits.js';
 import type { Unsubscribe } from '../services/unsubscribe.js';
 import type { Vault } from '../services/vault.js';
 
@@ -25,7 +25,7 @@ export function createEmailRouter(deps: { vault: Vault; limits: Limits; unsubscr
   const router = Router();
 
   router.post('/unsubscribe', async (req, res) => {
-    await limits.consume('ipAccount', keyFor(req.ip ?? 'unknown'));
+    await limits.consume('ipAccount', visitorKey(req.ip));
 
     const body = PageBody.safeParse(req.body);
     const userId = body.success ? unsubscribe.verify(body.data.token) : null;
@@ -45,7 +45,7 @@ export function createOneClickRouter(deps: { vault: Vault; limits: Limits; unsub
   const router = Router();
 
   router.post('/unsubscribe/one-click', async (req: Request, res) => {
-    await limits.consume('ipAccount', keyFor(req.ip ?? 'unknown'));
+    await limits.consume('ipAccount', visitorKey(req.ip));
 
     const token = Token.safeParse(req.query.token);
     const userId = token.success ? unsubscribe.verify(token.data) : null;

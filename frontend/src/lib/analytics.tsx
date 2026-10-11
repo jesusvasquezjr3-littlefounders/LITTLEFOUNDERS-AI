@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { hasCookieConsent } from '@/lib/visitor';
 
 /*
@@ -10,6 +11,11 @@ import { hasCookieConsent } from '@/lib/visitor';
  * on a device that opted out. Declining or revoking consent removes the
  * scripts and the GA4 cookies. Pageviews are fired by hand, once per route, because both trackers
  * would otherwise keep observing navigations after their script is removed.
+ *
+ * A tracker is never told an address's query string, only its path: a query can carry something
+ * private (the token of an unsubscribe link). And two pages are never measured at all, nor is any
+ * tracker's script loaded on them: the unsubscribe page and the page a Google sign-in returns to
+ * (`PRIVATE_PATHS`). A page whose address carries a secret goes in that list.
  *
  * VITE_PLAUSIBLE_SRC is Plausible's per-site script URL and
  * VITE_GA4_MEASUREMENT_ID is the GA4 measurement id (G-XXXX); both are public,
@@ -31,6 +37,17 @@ interface Plausible {
 interface Umami {
   track: (...args: unknown[]) => void;
 }
+
+/** What Umami is about to send for a pageview. Only the address is replaced. */
+interface UmamiPageview {
+  url?: string;
+  title?: string;
+  referrer?: string;
+  hostname?: string;
+  language?: string;
+  screen?: string;
+  website?: string;
+}
 declare global {
   interface Window {
     plausible?: Plausible;
@@ -41,6 +58,11 @@ declare global {
 }
 
 const DEVICE_OPT_OUT_FLAG = 'lf_analytics_device_optout';
+
+/** Pages no tracker sees or loads on: their address carries something that belongs to one person. */
+const PRIVATE_PATHS = ['/unsubscribe', '/auth/callback'];
+
+const isPrivatePath = (pathname: string): boolean => PRIVATE_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
 
 function readFlag(key: string): string | null {
   try {
@@ -152,12 +174,17 @@ function clearGa4Cookies(): void {
 }
 
 /** Umami's tracker is deferred, so on the mount that creates the tag the first pageview waits for its load event. */
-function trackUmamiPageview(): void {
+function trackUmamiPageview(pathname: string): void {
+  // Umami would send the address with its query: it is given the path alone.
+  const send = () => window.umami?.track((props: UmamiPageview): UmamiPageview => ({ ...props, url: pathname }));
+
   if (window.umami) {
-    window.umami.track();
+    send();
+
     return;
   }
-  document.getElementById('lf-umami')?.addEventListener('load', () => window.umami?.track(), { once: true });
+
+  document.getElementById('lf-umami')?.addEventListener('load', send, { once: true });
 }
 
 function ejectScript(id: string): void {
@@ -166,16 +193,21 @@ function ejectScript(id: string): void {
 
 /** Mounts or removes the trackers. `consentVersion` changes whenever the visitor makes a cookie choice. */
 export function AnalyticsScripts({ consentVersion = 0 }: { consentVersion?: number }) {
+  const { pathname } = useLocation();
+
   useEffect(() => {
-    if (measurable()) {
+    if (measurable() && !isPrivatePath(pathname)) {
+      // The address a tracker is given: this page's path on this site, never its query string.
+      const url = `${window.location.origin}${pathname}`;
+
       mountPlausible();
-      window.plausible?.('pageview');
+      window.plausible?.('pageview', { url });
       mountUmami();
-      trackUmamiPageview();
+      trackUmamiPageview(pathname);
       if (GA4_ID) {
         (window as unknown as Record<string, unknown>)[`ga-disable-${GA4_ID}`] = false;
         mountGa4();
-        window.gtag?.('event', 'page_view', { page_path: window.location.pathname });
+        window.gtag?.('event', 'page_view', { page_path: pathname, page_location: url });
       }
     } else {
       ejectScript('lf-plausible');
@@ -186,6 +218,6 @@ export function AnalyticsScripts({ consentVersion = 0 }: { consentVersion?: numb
         clearGa4Cookies();
       }
     }
-  }, [consentVersion]);
+  }, [consentVersion, pathname]);
   return null;
 }
