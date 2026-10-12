@@ -5,7 +5,7 @@
 # Boundary (NON-NEGOTIABLE, enforced in the frontend): Umami's
 # replay/heatmap recorder is NEVER loaded on kid-role sessions — behavioral
 # capture runs only on marketing + parent/admin surfaces.
-FROM ghcr.io/umami-software/umami:3.2.0
+FROM ghcr.io/umami-software/umami:3.4.0
 
 # Railway private networking is IPv6 — Next.js standalone binds the HOSTNAME
 # env; :: makes it reachable at pulse-umami.railway.internal.
