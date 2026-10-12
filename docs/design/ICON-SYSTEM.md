@@ -66,7 +66,7 @@ Every icon has three movements, each a named segment of its Lottie file. All thr
 
 ## Icons that exist
 
-The first nine were approved by the owner on 2026-10-11. The seven after them (`sun` to `check`) were drawn on 2026-10-12 to replace the library icons of the screens built before the rule; they are in use and wait for the owner's approval.
+The first nine were approved by the owner on 2026-10-11. The seven after them (`sun` to `check`) were drawn on 2026-10-12 to replace the library icons of the screens built before the rule; the owner approved them on 2026-10-12.
 
 A component of the Cojeev library that draws an icon of its own (the cross of a window, the chevron of a menu, a check) gets ours: `components/ui/icon.tsx` answers the library's names with these icons and draws nothing for a name we have no icon for. The library's icon set and its drawing engine are not in the repository, and neither `lucide` nor `morphicons` is installed. What stays as its owner draws it: Google's mark, the social networks' marks and the flags of the language menu. The Seed is still its own SVG (D-043).
 
