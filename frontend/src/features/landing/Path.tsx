@@ -31,7 +31,10 @@ export function Path() {
     </div>
     <ol className="col-span-4 grid md:col-span-8 lg:col-span-7">
       {copy.path.map((step, index) => <motion.li key={step.name}
-        style={{ '--fill': TONES[index]?.fill, '--ink': TONES[index]?.ink } as CSSProperties}
+        style={
+          // SAFETY: custom properties are valid inline style keys that CSSProperties does not list; each value is a color string or absent
+          { '--fill': TONES[index]?.fill, '--ink': TONES[index]?.ink } as CSSProperties
+        }
         className={`grid grid-cols-1 gap-y-3 border-t border-[var(--v-border)] py-6 first:border-t-0 first:pt-0 last:pb-0 md:grid-cols-[auto_minmax(0,1fr)] md:gap-x-5 md:gap-y-2 ${alignItems} ${align}`}
         {...reveal} transition={{ ...reveal.transition, delay: index * STAGGER }}>
         <span aria-hidden="true" className="grid size-14 place-items-center rounded-[var(--r-card-sm)] bg-[var(--fill)] text-2xl leading-none font-extrabold tabular-nums text-[var(--ink)] md:row-span-3">{number.format(index + 1)}</span>

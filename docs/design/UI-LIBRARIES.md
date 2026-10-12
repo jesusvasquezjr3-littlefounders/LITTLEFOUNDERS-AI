@@ -36,7 +36,6 @@ Names the only building blocks of the interface, so no agent reaches for another
 | 000h by Cojeev | General components | shadcn registry `@cojeev` | Button, Sheet, Dialog, Dropdown menu, Badge, Alert, Skeleton and Breadcrumb, and for the sign-in window Input, Input OTP, Checkbox, Field and Label (`src/components/ui/`; Card came with them as a dependency, and `input-otp` and `@radix-ui/react-checkbox` as packages). The Dialog close button is not used (it has a fixed English label); the sign-in window uses its own close button with a locale string |
 | Bklit UI | Charts | shadcn registry `@bklit` | Ring chart for the "4 in 10" figure (`src/components/charts/`) |
 | Sileo | Toasts | npm `sileo` + `sileo/styles.css` | Cookie choice confirmation; `<Toaster>` in `App.tsx` |
-| Morphicons | Icons that change state | npm `morphicons` + `lucide` icon data | Sun/moon theme toggle, and the icons of the screens built before D-054. No new icon uses it: every new icon is our own (T-012 tracks the replacement of the old ones) |
 | Thinking Orbs | Waiting on work | npm `thinking-orbs` | None yet: a page that loads shows the skeleton; the orb is for "the Mentor is thinking" |
 | lottie-web (light build) | Plays the application's own icons (D-054) | npm `lottie-web`, import `lottie-web/build/player/lottie_light` only | `components/AppIcon.tsx`; fetched the first time an icon has to move. The light build draws SVG and has no expressions, so no `eval`. Not an icon library: the icons are ours (rule 4 in [[FRONTEND-GUIDE]]) |
 | Bencho | Interaction blocks to copy | Copied from the site | None yet (see below) |
@@ -74,9 +73,6 @@ Default source for any component that is not a chart, toast, icon morph or loade
 ### Sileo
 `import { sileo, Toaster } from 'sileo'` and `import 'sileo/styles.css'` (confirmed required). `sileo.success|error|warning|info|promise`, options `title`, `description`, `position`, `duration`, `icon`, `fill`, `styles`. `title` and `description` are locale strings; a toast never carries a minor's personal data and never is the only place a message appears. Verified from the package: it honors `prefers-reduced-motion` (animation and transition durations go to zero) and announces with `aria-live="polite"`. It depends on its own `motion`; `package.json` carries an `overrides` entry (`sileo.motion = $motion`) so it shares ours instead of bundling a second copy (this cut the entry chunk by 127 KB). Its stylesheet is injected after ours, so the state colors are set on its viewport element in `lf-theme.css`; the toast is drawn as the opposite surface of the page (`ThemedToaster` in `App.tsx`).
 
-### Morphicons
-`MorphIcon` from `morphicons/react`, icon data from `lucide` (not `lucide-react`): `<MorphIcon icon={dark ? Sun : Moon} reducedMotion="user" />`. Stroke icon sets only; one icon set for the whole product; always `reducedMotion="user"`; icons are `aria-hidden` unless a `label` is given.
-
 ### Thinking Orbs
 Not used for page loads any more (the shell shows `PageSkeleton`, Cojeev's Skeleton); keep it for waits on work.
 
@@ -91,11 +87,11 @@ Not used for page loads any more (the shell shows `PageSkeleton`, Cojeev's Skele
 
 **Reading it with the browser tools.** Use the Chrome on the computer the agent is running on, never another connected one: check the machine first (`list_connected_browsers` marks the local one, and PowerShell's `$env:COMPUTERNAME` says which computer this is; the development machine is the Windows MSI laptop, and a Mac is also connected to the account). The owner signs in to Bencho with Google in their own Chrome and has authorised the agent to use that session at Bencho; the agent does not sign in, create accounts or approve sign-in screens itself. The page text tool does not see the Code pane: expand the section and read it from a screenshot or the accessibility tree, or have the owner press the copy button and paste.
 
-**Rules when a block is adopted.** Put it under `src/components/bencho/` with its notice and URL in a header comment; import `motion/react` (blocks use `framer-motion`) and replace `lucide-react` with `lucide` icon data through Morphicons where an icon changes state; take strings from the locale files and colors from the tokens; add keyboard and reduced-motion behavior; swap photographs for our own art. Sounds are off by default. No block is adopted yet; they are brought in one at a time as screens need them (T-009).
+**Rules when a block is adopted.** Put it under `src/components/bencho/` with its notice and URL in a header comment; import `motion/react` (blocks use `framer-motion`) and replace every `lucide-react` icon with one of ours ([[ICON-SYSTEM]]); take strings from the locale files and colors from the tokens; add keyboard and reduced-motion behavior; swap photographs for our own art. Sounds are off by default. No block is adopted yet; they are brought in one at a time as screens need them (T-009).
 
 ### Library strings that are not ours
 
-Cojeev's Breadcrumb carries English defaults (`aria-label="Breadcrumb"`, a Back button labelled "Back"). `components/Breadcrumbs.tsx` passes the translated label and does not use the Back button. Its separator would pull Cojeev's lazy icon data (about 354 KB); ours is a Lucide chevron through Morphicons.
+Cojeev's Breadcrumb carries English defaults (`aria-label="Breadcrumb"`, a Back button labelled "Back"). `components/Breadcrumbs.tsx` passes the translated label and does not use the Back button. Its separator would pull Cojeev's lazy icon data (about 354 KB); ours is our own chevron, and that icon data is no longer in the repository.
 
 ## Local patches to copied code
 
@@ -125,7 +121,6 @@ Re-run this audit when a component is added, using a script like the one describ
 | A rich interaction Cojeev lacks (slide to confirm, dropzone) | Bencho block, adapted. The one-time code field is Cojeev's `input-otp`, so no Bencho block was needed for it |
 | Chart, gauge, ring, heatmap | Bklit UI |
 | A message that fades | Sileo |
-| An icon that changes state | Morphicons |
 | A page or a block loading | Cojeev Skeleton (`PageSkeleton`) |
 | Waiting on work, "the Mentor is thinking" | Thinking Orbs |
 | A 3D character | Not here; see [[DESIGN-SYSTEM]] |

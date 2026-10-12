@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
-import { MorphIcon } from 'morphicons/react';
-import { ChevronRight } from 'lucide';
+import { AppIcon } from '@/components/AppIcon';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { useCoreCopy } from '@/i18n/useCopy';
 
@@ -30,7 +29,7 @@ export function Breadcrumbs({ trail }: { trail: Crumb[] }) {
           {last || !crumb.to
             ? <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
             : <BreadcrumbLink asChild><Link to={crumb.to} className="inline-flex min-h-12 min-w-12 items-center justify-center">{crumb.label}</Link></BreadcrumbLink>}
-          {last ? null : <BreadcrumbSeparator><MorphIcon icon={ChevronRight} size={16} strokeWidth={2} reducedMotion="user" /></BreadcrumbSeparator>}
+          {last ? null : <BreadcrumbSeparator><AppIcon name="chevron" size={16} className="rotate-180" /></BreadcrumbSeparator>}
         </BreadcrumbItem>;
       })}
     </BreadcrumbList>

@@ -58,9 +58,11 @@ export type Answers = z.infer<typeof Answers>;
 
 const KEY = 'lf.onboarding';
 
-const KEEP_MS = 30 * 24 * 60 * 60 * 1000;
+const DAY_MS = 24 * 60 * 60 * 1000;
 
-/** Marks the tab in which the onboarding was finished. It dies with the tab. */
+const KEEP_MS = 30 * DAY_MS;
+
+/** Marks the tab in which the questions were answered, and when. It dies with the tab. */
 const SITTING_KEY = 'lf.onboarding.sitting';
 
 const SITTING_MS = 30 * 60 * 1000;
@@ -112,9 +114,23 @@ function read(): Answers | null {
     try {
       const parsed = Answers.safeParse(JSON.parse(raw));
 
-      if (parsed.success && Date.now() - parsed.data.savedAt < KEEP_MS) value = parsed.data;
+      const age = parsed.success ? Date.now() - parsed.data.savedAt : null;
+
+      // a date from the future is not a date this code wrote
+      if (parsed.success && age !== null && age < KEEP_MS && age > -DAY_MS) value = parsed.data;
     } catch {
       value = null;
+    }
+
+    // Forgotten means gone: answers past their 30 days, or that this code cannot read, do not stay on a device
+    // that may be shared.
+    if (value === null) {
+      try {
+        window.localStorage.removeItem(KEY);
+        raw = null;
+      } catch {
+        // storage closed between the read and now: nothing more to do
+      }
     }
   }
 
@@ -176,7 +192,9 @@ export const onboarding = {
 
     if (!current) return;
 
-    if (patch.finished === true) markSitting(Date.now());
+    // The sitting is the moment the person answered who they are, never the press of the last button: old answers
+    // found on a shared device are not made new again by pressing it.
+    if (patch.age !== undefined || patch.name !== undefined) markSitting(Date.now());
 
     write({ ...current, ...patch, savedAt: Date.now() });
   },
@@ -186,10 +204,15 @@ export const onboarding = {
    * screen is the one who answered. Only then are the answers given to a new account without asking.
    */
   isSameSitting(): boolean {
+    return read()?.finished === true && this.isCurrentSitting();
+  },
+
+  /** True when the age or the name was answered in this tab within the last half hour, finished or not. */
+  isCurrentSitting(): boolean {
     const startedAt = sittingStartedAt();
     const elapsed = startedAt === null ? null : Date.now() - startedAt;
 
-    return read()?.finished === true && elapsed !== null && elapsed >= 0 && elapsed < SITTING_MS;
+    return elapsed !== null && elapsed >= 0 && elapsed < SITTING_MS;
   },
 
   /** The age was refused when the account was created: the sign-in window asks for it again. */

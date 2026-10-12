@@ -9,6 +9,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
  */
 
 export const LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;
+
 export type Locale = (typeof LOCALES)[number];
 
 const resources = {
@@ -32,10 +33,12 @@ const resources = {
  */
 function publishDocumentLanguage(lng: string | undefined): void {
   if (typeof document === 'undefined') return;
+
   const resolved =
     LOCALES.find((id) => id === lng) ??
     LOCALES.find((id) => id.slice(0, 2) === (lng ?? '').slice(0, 2).toLowerCase()) ??
     'en-US';
+
   document.documentElement.setAttribute('lang', resolved);
 }
 
@@ -50,6 +53,7 @@ void i18n
   });
 
 publishDocumentLanguage(i18n.language);
+
 i18n.on('languageChanged', publishDocumentLanguage);
 
 export default i18n;

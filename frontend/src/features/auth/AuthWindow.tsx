@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useId, useRef, useState, type FormEvent, type RefObject } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { MorphIcon } from 'morphicons/react';
-import { ArrowLeft, Mail, X } from 'lucide';
+import { AppIcon } from '@/components/AppIcon';
 import { sileo } from 'sileo';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -131,7 +130,7 @@ export default function AuthWindow({ isOpen, onOpenChange, entry, opener }: Prop
       </div>
       <DialogClose asChild>
         <Button type="button" variant="outline" data-icon-only className="absolute end-2 top-2 size-12 min-w-0 bg-[color-mix(in_srgb,var(--v-canvas)_85%,transparent)] p-0" aria-label={copy.close} title={copy.close}>
-          <MorphIcon icon={X} size={22} strokeWidth={2} reducedMotion="user" />
+          <AppIcon name="close" size={22} />
         </Button>
       </DialogClose>
     </DialogContent>
@@ -165,7 +164,7 @@ const textLink = 'font-semibold underline underline-offset-4';
 
 function BackButton({ onClick, label }: { onClick: () => void; label: string }) {
   return <Button type="button" variant="ghost" size="sm" className={textLink} onClick={onClick}>
-    <MorphIcon icon={ArrowLeft} size={18} strokeWidth={2} reducedMotion="user" />{label}
+    <AppIcon name="chevron" size={18} />{label}
   </Button>;
 }
 
@@ -204,7 +203,7 @@ function ChooseStep({ isJoining, onEmail, onSignUp, onGoogle }: { isJoining: boo
         <GoogleMark className="size-5 shrink-0" />{copy.google}
       </Button>
       <Button type="button" fullWidth onClick={onEmail}>
-        <MorphIcon icon={Mail} size={20} strokeWidth={2} reducedMotion="user" />{isJoining ? copy.continueWithEmail : copy.emailOrUsername}
+        <AppIcon name="mail" size={24} />{isJoining ? copy.continueWithEmail : copy.emailOrUsername}
       </Button>
     </div>
     <p role="status" className={`${lead} ${waiting || problem ? '' : 'sr-only'}`}>{waiting ? copy.googleWaiting : problem}</p>

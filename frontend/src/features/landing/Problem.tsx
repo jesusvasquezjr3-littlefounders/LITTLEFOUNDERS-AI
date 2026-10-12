@@ -20,7 +20,9 @@ import { body, display, grid, section, statement } from '@/features/landing/type
  * then the sources centered under both. Stacked and centered below 1024 px.
  */
 const OUT_OF = 10;
+
 const FULL = 'col-span-4 md:col-span-8 lg:col-span-12';
+
 const HALF = 'col-span-4 md:col-span-8 lg:col-span-6';
 
 export function Problem() {

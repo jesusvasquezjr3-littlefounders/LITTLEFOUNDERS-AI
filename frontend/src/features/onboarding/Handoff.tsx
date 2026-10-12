@@ -25,11 +25,14 @@ export function OnboardingHandoff() {
   const session = useSession();
   const answers = useOnboardingAnswers();
   const working = useRef(false);
+  // one try for each page load: a refusal is not asked again in a loop, which would spend the allowance of everybody
+  // behind the same network address
+  const failed = useRef(false);
 
   useEffect(() => {
     const { account } = session;
 
-    if (session.status !== 'signedIn' || !account || !answers?.finished || working.current) return;
+    if (session.status !== 'signedIn' || !account || !answers?.finished || working.current || failed.current) return;
 
     if (account.mentor !== null || account.displayName !== '') return onboarding.clear();
 
@@ -46,8 +49,12 @@ export function OnboardingHandoff() {
     working.current = true;
 
     void (async () => {
+      let isAgeSaid = false;
+
       try {
         if (account.needsAge && age !== undefined) await session.declareAge(age, false);
+
+        isAgeSaid = true;
 
         const profile: Parameters<typeof session.saveProfile>[0] = {};
 
@@ -63,7 +70,9 @@ export function OnboardingHandoff() {
       } catch {
         // The age was refused or Core could not be reached. Forget the age so the window asks for it;
         // the rest stays in this browser and is tried again on the next page load.
-        onboarding.forgetAge();
+        failed.current = true;
+
+        if (!isAgeSaid) onboarding.forgetAge();
       } finally {
         working.current = false;
       }

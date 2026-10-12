@@ -7,18 +7,22 @@
  */
 
 const CONSENT_COOKIE = 'lf_cc';
+
 const MAX_AGE_DAYS = 400; // the practical browser ceiling for a JS-set cookie
 
 function cookieDomain(): string {
   const { hostname } = window.location;
+
   if (hostname === 'localhost' || /^\d+\.\d+\.\d+\.\d+$/.test(hostname)) return '';
   // Registrable domain, so locale subdomains share one choice.
   const parts = hostname.split('.');
+
   return parts.length > 2 ? `; domain=.${parts.slice(-2).join('.')}` : `; domain=.${hostname}`;
 }
 
 function readCookie(name: string): string | null {
   const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+
   return match ? decodeURIComponent(match[1]!) : null;
 }
 
@@ -32,6 +36,7 @@ export type CookieConsent = 'granted' | 'denied' | 'unset';
 
 export function getCookieConsent(): CookieConsent {
   const v = readCookie(CONSENT_COOKIE);
+
   return v === 'granted' || v === 'denied' ? v : 'unset';
 }
 

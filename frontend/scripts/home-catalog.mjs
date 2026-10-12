@@ -10,7 +10,9 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const frontend = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+
 const core = resolve(frontend, '../backend/src/services/home.ts');
+
 const loops = join(frontend, 'public/stage/loops');
 
 if (!existsSync(core)) {
@@ -26,15 +28,22 @@ if (!list) {
 }
 
 const names = [...list[1].matchAll(/'([a-z-]+)'/g)].map((match) => match[1]);
+
 const files = new Set(readdirSync(loops));
+
 const expected = (name) => ['light', 'dark'].flatMap((mode) => [`${name}-${mode}.mp4`, `${name}-${mode}-poster.webp`]);
+
 const missing = names.flatMap((name) => expected(name).filter((file) => !files.has(file)));
+
 const known = new Set(names.flatMap(expected));
+
 const extra = [...files].filter((file) => !known.has(file));
 
 if (missing.length || extra.length || new Set(names).size !== names.length) {
   if (missing.length) console.error(`home-catalog: Core names compositions that have no files: ${missing.join(', ')}`);
+
   if (extra.length) console.error(`home-catalog: files that no composition of Core's names: ${extra.join(', ')}`);
+
   if (new Set(names).size !== names.length) console.error('home-catalog: a composition is listed twice');
   process.exit(1);
 }

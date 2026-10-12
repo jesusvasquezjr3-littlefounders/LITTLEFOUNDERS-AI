@@ -115,6 +115,9 @@ export function AppLayout() {
   useEffect(() => {
     if (!isNew) return;
 
+    // Answers left in this browser by somebody else, another day, are not this person's: they start from nothing.
+    if (!onboarding.isCurrentSitting()) onboarding.clear();
+
     nextPlace.keep(pathname);
     void navigate(session.account?.parentIntent ? '/onboarding/parent' : '/onboarding', { replace: true });
   }, [isNew, navigate, pathname, session.account]);

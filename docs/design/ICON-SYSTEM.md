@@ -8,7 +8,7 @@ updated: 2026-10-12
 
 > The rules every icon and symbol of the platform is drawn and animated by, the steps to make a new one, and the icons that exist.
 
-> **Status: accepted** (2026-10-11). The owner set the rule (D-054 in [[DECISIONS]]), rejected a first set of line icons, and approved the nine icons below as the level and the style every new icon follows.
+> **Status: accepted** (2026-10-11). The owner set the rule (D-054 in [[DECISIONS]]), rejected a first set of line icons, and approved the first nine icons below as the level and the style every new icon follows.
 
 ## Role
 
@@ -57,7 +57,7 @@ Every icon has three movements, each a named segment of its Lottie file. All thr
 
 ## Making a new icon
 
-1. Read the nine in `frontend/tools/icons/definitions.mjs`, and look at them moving in `/dev/icons` (dev server). The file's header repeats the rules above next to the code.
+1. Read the ones in `frontend/tools/icons/definitions.mjs`, and look at them moving in `/dev/icons` (dev server). The file's header repeats the rules above next to the code.
 2. Add an entry to `ICONS`: a `name` (lowercase words joined by hyphens), an optional `root`, and its `layers` from the back to the front. A layer has one paint (`fill`, `gradient`, `stroke` with a `width`, or `ink`), its `shapes` (`rect`, `circle`, `ellipse`, `path` with M, L, C and Z only, or `morph` for an outline that changes) and what moves (`move`, `scale`, `rotate`, `opacity`, `draw` for a line), each built with `motion(rest, { idle, hover, select })`.
 3. Run `npm run icons` in `frontend/`. It writes `src/icons/lottie/<name>.json` and `src/icons/rest.ts`, and fails with the reason if the icon breaks the contract (grid, size, layers, 24 KB, round corners, same number of points in every pose of a morph, every movement back in the rest pose). Never edit the generated files by hand.
 4. Look at it in `/dev/icons`: alive, hovered, selected; on the three surfaces; at 20, 24 and 32 px; in light and in dark. Fix what you see and repeat.
@@ -66,7 +66,9 @@ Every icon has three movements, each a named segment of its Lottie file. All thr
 
 ## Icons that exist
 
-All nine were approved by the owner on 2026-10-11.
+The first nine were approved by the owner on 2026-10-11. The seven after them (`sun` to `check`) were drawn on 2026-10-12 to replace the library icons of the screens built before the rule; they are in use and wait for the owner's approval.
+
+A component of the Cojeev library that draws an icon of its own (the cross of a window, the chevron of a menu, a check) gets ours: `components/ui/icon.tsx` answers the library's names with these icons and draws nothing for a name we have no icon for. The library's icon set and its drawing engine are not in the repository, and neither `lucide` nor `morphicons` is installed. What stays as its owner draws it: Google's mark, the social networks' marks and the flags of the language menu. The Seed is still its own SVG (D-043).
 
 | Icon | The picture | Alive | Hover | Select |
 |---|---|---|---|---|
@@ -77,6 +79,13 @@ All nine were approved by the owner on 2026-10-11.
 | `wallet` | A wallet with a clasp and a golden Seed in it | The Seed bobs; the stud pulses | The flap opens and the Seed jumps | Pop; a higher jump |
 | `tasks` | A clipboard with a sheet and a mint check | The check is drawn again and again | It tilts; the check is redrawn | Pop; the check is redrawn and grows |
 | `family` | Two grown-ups and a child in front of them | The grown-ups sway; the child hops a little | They lean in; the child jumps | Pop; a higher jump |
+| `sun` | The light theme: a gold disc with eight rays | The rays turn slowly; the disc breathes | The rays turn and grow | Pop; a quarter turn |
+| `moon` | The dark theme: a gold crescent with two pale stars | It rocks; the stars twinkle | It tips back | Pop; the star grows and spins |
+| `account` | A person, head and shoulders | The head sways | It nods | Pop; the head jumps |
+| `signout` | A door and an orange arrow that leaves it | The arrow leans out | The arrow pulls back and goes; the door narrows | Pop; a longer leap |
+| `mail` | A gold envelope with a red dot for what is new | The dot pulses | The flap opens | Pop; the flap opens wide |
+| `warning` | A round orange triangle with its mark | It shakes now and then | It shakes | Pop; it shakes and the mark is drawn |
+| `check` | A mint check: a line, because the thing is one | None | It is drawn again | It is drawn again and grows |
 | `chevron` | A plain sign in the text color, pointing left (the page turns it for other directions) | None | It nudges the way it points | A longer nudge |
 | `close` | A plain sign in the text color: two strokes that cross | None | A quarter turn and back | A half turn and back |
 

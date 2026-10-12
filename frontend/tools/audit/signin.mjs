@@ -69,7 +69,18 @@ await run('signin', args, async (page, config) => {
     await sleep(250);
   };
   const email = `walk${Date.now()}@example.test`;
-  const expect = async (label, expression) => { if (!(await page.ev(expression))) problems.push(label); };
+  // A check waits for what it expects, up to eight seconds.
+  const expect = async (label, expression) => {
+    for (const end = Date.now() + 8000; ;) {
+      if (await page.ev(expression).catch(() => false)) return;
+
+      if (Date.now() > end) break;
+
+      await sleep(150);
+    }
+
+    problems.push(label);
+  };
 
   await page.ev(axeSource);
 

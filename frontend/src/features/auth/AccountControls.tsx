@@ -1,5 +1,4 @@
-import { MorphIcon } from 'morphicons/react';
-import { LogOut, User } from 'lucide';
+import { AppIcon } from '@/components/AppIcon';
 import { sileo } from 'sileo';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -43,14 +42,14 @@ function AccountMenu() {
   return <DropdownMenu>
     <DropdownMenuTrigger asChild>
       <Button type="button" variant="outline" data-icon-only className="size-12 min-w-0 p-0" aria-label={copy.account} title={copy.account}>
-        <MorphIcon icon={User} size={22} strokeWidth={2} reducedMotion="user" />
+        <AppIcon name="account" size={28} />
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end" aria-label={copy.account} className="max-w-[min(320px,calc(100vw-32px))]">
       <DropdownMenuLabel className="!tracking-normal !normal-case !whitespace-normal [overflow-wrap:anywhere]">{name}</DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuItem adornment={false} onSelect={() => { void signOut(); }}>
-        <MorphIcon icon={LogOut} size={18} strokeWidth={2} reducedMotion="user" />{copy.signOut}
+        <AppIcon name="signout" size={24} />{copy.signOut}
       </DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>;

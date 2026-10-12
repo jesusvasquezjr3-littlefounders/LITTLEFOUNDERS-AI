@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { sileo } from 'sileo';
+import { nextPlace } from '@/features/app/nextPlace';
 import { GOOGLE_CHANNEL, parseGoogleResult, useSession } from '@/features/auth/session';
 import { useCoreCopy } from '@/i18n/useCopy';
 
@@ -48,7 +49,9 @@ export function AuthCallback() {
       else if (result === 'failed') sileo.error({ title: copy.auth.errors.googleFailed });
       else if (result === 'unavailable') sileo.error({ title: copy.auth.errors.googleUnavailable });
 
-      void navigate('/', { replace: true });
+      // Signed in: into the application, to the place the person was going or to their home. Its guard asks
+      // what a new account still owes (the age, then a name and a mentor). Anything else: back to the site.
+      void navigate(result === 'ok' ? nextPlace.path() : '/', { replace: true });
     })();
   }, [isPopup, result, session, navigate, copy]);
 

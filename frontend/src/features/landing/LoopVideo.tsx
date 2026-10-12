@@ -19,14 +19,17 @@ import { useTheme } from '@/theme/useTheme';
 /** True when the visitor asked for reduced motion or less data: show the poster only. */
 function useStillOnly() {
   const [still, setStill] = useState(() => {
-    if (typeof window.matchMedia !== 'function') return false;
+    if (typeof window.matchMedia === 'undefined') return false;
+
+    // SAFETY: only widens Navigator with an optional property; where the browser has no Network Information API it reads as undefined
     const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
 
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches || window.matchMedia('(prefers-reduced-data: reduce)').matches || connection?.saveData === true;
   });
 
   useEffect(() => {
-    if (typeof window.matchMedia !== 'function') return;
+    if (typeof window.matchMedia === 'undefined') return;
+
     const list = window.matchMedia('(prefers-reduced-motion: reduce)');
     const update = () => setStill(list.matches);
     list.addEventListener('change', update);

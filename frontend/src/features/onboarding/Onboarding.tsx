@@ -1,8 +1,7 @@
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
-import { MorphIcon } from 'morphicons/react';
-import { ArrowLeft, X } from 'lucide';
+import { AppIcon } from '@/components/AppIcon';
 import { Button } from '@/components/ui/button';
 import { Field, FieldControl, FieldDescription, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
@@ -135,14 +134,14 @@ function Walk({ answers }: { answers: Answers }) {
     <header className="mx-auto flex h-[72px] w-full max-w-[1240px] shrink-0 items-center gap-3 px-4 sm:px-6">
       <Button type="button" variant="outline" data-icon-only className={cn('size-12 min-w-0 shrink-0 p-0', index === 0 && 'invisible')} aria-label={copy.back} title={copy.back}
         disabled={index === 0} onClick={() => go(index - 1)}>
-        <MorphIcon icon={ArrowLeft} size={20} strokeWidth={2.4} reducedMotion="user" aria-hidden="true" />
+        <AppIcon name="chevron" size={22} />
       </Button>
       <div role="progressbar" aria-label={fill(copy.progress, { step: String(index + 1), total: String(steps.length) })} aria-valuemin={1} aria-valuemax={steps.length} aria-valuenow={index + 1}
         className="h-3 min-w-0 flex-1 overflow-hidden rounded-full bg-[var(--v-beige)]">
         <motion.div className="h-full rounded-full bg-[var(--primary)]" initial={false} animate={{ width: `${Math.round(shownProgress(index + 1, steps.length) * 100)}%` }} transition={{ duration: 0.4, ease: ENTER }} />
       </div>
       <Button asChild variant="outline" data-icon-only className="size-12 min-w-0 shrink-0 p-0">
-        <Link to="/" aria-label={copy.close} title={copy.close}><MorphIcon icon={X} size={20} strokeWidth={2.4} reducedMotion="user" aria-hidden="true" /></Link>
+        <Link to="/" aria-label={copy.close} title={copy.close}><AppIcon name="close" size={22} /></Link>
       </Button>
     </header>
 
@@ -217,7 +216,8 @@ function AgeForm({ initial, onAnswer }: { initial: number | undefined; onAnswer:
 function NameForm({ initial, onAnswer }: { initial: string | undefined; onAnswer: (name: string) => void }) {
   const copy = useOnboardingCopy();
   const [value, setValue] = useState(initial ?? '');
-  const name = value.trim().replace(/\s+/g, ' ');
+  // one form for a letter with its accent, so a name typed on any keyboard is the name Core accepts
+  const name = value.normalize('NFC').trim().replace(/\s+/g, ' ');
   const isWritten = NAME.test(name);
   const isValid = isWritten && !isReservedName(name);
 

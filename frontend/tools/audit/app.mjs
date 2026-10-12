@@ -56,8 +56,16 @@ await run('app', args, async (page, config) => {
   const isPhone = config.width < 1024;
   const tag = `${config.width}-${config.lang}-${config.theme}`;
   const problems = [];
+  // A check waits for what it expects, up to eight seconds: a step that is right a moment later than the wait
+  // before it guessed is not a failure of the product.
   const expect = async (label, expression, show) => {
-    if (await page.ev(expression)) return;
+    for (const end = Date.now() + 8000; ;) {
+      if (await page.ev(expression).catch(() => false)) return;
+
+      if (Date.now() > end) break;
+
+      await sleep(150);
+    }
 
     problems.push(show ? `${label} (${JSON.stringify(await page.ev(show))})` : label);
   };

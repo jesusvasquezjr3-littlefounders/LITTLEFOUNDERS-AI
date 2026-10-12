@@ -24,16 +24,25 @@ import { hasCookieConsent } from '@/lib/visitor';
  */
 
 const PLAUSIBLE_SRC: string | undefined = import.meta.env.VITE_PLAUSIBLE_SRC;
+
 const UMAMI_SRC: string | undefined = import.meta.env.VITE_UMAMI_SRC;
+
 const UMAMI_WEBSITE_ID: string | undefined = import.meta.env.VITE_UMAMI_WEBSITE_ID;
+
 const GA4_ID: string | undefined = import.meta.env.VITE_GA4_MEASUREMENT_ID;
+
+/** The one option this site passes to Plausible's `init`. */
+interface PlausibleOptions {
+  autoCapturePageviews?: boolean;
+}
 
 interface Plausible {
   (...args: unknown[]): void;
   q?: unknown[][];
-  o?: unknown;
-  init?: (opts?: unknown) => void;
+  o?: PlausibleOptions;
+  init?: (opts?: PlausibleOptions) => void;
 }
+
 interface Umami {
   track: (...args: unknown[]) => void;
 }
@@ -48,12 +57,15 @@ interface UmamiPageview {
   screen?: string;
   website?: string;
 }
+
 declare global {
   interface Window {
     plausible?: Plausible;
     umami?: Umami;
     dataLayer?: unknown[];
     gtag?: (...args: unknown[]) => void;
+    /** GA4's own switch: `true` under `ga-disable-<measurement id>` stops that property from sending anything. */
+    [gaDisable: `ga-disable-${string}`]: boolean;
   }
 }
 
@@ -61,10 +73,10 @@ const DEVICE_OPT_OUT_FLAG = 'lf_analytics_device_optout';
 
 /**
  * Pages no tracker sees or loads on. The first two carry something that belongs to one person in their address.
- * The rest are the signed-in application: what a person does in it, most of them minors, is not measured by any
+ * The onboarding is where a person, often a child, says their age and their name. The rest are the signed-in application: what a person does in it, most of them minors, is not measured by any
  * third party (D-055). Measuring the product itself is decided with its own feature, never by default.
  */
-const PRIVATE_PATHS = ['/unsubscribe', '/auth/callback', '/home', '/learn', '/mentor', '/wallet', '/tasks', '/family'];
+const PRIVATE_PATHS = ['/unsubscribe', '/auth/callback', '/onboarding', '/home', '/learn', '/mentor', '/wallet', '/tasks', '/family'];
 
 // the router matches a path whatever its case, so `/HOME` is the application too
 const isPrivatePath = (pathname: string): boolean => PRIVATE_PATHS.some((path) => pathname.toLowerCase() === path || pathname.toLowerCase().startsWith(`${path}/`));
@@ -121,18 +133,23 @@ function mountPlausible(): void {
   el.async = true;
   el.src = PLAUSIBLE_SRC;
   document.head.appendChild(el);
+
   // Queue calls until the async script defines the real implementation.
   if (!window.plausible) {
     const q: unknown[][] = [];
-    const stub = ((...args: unknown[]) => {
+
+    const stub: Plausible = (...args: unknown[]) => {
       q.push(args);
-    }) as Plausible;
+    };
+
     stub.q = q;
-    stub.init = (opts?: unknown) => {
+    stub.init = (opts?: PlausibleOptions) => {
       stub.o = opts ?? {};
     };
+
     window.plausible = stub;
   }
+
   // Pageviews are fired by hand: the default would hook history and outlive the script tag.
   window.plausible.init?.({ autoCapturePageviews: false });
 }
@@ -162,6 +179,7 @@ function mountGa4(): void {
     // eslint-disable-next-line prefer-rest-params
     dataLayer.push(arguments);
   };
+
   const el = document.createElement('script');
   el.id = 'lf-ga4';
   el.async = true;
@@ -174,6 +192,7 @@ function mountGa4(): void {
 /** Removes the cookies GA4 sets (the client id and the per-property session cookie). */
 function clearGa4Cookies(): void {
   const names = document.cookie.split(';').map((c) => c.split('=')[0]?.trim() ?? '').filter((n) => n === '_ga' || n.startsWith('_ga_') || n === '_gid');
+
   for (const name of names) {
     document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
     document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${location.hostname}`;
@@ -211,8 +230,9 @@ export function AnalyticsScripts({ consentVersion = 0 }: { consentVersion?: numb
       window.plausible?.('pageview', { url });
       mountUmami();
       trackUmamiPageview(pathname);
+
       if (GA4_ID) {
-        (window as unknown as Record<string, unknown>)[`ga-disable-${GA4_ID}`] = false;
+        window[`ga-disable-${GA4_ID}`] = false;
         mountGa4();
         window.gtag?.('event', 'page_view', { page_path: pathname, page_location: url });
       }
@@ -227,12 +247,14 @@ export function AnalyticsScripts({ consentVersion = 0 }: { consentVersion?: numb
 
       ejectScript('lf-plausible');
       ejectScript('lf-umami');
+
       if (GA4_ID) {
-        (window as unknown as Record<string, unknown>)[`ga-disable-${GA4_ID}`] = true;
+        window[`ga-disable-${GA4_ID}`] = true;
         ejectScript('lf-ga4');
         clearGa4Cookies();
       }
     }
   }, [consentVersion, pathname]);
+
   return null;
 }

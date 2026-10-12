@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { MorphIcon } from 'morphicons/react';
-import { ArrowUp } from 'lucide';
+import { AppIcon } from '@/components/AppIcon';
 import { Button } from '@/components/ui/button';
 import { useCoreCopy } from '@/i18n/useCopy';
 
@@ -37,7 +36,7 @@ export function BackToTop() {
       initial={{ opacity: 0, y: 12, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 12, scale: 0.9 }}
       transition={{ type: 'spring', stiffness: 420, damping: 32 }}>
       <Button type="button" variant="outline" data-icon-only className="size-12 min-w-0 bg-[var(--v-paper)] p-0 shadow-[var(--shadow-float)]" aria-label={label} title={label} onClick={goTop}>
-        <MorphIcon icon={ArrowUp} size={22} strokeWidth={2} reducedMotion="user" />
+        <AppIcon name="chevron" size={24} className="rotate-90" />
       </Button>
     </motion.div> : null}
   </AnimatePresence>;

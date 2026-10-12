@@ -78,6 +78,33 @@ function burning(poses) {
 
 const tongue = (w, h, leans, grow = 1) => burning(leans.map((lean, i) => flame(24, 43, w, h * (i % 2 ? grow : 1), lean)));
 
+/** A round burst of `count` rays: a star whose points reach `R` and whose valleys stay at `r`. */
+const burst = (cx, cy, R, r, count, round) => soft(Array.from({ length: count * 2 }, (_, i) => { const a = (i / (count * 2)) * Math.PI * 2 - Math.PI / 2; const radius = i % 2 ? r : R; return [cx + Math.cos(a) * radius, cy + Math.sin(a) * radius]; }), round);
+
+/** A crescent: what is left of the round at `c` (radius `R`) when the round at `bite` (radius `r`) is taken out of it. */
+function crescent(c, R, bite, r) {
+  const toward = Math.atan2(bite[1] - c[1], bite[0] - c[0]);
+  const steps = 48;
+  const outer = [];
+  const inner = [];
+
+  for (let i = 0; i < steps; i++) {
+    const a = toward + (i / steps) * Math.PI * 2;
+    const point = [c[0] + Math.cos(a) * R, c[1] + Math.sin(a) * R];
+
+    if (Math.hypot(point[0] - bite[0], point[1] - bite[1]) > r + 0.4) outer.push(point);
+  }
+
+  for (let i = 0; i < steps; i++) {
+    const a = toward - (i / steps) * Math.PI * 2;
+    const point = [bite[0] + Math.cos(a) * r, bite[1] + Math.sin(a) * r];
+
+    if (Math.hypot(point[0] - c[0], point[1] - c[1]) < R - 0.4) inner.push(point);
+  }
+
+  return soft([...outer, ...inner], 1.4);
+}
+
 // the whole icon grows a little past its size and settles: the same landing for every icon when it is selected
 const POP = [[0.3, [1.14, 1.14]], [0.6, [0.96, 0.96]], [0.82, [1.03, 1.03]]];
 const FOOT = [24, 42];
@@ -167,6 +194,72 @@ export const ICONS = [
       { name: 'left', fill: P.indigo, pivot: [13, 42], shapes: [{ circle: [13.4, 12.4, 6] }, { rect: [5.5, 21, 16, 21, 8] }], rotate: motion(0, { idle: [[0.5, -2.5]], hover: [[0.35, 5], [0.7, -1]], select: [[0.3, 6], [0.6, -2]] }) },
       { name: 'right', fill: P.pink, pivot: [35, 42], shapes: [{ circle: [34.6, 12.4, 6] }, { rect: [26.5, 21, 16, 21, 8] }], rotate: motion(0, { idle: [[0.5, 2.5]], hover: [[0.35, -5], [0.7, 1]], select: [[0.3, -6], [0.6, 2]] }) },
       { name: 'child', fill: P.gold, pivot: FOOT, shapes: [{ circle: [24, 24.4, 4.8] }, { rect: [17.6, 30.6, 12.8, 11.4, 6.2] }], move: motion([0, 0], { idle: [[0.2, [0, 0]], [0.35, [0, -2.6]], [0.5, [0, 0]]], hover: [[0.12, [0, 1]], [0.4, [0, -5]], [0.68, [0, 0.6]]], select: [[0.1, [0, 1.2]], [0.36, [0, -7]], [0.62, [0, 0.8]], [0.8, [0, -1.2]]] }), scale: motion([1, 1], { hover: [[0.12, [1.06, 0.92]], [0.4, [0.96, 1.05]]], select: [[0.1, [1.08, 0.88]], [0.36, [0.94, 1.07]]] }) },
+    ],
+  },
+  {
+    name: 'sun',
+    // the light theme: a sun whose rays turn slowly around it
+    root: { pivot: [24, 24], scale: motion([1, 1], { select: POP }) },
+    layers: [
+      { name: 'rays', even: true, fill: '#ffb020', pivot: [24, 24], shapes: [{ path: burst(24, 24, 19.5, 12.4, 8, 2.4) }], rotate: motion(0, { idle: [[0.5, 22.5]], hover: [[0.5, 45]], select: [[0.5, 90]] }), scale: motion([1, 1], { idle: [[0.25, [1.05, 1.05]], [0.75, [0.95, 0.95]]], hover: [[0.4, [1.12, 1.12]]] }) },
+      { name: 'disc', gradient: { from: [24, 13], to: [24, 35], stops: [[0, P.yellow], [1, P.gold]] }, pivot: [24, 24], shapes: [{ circle: [24, 24, 10.6] }], scale: motion([1, 1], { idle: [[0.5, [1.04, 1.04]]], hover: [[0.4, [0.92, 0.92]], [0.7, [1.04, 1.04]]] }) },
+      { name: 'shine', fill: P.white, pivot: [20.4, 20.2], shapes: [{ circle: [20.4, 20.2, 2.4] }], opacity: motion(0.55, { idle: [[0.5, 0.9]] }) },
+    ],
+  },
+  {
+    name: 'moon',
+    // the dark theme: a crescent that rocks a little, with two stars that twinkle beside it
+    root: { pivot: [24, 26], rotate: motion(0, { idle: [[0.5, -5]], hover: [[0.35, -16], [0.7, 4]] }), scale: motion([1, 1], { select: POP }) },
+    layers: [
+      { name: 'crescent', gradient: { from: [18, 8], to: [26, 42], stops: [[0, P.yellow], [1, P.gold]] }, shapes: [{ path: crescent([21.5, 25.5], 16.5, [29.5, 19.5], 13.6) }] },
+      { name: 'star', fill: P.pale, pivot: [35.5, 12], shapes: [{ path: star(35.5, 12, 5.2) }], scale: motion([1, 1], { idle: [[0.3, [0.55, 0.55]], [0.6, [1.15, 1.15]]], select: [[0.4, [1.6, 1.6]]] }), rotate: motion(0, { idle: [[0.6, 45]], select: [[0.5, 90]] }) },
+      { name: 'small star', fill: P.pale, pivot: [39, 26.5], shapes: [{ path: star(39, 26.5, 3) }], scale: motion([1, 1], { idle: [[0.2, [1.2, 1.2]], [0.55, [0.4, 0.4]], [0.85, [1.1, 1.1]]], hover: [[0.5, [1.5, 1.5]]] }) },
+    ],
+  },
+  {
+    name: 'account',
+    // a person, head and shoulders; the head nods
+    root: { pivot: FOOT, scale: motion([1, 1], { select: POP }) },
+    layers: [
+      { name: 'shoulders', gradient: { from: [24, 26], to: [24, 42], stops: [[0, '#6f69ff'], [1, P.deep]] }, pivot: FOOT, shapes: [{ rect: [7, 25, 34, 17, 8.5] }], scale: motion([1, 1], { hover: [[0.3, [1.04, 0.93]], [0.65, [0.99, 1.03]]] }) },
+      { name: 'head', gradient: { from: [24, 6], to: [24, 23], stops: [[0, P.yellow], [1, P.gold]] }, pivot: [24, 23], shapes: [{ circle: [24, 14.6, 8.4] }], move: motion([0, 0], { idle: [[0.5, [0, -1]]], hover: [[0.3, [0, 2.2]], [0.62, [0, -1.4]]], select: [[0.3, [0, -4]], [0.6, [0, 1]]] }), rotate: motion(0, { idle: [[0.25, -4], [0.75, 4]] }) },
+    ],
+  },
+  {
+    name: 'signout',
+    // leaving: a door, and an arrow that goes out of it
+    root: { pivot: FOOT, scale: motion([1, 1], { select: POP }) },
+    layers: [
+      { name: 'door', gradient: { from: [17, 6], to: [17, 42], stops: [[0, '#6f69ff'], [1, P.deep]] }, pivot: [5, 24], shapes: [{ rect: [5, 6, 24, 36, 7] }], scale: motion([1, 1], { hover: [[0.35, [0.9, 1]], [0.7, [1.02, 1]]], select: [[0.3, [0.84, 1]], [0.65, [1.03, 1]]] }) },
+      { name: 'knob', fill: P.gold, shapes: [{ circle: [11.5, 24, 2.3] }] },
+      { name: 'arrow', fill: P.orange, pivot: [30, 24], shapes: [{ path: soft([[18, 21], [31, 21], [31, 15.5], [43.5, 24], [31, 32.5], [31, 27], [18, 27]], 2.2) }], move: motion([0, 0], { idle: [[0.35, [-2.4, 0]], [0.6, [0.6, 0]]], hover: [[0.25, [-4, 0]], [0.6, [1.2, 0]]], select: [[0.2, [-5, 0]], [0.5, [1.6, 0]], [0.75, [-0.8, 0]]] }) },
+    ],
+  },
+  {
+    name: 'mail',
+    // an envelope with something new in it; the flap opens. Gold, so it reads on the indigo button it sits in as on a page
+    root: { pivot: FOOT, scale: motion([1, 1], { select: POP }) },
+    layers: [
+      { name: 'body', gradient: { from: [24, 12], to: [24, 40], stops: [[0, P.yellow], [1, P.gold]] }, pivot: [24, 40], shapes: [{ rect: [4.5, 12, 39, 28, 7] }], scale: motion([1, 1], { hover: [[0.3, [1.03, 0.95]], [0.65, [0.99, 1.02]]] }) },
+      { name: 'flap', fill: '#ff9f1c', pivot: [24, 14], shapes: [{ path: soft([[7.5, 14.5], [40.5, 14.5], [24, 29.5]], 3.6) }], scale: motion([1, 1], { hover: [[0.35, [1, 0.25]], [0.7, [1, 1.06]]], select: [[0.3, [1, 0.15]], [0.65, [1, 1.08]]] }) },
+      { name: 'new', fill: P.red, pivot: [38.5, 11.5], shapes: [{ circle: [38.5, 11.5, 5] }], scale: motion([1, 1], { idle: [[0.25, [1.25, 1.25]], [0.5, [0.9, 0.9]], [0.75, [1.15, 1.15]]], select: [[0.35, [1.6, 1.6]], [0.7, [0.9, 0.9]]] }) },
+    ],
+  },
+  {
+    name: 'warning',
+    // something went wrong: a round triangle that shakes, with its mark
+    root: { pivot: [24, 40], rotate: motion(0, { idle: [[0.42, 0], [0.5, -5], [0.58, 5], [0.66, 0]], hover: [[0.2, -9], [0.45, 8], [0.7, -4]], select: [[0.2, -10], [0.45, 9], [0.7, -4]] }), scale: motion([1, 1], { select: POP }) },
+    layers: [
+      { name: 'sign', gradient: { from: [24, 6], to: [24, 40], stops: [[0, '#ffa63d'], [1, P.orange]] }, shapes: [{ path: soft([[24, 5], [43.5, 39.5], [4.5, 39.5]], 6.5) }] },
+      { name: 'mark', stroke: P.white, width: 4.6, shapes: [{ path: 'M24 17.5 L24 26.5' }], draw: motion(1, { select: [[0.2, 0], [0.45, 1]] }) },
+      { name: 'dot', fill: P.white, pivot: [24, 33], shapes: [{ circle: [24, 33, 2.5] }], scale: motion([1, 1], { idle: [[0.5, [1.3, 1.3]]], hover: [[0.4, [1.5, 1.5]]] }) },
+    ],
+  },
+  {
+    name: 'check',
+    // The mark of the thing that is chosen, in a menu or a box: a check is a line, so it is drawn as one, and drawn again when it is chosen.
+    layers: [
+      { name: 'check', stroke: P.mint, width: 5.4, pivot: [24, 25], shapes: [{ path: 'M11.5 25.5 L20 33.5 L36.5 14.5' }], draw: motion(1, { hover: [[0.12, 0], [0.3, 0]], select: [[0.12, 0], [0.34, 0]] }), scale: motion([1, 1], { select: [[0.34, [1, 1]], [0.62, [1.2, 1.2]], [0.82, [0.97, 0.97]]] }) },
     ],
   },
   {

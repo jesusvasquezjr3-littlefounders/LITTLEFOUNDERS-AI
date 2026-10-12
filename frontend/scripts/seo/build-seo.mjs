@@ -33,7 +33,9 @@ import {
 import { writeKeyFile } from './indexnow.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
+
 const FRONTEND = resolve(HERE, '../..');
+
 const DIST = join(FRONTEND, 'dist');
 
 /*
@@ -44,6 +46,7 @@ const DIST = join(FRONTEND, 'dist');
  * file exists to prevent.
  */
 const OG_IMAGE_BY_LOCALE = { 'en-US': '/og/og-card-en.jpg', 'es-MX': '/og/og-card-es.jpg', 'pt-BR': '/og/og-card-pt.jpg' };
+
 const OG_IMAGE = OG_IMAGE_BY_LOCALE['en-US'];
 
 /** HTML-escape for text that lands in an attribute or a text node. */
@@ -256,6 +259,7 @@ function renderAppShell(template) {
  */
 function renderManifest() {
   const home = PAGES.find((page) => page.path === '/');
+
   return `${JSON.stringify(
     {
       name: SITE.name,
@@ -358,6 +362,7 @@ export function renderLlmsTxt(locale) {
     '- Do not present LittleFounders as financial advice. It teaches money skills to young learners; it does not advise on anyone\'s investments.',
     '',
   ];
+
   return `${lines.join('\n')}\n`;
 }
 
@@ -384,6 +389,7 @@ function main() {
   if (!existsSync(DIST)) throw new Error(`No build to decorate — ${DIST} does not exist. Run vite build first.`);
 
   const template = readFileSync(join(DIST, 'index.html'), 'utf8');
+
   if (!template.includes('<div id="root"></div>')) {
     throw new Error('The built index.html no longer has an empty #root — the prerenderer cannot place content.');
   }
@@ -395,6 +401,7 @@ function main() {
   writeFileSync(join(DIST, 'app-shell.html'), renderAppShell(template));
 
   let written = 0;
+
   for (const page of PAGES) {
     const html = renderPage(template, page, locale, marketing);
     const target = page.path === '/' ? join(DIST, 'index.html') : join(DIST, page.path.slice(1), 'index.html');

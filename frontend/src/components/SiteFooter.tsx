@@ -20,10 +20,15 @@ import { LEGAL, SOCIAL } from '@/lib/footerLinks';
  * brand outline does not show on black.
  */
 const FOCUS = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white';
+
 const LINK = `inline-flex min-h-12 items-center text-base font-medium text-white no-underline underline-offset-4 hover:underline ${FOCUS}`;
+
 const STATIC = 'inline-flex min-h-12 items-center text-base font-medium text-white/70';
+
 const MARK = 'inline-flex size-12 items-center justify-center rounded-full text-white';
+
 const GRID = 'mx-auto grid w-full max-w-[1120px] grid-cols-4 gap-x-4 px-4 sm:px-6 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12';
+
 const TITLE = 'flex min-h-12 items-center justify-center text-base font-semibold text-white/70 md:justify-start';
 
 export function SiteFooter() {

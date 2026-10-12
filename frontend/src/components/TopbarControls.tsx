@@ -1,5 +1,4 @@
-import { MorphIcon } from 'morphicons/react';
-import { Moon, Sun } from 'lucide';
+import { AppIcon } from '@/components/AppIcon';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -23,7 +22,8 @@ function ThemeToggle() {
   const label = isDark ? copy.themeLight : copy.themeDark;
 
   return <Button type="button" variant="outline" data-icon-only className={ROUND} aria-label={label} title={label} onClick={() => setChoice(isDark ? 'light' : 'dark')}>
-    <MorphIcon icon={isDark ? Sun : Moon} size={22} strokeWidth={2} reducedMotion="user" />
+    {/* the theme the button leads to; a key each, so the one that leaves takes its player with it */}
+    <AppIcon key={isDark ? 'sun' : 'moon'} name={isDark ? 'sun' : 'moon'} size={28} />
   </Button>;
 }
 

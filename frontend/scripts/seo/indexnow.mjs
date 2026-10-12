@@ -34,6 +34,7 @@ import { fileURLToPath } from 'node:url';
 import { SITE, absolute, indexablePages } from './site.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
+
 const FRONTEND = resolve(HERE, '../..');
 
 /*
@@ -55,6 +56,7 @@ export function writeKeyFile(distDir) {
   mkdirSync(distDir, { recursive: true });
   // Body is the key itself, nothing else — the spec is exact about this.
   writeFileSync(join(distDir, `${INDEXNOW_KEY}.txt`), `${INDEXNOW_KEY}\n`);
+
   return `${INDEXNOW_KEY}.txt`;
 }
 
@@ -66,6 +68,7 @@ export function submittableUrls() {
 export async function submit({ dryRun = false } = {}) {
   const urlList = submittableUrls();
   const host = new URL(SITE.origin).host;
+
   const body = {
     host,
     key: INDEXNOW_KEY,
@@ -75,7 +78,9 @@ export async function submit({ dryRun = false } = {}) {
 
   if (dryRun) {
     console.log(`indexnow (dry run) — would submit ${urlList.length} URL(s) to ${ENDPOINT}`);
+
     for (const url of urlList) console.log(`  ${url}`);
+
     return { ok: true, status: 0, dryRun: true, count: urlList.length };
   }
 
@@ -86,6 +91,7 @@ export async function submit({ dryRun = false } = {}) {
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(15_000),
     });
+
     /*
      * 200 accepted, 202 accepted-pending-key-validation. Both are success, and
      * 202 is the NORMAL answer the first time a key is seen — treating it as a
@@ -93,15 +99,18 @@ export async function submit({ dryRun = false } = {}) {
      */
     const ok = res.status === 200 || res.status === 202;
     console.log(`indexnow — ${ok ? 'accepted' : 'refused'} (HTTP ${res.status}) for ${urlList.length} URL(s)`);
+
     if (!ok) {
       const text = await res.text().catch(() => '');
       console.log(`  ${text.slice(0, 300)}`);
       console.log('  Not fatal: the sitemap still carries these URLs. A refusal usually means the key file is not reachable yet.');
     }
+
     return { ok, status: res.status, count: urlList.length };
   } catch (error) {
     console.log(`indexnow — could not reach ${ENDPOINT}: ${String(error).slice(0, 160)}`);
     console.log('  Not fatal: a slow or unreachable search engine must never fail a deploy.');
+
     return { ok: false, status: 0, count: urlList.length };
   }
 }
@@ -110,6 +119,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const dryRun = process.argv.includes('--dry-run');
   const strict = process.argv.includes('--strict');
   const result = await submit({ dryRun });
+
   // Fails a deploy only when explicitly asked to. See the header.
   if (!result.ok && strict) process.exit(1);
 }

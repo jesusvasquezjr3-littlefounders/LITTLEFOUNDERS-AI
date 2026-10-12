@@ -62,7 +62,7 @@ The limits Core enforces for sign-in ([[F-001-authentication]]), in `backend/src
 
 ## In development
 
-The numbers above are the ones a developer's machine runs with too, unless `RELAXED_LIMITS=true` is in `backend/.env` (D-057). Then the limits that count how often something is asked for are a hundred times wider: codes per network address and per email address, session, account and code-check calls per network address, reads per account, and the allowance for new addresses. The limits on guessing a code and the things that happen once are not touched. Core honors the setting only when `NODE_ENV` is exactly `development` and refuses to start with it otherwise; it logs `limits.relaxed` when it is on. It must never be set in production, and is not among the production variables.
+The numbers above are the ones a developer's machine runs with too, unless `RELAXED_LIMITS=true` is in `backend/.env` (D-057). Then the limits that count how often something is asked for are a hundred times wider: codes per network address and per email address, session, account and code-check calls per network address (how many checks an address may ask for, not how many guesses a code or an address may receive), reads per account, and the allowance for new addresses. The limits on guessing a code and the things that happen once are not touched. Core honors the setting only when `NODE_ENV` is exactly `development` and refuses to start with it otherwise; it logs `limits.relaxed` when it is on. It must never be set in production, and is not among the production variables.
 
 ## Related
 

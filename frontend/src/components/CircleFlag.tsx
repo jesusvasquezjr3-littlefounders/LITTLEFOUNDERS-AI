@@ -1,4 +1,5 @@
 import { useId } from 'react';
+import type { Locale } from '@/i18n';
 
 /**
  * The three launch-market flags, drawn as circles in a 32 px box. They name a
@@ -7,7 +8,7 @@ import { useId } from 'react';
  */
 export type FlagCode = 'MX' | 'US' | 'BR';
 
-export const LOCALE_FLAG: Readonly<Record<string, FlagCode>> = { 'es-MX': 'MX', 'en-US': 'US', 'pt-BR': 'BR' };
+export const LOCALE_FLAG: Readonly<Record<Locale, FlagCode>> = { 'es-MX': 'MX', 'en-US': 'US', 'pt-BR': 'BR' };
 
 function Mexico() {
   return <>

@@ -1,8 +1,7 @@
 import { useEffect, useId } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { MorphIcon } from 'morphicons/react';
-import { TriangleAlert } from 'lucide';
+import { AppIcon } from '@/components/AppIcon';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { usePageTitle } from '@/components/pageTitle';
 import { Button } from '@/components/ui/button';
@@ -43,7 +42,7 @@ export function NotFound() {
     <section aria-labelledby={titleId} className={`${grid} items-center gap-y-4 pt-2 pb-12 text-center md:pb-16`}>
       <motion.p className="col-span-4 flex min-w-0 flex-wrap items-center justify-center gap-x-2 gap-y-2 text-[length:var(--fs-title)] leading-none font-bold tracking-wide text-[var(--lf-error)] md:col-span-8 lg:col-span-12"
         initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: 'spring', stiffness: 260, damping: 22 }}>
-        <MorphIcon icon={TriangleAlert} size={22} strokeWidth={2.4} reducedMotion="user" aria-hidden="true" />
+        <AppIcon name="warning" size={28} alive />
         {copy.code}
       </motion.p>
       <div role="img" aria-label={copy.sceneAlt} className="pointer-events-none col-span-4 mx-auto aspect-[40/17] w-full max-w-3xl min-w-0 [mask-image:radial-gradient(ellipse_74%_72%_at_50%_52%,#000_72%,transparent_100%)] md:col-span-8 lg:col-span-12">

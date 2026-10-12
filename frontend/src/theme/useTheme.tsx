@@ -14,7 +14,7 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 function systemPrefersDark(): boolean {
   // matchMedia is absent in some test environments (jsdom) — default to light there.
-  return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  return typeof window.matchMedia !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches;
 }
 
 function resolveIsDark(choice: ThemeChoice): boolean {
@@ -23,8 +23,8 @@ function resolveIsDark(choice: ThemeChoice): boolean {
 
 function canCrossFade(): boolean {
   return (
-    typeof document.startViewTransition === 'function' &&
-    !(typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+    typeof document.startViewTransition !== 'undefined' &&
+    !(typeof window.matchMedia !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches)
   );
 }
 
@@ -78,10 +78,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const apply = () => {
       const dark = resolveIsDark(choice);
       const root = document.documentElement;
+
       const paint = () => {
         root.classList.toggle('dark', dark);
         root.dataset.mode = dark ? 'dark' : 'light';
       };
+
       const animate = mounted.current && root.dataset.mode !== (dark ? 'dark' : 'light') && canCrossFade();
 
       mounted.current = true;
@@ -100,7 +102,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
     apply();
 
-    if (choice === 'auto' && typeof window.matchMedia === 'function') {
+    if (choice === 'auto' && typeof window.matchMedia !== 'undefined') {
       const mq = window.matchMedia('(prefers-color-scheme: dark)');
       mq.addEventListener('change', apply);
 

@@ -9,8 +9,10 @@ import { metaFor, PAGES, SITE } from '../scripts/seo/site.mjs';
  */
 export function landingTitle(locale: string): string {
   const page = PAGES.find((entry) => entry.path === '/');
+
   if (!page) return '';
   const suffix = ` | ${SITE.name}`;
   const title = metaFor(page, locale).title;
+
   return title.endsWith(suffix) ? title.slice(0, -suffix.length) : title;
 }

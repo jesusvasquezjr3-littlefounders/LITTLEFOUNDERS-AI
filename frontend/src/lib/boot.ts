@@ -30,10 +30,12 @@ const FONT_WAIT_MS = 1200;
 
 function afterNextPaint(): Promise<void> {
   return new Promise((resolve) => {
-    if (typeof requestAnimationFrame !== 'function') {
+    if (typeof requestAnimationFrame === 'undefined') {
       resolve();
+
       return;
     }
+
     // Two frames: the first is scheduled before the commit paints, the second
     // runs after it. One frame reveals a still-empty page on slower devices.
     requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
@@ -41,8 +43,11 @@ function afterNextPaint(): Promise<void> {
 }
 
 function fontsSettled(): Promise<void> {
+  // SAFETY: only makes `fonts` optional; a browser without the Font Loading API leaves it undefined, and the next line checks
   const fonts = (document as Document & { fonts?: FontFaceSet }).fonts;
+
   if (!fonts?.ready) return Promise.resolve();
+
   return Promise.race([
     fonts.ready.then(() => undefined),
     new Promise<void>((resolve) => setTimeout(resolve, FONT_WAIT_MS)),

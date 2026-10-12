@@ -71,19 +71,19 @@ export function HomeView({ home, values }: { home: HomeRead | null; values: DayV
     })),
   ] : []), [copy, places, navigate, weekday, date, composition, values]);
 
-  return <div className="grid items-center gap-x-8 gap-y-6 lg:min-h-[calc(100dvh-140px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+  return <div className="grid items-center gap-x-8 gap-y-4 sm:gap-y-6 lg:min-h-[calc(100dvh-140px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
     {/* the same shapes while it loads, so nothing moves when the words, the cards and the composition arrive */}
     <div className="order-2 grid justify-items-center lg:order-1">
       {home ? <Deck cards={cards} label={copy.home.deck} hint={copy.home.hint} position={(index, total, card) => copy.home.position.replace('{name}', card).replace('{n}', String(index)).replace('{total}', String(total))} />
         : <Skeleton variant="card" className="aspect-[5/7] w-[min(320px,66vw)]" />}
     </div>
 
-    <div className="order-1 grid justify-items-center gap-4 lg:order-2 lg:justify-items-start">
+    <div className="order-1 grid justify-items-center gap-2 sm:gap-4 lg:order-2 lg:justify-items-start">
       {home ? <div className="grid gap-1.5 text-center lg:text-start">
         <h1 className="m-0 text-balance text-[30px] font-extrabold leading-[1.05] tracking-[-0.03em] sm:text-[40px]">{words.greeting}</h1>
         <p className="m-0 text-balance text-[16px] text-[color:var(--v-text-2)] sm:text-[18px]">{words.subtitle}</p>
       </div> : <div className="grid justify-items-center gap-2 lg:justify-items-start"><Skeleton className="h-10 w-64" /><Skeleton variant="line" className="w-56" /></div>}
-      <div className="aspect-[3/2] w-full max-w-[240px] sm:max-w-[400px] lg:max-w-[560px]">
+      <div className="aspect-[3/2] w-full max-w-[176px] sm:max-w-[400px] lg:max-w-[560px]">
         {composition ? <Loop src={`/stage/loops/${composition.name}`} width={1200} height={800} className="h-auto w-full" priority /> : <Skeleton variant="card" className="size-full" />}
       </div>
     </div>
