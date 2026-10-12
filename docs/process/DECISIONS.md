@@ -384,7 +384,7 @@ The first use is the guest's notice: "erase it" asks before erasing ([[F-004-app
 
 ### D-059: The new version goes to production now, from zero
 
-Date: 2026-10-12. Status: accepted (the owner's decision).
+Date: 2026-10-12. Status: accepted (the owner's decision), and carried out the same day.
 
 The bases of the platform are built, and production holds no product and no real user: its accounts are tests and guests. So the new version is deployed now, to see everything work in the real environment before the advanced features are built. This lifts D-050 for this deployment: the lines of T-036 that can only be closed in production are closed there and reported, and the ones that are decisions stay open and are named below.
 

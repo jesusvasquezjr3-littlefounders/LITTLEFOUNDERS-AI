@@ -8,7 +8,7 @@ updated: 2026-10-12
 
 > The structure a signed-in person moves in: the menu, the home with the composition of the day and the pile of the day, and the empty destinations each feature will fill.
 
-> **Status: draft.** The owner chose the structure from prototypes and approved the plan, the compositions and the icons (D-051 to D-054). What is written here is what was built from those decisions on 2026-10-11; the owner has not reviewed the built application yet, and it is not deployed.
+> **Status: draft.** The owner chose the structure from prototypes and approved the plan, the compositions and the icons (D-051 to D-054). What is written here is what was built from those decisions on 2026-10-11; the owner approved it on 2026-10-12, and it has been in production since that day (D-059).
 
 ## Summary
 
