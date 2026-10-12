@@ -1,7 +1,7 @@
 ---
 title: Child safety and privacy
 status: scaffold
-updated: 2026-10-11
+updated: 2026-10-12
 ---
 
 # Child safety and privacy
@@ -45,7 +45,12 @@ What the product holds about a person today, all of it in [[F-001-authentication
 - **Language.**
 - With Google, the authentication service also keeps what Google sends (name, picture). Whether to strip it is open.
 
-Nothing is collected from a visitor who has not signed in: no request reaches the backend. Logs carry no personal data ([[SECURITY-GUIDE]]). The third parties that receive an address are the mail route (the mail service to Amazon SES) and, for a person who chooses it, Google.
+Nothing is collected from a visitor who has not signed in: no request reaches the backend. Logs carry no personal data ([[SECURITY-GUIDE]]). The third parties that receive an address are the mail route and, for a person who chooses it, Google.
+
+The mail route is Brevo since 2026-10-12 (D-060 in [[DECISIONS]], [[F-002-emails]]); Amazon SES no longer receives anything. For each email Brevo receives the recipient's address, the subject and the body, which is a sign-in code or the welcome email and holds no name, age or account detail. Two things are open and go to counsel with the other privacy questions (T-036 in [[BUILD-TASKS]]):
+
+- Brevo counts opens and clicks of transactional email. It is set to "anonymous", so a count is not tied to a contact, and the screen that sets it has no way to switch the counting off.
+- Brevo keeps a log of each transactional email (recipient, subject, events) under its own retention rules, which have not been reviewed.
 
 ## To define
 

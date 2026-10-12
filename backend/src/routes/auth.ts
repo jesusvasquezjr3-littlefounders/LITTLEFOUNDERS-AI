@@ -8,6 +8,7 @@ import { authOf, type AuthMiddleware } from '../middleware/auth.js';
 import type { Cookies } from '../services/cookies.js';
 import type { Gotrue, Session } from '../services/gotrue.js';
 import type { KnownDevices } from '../services/knownDevice.js';
+import type { Mailer } from '../services/mailer.js';
 import type { TokenVerifier } from '../services/tokens.js';
 import type { Challenges } from '../services/challenge.js';
 import { keyFor, visitorKey, type Limits } from '../services/limits.js';
@@ -79,8 +80,8 @@ function accountView(userId: string, account: AccountContext) {
   };
 }
 
-export function createAuthRouter(deps: { config: Config; gotrue: Gotrue; vault: Vault; cookies: Cookies; knownDevices: KnownDevices; challenges: Challenges; limits: Limits; auth: AuthMiddleware; verifyToken: TokenVerifier }): Router {
-  const { config, gotrue, vault, cookies, knownDevices, challenges, limits, auth, verifyToken } = deps;
+export function createAuthRouter(deps: { config: Config; gotrue: Gotrue; vault: Vault; cookies: Cookies; knownDevices: KnownDevices; challenges: Challenges; limits: Limits; auth: AuthMiddleware; verifyToken: TokenVerifier; mailer: Mailer }): Router {
+  const { config, gotrue, vault, cookies, knownDevices, challenges, limits, auth, verifyToken, mailer } = deps;
   const router = Router();
 
   const clientKey = (req: Request): string => visitorKey(req.ip);
@@ -164,6 +165,10 @@ export function createAuthRouter(deps: { config: Config; gotrue: Gotrue; vault: 
       throw new ApiError('PROOF_REQUIRED');
     }
 
+    // Emails are not leaving at all (services/mailer.ts): say so now, to everybody alike and before
+    // the person's minute is spent, instead of promising a code that cannot come (fail safe, D-058).
+    if (mailer.isDown()) throw new ApiError('UNAVAILABLE');
+
     const target = await resolve(body.data.identifier);
 
     if (!target) throw new ApiError('BAD_REQUEST');
@@ -179,7 +184,8 @@ export function createAuthRouter(deps: { config: Config; gotrue: Gotrue; vault: 
     // Answer first, send afterwards, whatever was typed. A username that exists and one that does
     // not, an address with an account and one without, an address that just got a code through its
     // username and one that did not: all take the same time and get the same answer. The price is
-    // that a failure to send is not told to the person; it is logged, and they can ask again.
+    // that a failure to send one email is not told to the person; it is logged, and they can ask
+    // again. An outage of the whole mail path is told, above.
     sendData(res, { sent: true, codeLength: CODE_LENGTH, expiresInSeconds: CODE_LIFETIME_SECONDS, resendAfterSeconds: RESEND_AFTER_SECONDS });
 
     const { email } = target;

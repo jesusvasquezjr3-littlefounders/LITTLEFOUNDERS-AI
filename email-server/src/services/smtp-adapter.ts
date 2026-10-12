@@ -4,8 +4,8 @@ import type { EmailAdapter, SendRequest, SendResult } from './adapter.js';
 /*
  * SmtpAdapter — submits mail into the co-located Haraka engine over plain SMTP
  * on localhost. Haraka (relay_internal) treats the localhost connection as
- * relaying and forwards it to Amazon SES over TLS + SMTP AUTH. The internal hop
- * is intentionally plaintext-on-loopback; the sensitive hop (Haraka -> SES) is
+ * relaying and forwards it to the smarthost over TLS + SMTP AUTH. The internal hop
+ * is intentionally plaintext-on-loopback; the sensitive hop (Haraka -> smarthost) is
  * encrypted.
  *
  * With EMAIL_ENGINE=smtp the same adapter submits to a local mail catcher instead (development).

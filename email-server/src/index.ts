@@ -10,7 +10,7 @@ import { renderHarakaConfig, startHaraka } from './services/haraka.js';
  *
  * With EMAIL_ENGINE=haraka it runs TWO cooperating processes in one container:
  *   1. the Haraka SMTP engine (email-server/haraka) — the outbound relay to
- *      Amazon SES, listening on localhost only;
+ *      the smarthost, listening on localhost only;
  *   2. this Express HTTP API — /health (Railway healthcheck) and POST
  *      /api/v1/send, which builds an email from its templates (src/mail) and
  *      whose SmtpAdapter submits it into Haraka on localhost.
@@ -44,7 +44,7 @@ if (config.EMAIL_ENGINE === 'haraka') {
   console.log(`[${SERVICE}] engine=smtp (mail goes to ${config.SMTP_HOST}:${config.SMTP_PORT} and no further)`);
 } else {
   adapter = new NoopAdapter();
-  console.log(`[${SERVICE}] engine=noop (no real SMTP; set EMAIL_ENGINE=haraka to relay via SES)`);
+  console.log(`[${SERVICE}] engine=noop (no real SMTP; set EMAIL_ENGINE=haraka to relay through the smarthost)`);
 }
 
 const server = createApp(adapter, { siteUrl: config.FRONTEND_URL }).listen(config.PORT, () => {

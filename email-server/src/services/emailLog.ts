@@ -7,7 +7,7 @@ import { insertEmailLog, isVaultConfigured, listEmailLogs, summarizeEmailLogs, u
  * Two writers, one store:
  *   - POST /api/v1/send      — an email this service built: one line, `queued`,
  *                              with the template, the language and the account.
- *   - POST /api/v1/logs      — the Haraka SMTP plugin, once Amazon SES accepted
+ *   - POST /api/v1/logs      — the Haraka SMTP plugin, once the smarthost accepted
  *                              a message. For an email of ours that turns its
  *                              line into `relayed`; mail another internal
  *                              service submitted over SMTP gets its own line.
@@ -28,7 +28,7 @@ export interface EmailLogEntry {
   id: string;
   /**
    * Identity of the EMAIL — the SMTP/provider Message-ID. This is the value an
-   * operator correlates with SES logs, so it is surfaced separately rather
+   * operator correlates with the smarthost's logs, so it is surfaced separately rather
    * than overloading `id`.
    */
   messageId: string;

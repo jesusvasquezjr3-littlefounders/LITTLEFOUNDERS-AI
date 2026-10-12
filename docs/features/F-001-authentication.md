@@ -1,7 +1,7 @@
 ---
 title: F-001 Sign-in, sign-up and user types
 status: draft
-updated: 2026-10-11
+updated: 2026-10-12
 ---
 
 # F-001 Sign-in, sign-up and user types
@@ -102,7 +102,7 @@ Read against the attacker's checklists in `.claude/skills/strix-security-referen
 | A name or a public username on an account with no age record | `PUT /account/profile` and `/username` answer `AGE_REQUIRED` until the age is declared; only the language can be set before |
 | Personal data in logs | Core logs the method, the route pattern, the status and a failure's kind. Never an address, a username, a code, a token or a cookie; counter keys are digests |
 
-For minors: no birth date is stored, only a whole-number age; under 13 the permission box is required and recorded; nothing here is shown to another user; the only third parties that receive an address are the authentication service's mail route (Courier to Amazon SES) and, for a person who chooses it, Google. What a self-declared box does and does not satisfy legally is in [[CHILD-SAFETY-AND-PRIVACY]].
+For minors: no birth date is stored, only a whole-number age; under 13 the permission box is required and recorded; nothing here is shown to another user; the only third parties that receive an address are the authentication service's mail route (Courier to Brevo, which also receives the subject and the body: D-060) and, for a person who chooses it, Google. What a self-declared box does and does not satisfy legally is in [[CHILD-SAFETY-AND-PRIVACY]].
 
 ## Locale strings
 
@@ -113,6 +113,7 @@ For minors: no birth date is stored, only a whole-number age; under 13 the permi
 - Wrong code: a sentence in the window, the boxes are emptied and keep the focus. After five wrong codes the code stops working and the window says to ask for a new one.
 - A second request for a code inside a minute: refused with the wait in seconds; the window shows a countdown before "send a new code" appears.
 - The mail cannot be sent: the person is not told (Core answers before it sends, so that the answer says nothing about the address); the failure is logged, and the person can ask for a new code after a minute.
+- No email can leave (the mail service or its relay is down, three failures running): asking for a code is answered `UNAVAILABLE`, the same to everybody, instead of "sent" ([[F-002-emails]]). One email refused for one address is still not told: it would say something about that address.
 - The counter store is unreachable: a limit that protects an account refuses the request (`UNAVAILABLE`); the capacity limit lets it through. Production does not boot without `REDIS_URL`.
 - The database or the authentication service is unreachable: `UNAVAILABLE`, never a half-made session.
 - The Google window is closed without choosing: the waiting page keeps offering the other ways to sign in and stops waiting after ten minutes.

@@ -1,12 +1,12 @@
 'use strict'
 
-// Courier's forward to the Amazon SES smarthost, with one rule added: nothing
+// Courier's forward to the smarthost, with one rule added: nothing
 // leaves over a connection that is not encrypted.
 //
 // It is Haraka's own queue/smtp_forward (same config file, smtp_forward.ini,
 // same behavior), inherited whole. That plugin upgrades to TLS only when the
 // other side offers it: if the offer is missing (a fault, or somebody on the
-// path removing it), it would go on and send the SES password and then the
+// path removing it), it would go on and send the smarthost's password and then the
 // email, a sign-in code included, in clear. Here every command that carries a
 // secret or a message is held back unless the connection has been secured, and
 // the email is deferred instead (the caller is told it was not sent).
