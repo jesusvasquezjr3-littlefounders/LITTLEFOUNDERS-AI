@@ -382,6 +382,17 @@ Whatever goes wrong, and whatever a person presses by mistake, they keep what th
 
 The first use is the guest's notice: "erase it" asks before erasing ([[F-004-application]]).
 
+### D-059: The new version goes to production now, from zero
+
+Date: 2026-10-12. Status: accepted (the owner's decision).
+
+The bases of the platform are built, and production holds no product and no real user: its accounts are tests and guests. So the new version is deployed now, to see everything work in the real environment before the advanced features are built. This lifts D-050 for this deployment: the lines of T-036 that can only be closed in production are closed there and reported, and the ones that are decisions stay open and are named below.
+
+- **From zero.** Nothing in the production database is worth keeping. It is backed up first and then started again with the new migrations; the previous accounts are not carried over (T-026 is no longer needed).
+- **What exists stays as it is.** No existing production variable is changed or removed, Google's sign-in keys above all. The new version only adds the variables it needs.
+- **A copy of the keys.** Every production service's variables were saved on 2026-10-12 on the owner's computer, outside the repository and outside any synced folder, readable by the owner's user only, because some (the AI services') will be used again. No value is in the repository or in any document.
+- **Accepted for now:** no legal pages (T-003), no reading by counsel of the age step, of analytics and of the guest entry for a child under 13 (T-020, T-036), and Google's sign-in not yet run end to end (T-019). Until the privacy notice is published the address is not announced or shared.
+
 ## Related
 
 - [[F-001-authentication]]
