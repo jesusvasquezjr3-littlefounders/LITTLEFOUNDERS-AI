@@ -1,7 +1,7 @@
 ---
 title: Security guide
 status: scaffold
-updated: 2026-10-11
+updated: 2026-10-12
 ---
 
 # Security guide
@@ -56,6 +56,8 @@ What is built and in force since 2026-10-10 (decisions D-028 to D-031 in [[DECIS
 - **The relay's hop to Amazon SES.** Nothing leaves over a connection that is not encrypted, and the smarthost's certificate is verified (`haraka/plugins/forward_secure.js`, `[tls] rejectUnauthorized=true`). When the smarthost does not take a message, it is deferred: the relay never delivers straight to a recipient's mail server (`haraka/plugins/no_direct_delivery.js`). The relay logs at `warn`, so no address is written, and the mail service logs the kind of a failure, never its text.
 - **How a change is reviewed.** Before and after building anything that touches identity, data or input, read the matching checklists in `.claude/skills/strix-security-reference/` as the attacker would, and record what stops each threat in the feature's document.
 - `scripts/check-secrets.sh` scans tracked files for credentials. The vendored anti-slop rules reject unparsed input and unjustified type assertions. Security skills for agents and the rules for any AI pentest run are in [[ai-pentesting]].
+
+- **Found during the first deployment, 2026-10-12, and fixed before the closed gateway went live:** the gateway's start script replaces each `$NAME` of its key list with the variable's value and removes a key left empty, but a variable that is not set at all was left as its own name, and the name then worked as a key. In production `SUPABASE_SECRET_KEY` and `SUPABASE_PUBLISHABLE_KEY` are not set, so the text `$SUPABASE_SECRET_KEY` sent as the key was let through as the service consumer (checked on the live gateway before the fix: 200; after: 401). The services behind still asked for a signed token, but the closed gateway rests on that key list, and the open authentication routes would have been reachable around Core. `database/railway/kong/kong-entrypoint.sh` now removes a credential that is still a variable's name. The lesson for any template that substitutes variables: decide what an unset one becomes.
 
 ## Related
 
