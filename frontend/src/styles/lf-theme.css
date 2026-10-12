@@ -321,6 +321,24 @@ html:root[data-mode] {
   visibility: hidden;
 }
 
+/*
+ * The library hides every span of the sidebar's header when the sidebar is collapsed. An icon of ours is made of
+ * spans, and the one it plays in is among them: without this the chevron that opens the sidebar disappears the
+ * first time a pointer touches it. The button itself stays a round of 44 px.
+ */
+[data-slot="sidebar"].-mini .v-brand .v-collapse .lf-icon {
+  display: inline-grid;
+}
+
+[data-slot="sidebar"].-mini .v-brand .v-collapse .lf-icon-stage {
+  display: block;
+}
+
+[data-slot="sidebar"] .v-brand .v-collapse {
+  block-size: 44px;
+  min-block-size: 44px;
+}
+
 .lf-icon .ink-stroke path {
   stroke: currentColor;
 }

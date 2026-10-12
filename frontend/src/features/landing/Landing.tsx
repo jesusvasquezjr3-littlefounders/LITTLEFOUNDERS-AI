@@ -8,7 +8,7 @@ import { Problem } from '@/features/landing/Problem';
 /** `/`: the landing page. Who it is for and what it promises, the evidence, the path, what stays true, the ask. Layout rules: type.ts. Above it, for somebody who walked the onboarding without creating an account, the notice of what this device keeps. */
 export function Landing() {
   return <div>
-    <SavedNotice />
+    <div className="flex justify-center pt-3"><SavedNotice /></div>
     <Hero />
     <Problem />
     <Path />

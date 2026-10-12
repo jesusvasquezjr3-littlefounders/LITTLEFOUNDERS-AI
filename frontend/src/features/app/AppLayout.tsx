@@ -8,7 +8,6 @@ import { Dock, type DockItem } from '@/components/ui/dock';
 import { Sidebar, SidebarContent, SidebarHeader, SidebarMenuButton, SidebarMenuLabel, SidebarTrigger } from '@/components/ui/sidebar';
 import { useAuthDialog } from '@/features/auth/AuthDialog';
 import { useSession } from '@/features/auth/session';
-import { SavedNotice } from '@/features/onboarding/SavedNotice';
 import { onboarding, useOnboardingAnswers } from '@/features/onboarding/store';
 import { useGuest } from '@/features/app/guest';
 import { useHome, type Destination, type HomeState } from '@/features/app/homeData';
@@ -190,8 +189,6 @@ function Signed({ mainId, isOpen, isDark, current, onOpenChange }: { mainId: str
           <img src={isDark ? '/brand/logo-white.png' : '/brand/logo.png'} alt={core.appShell.brand} width={560} height={102} className="h-5 w-auto min-[400px]:h-6 sm:h-7 lg:invisible" />
           <TopbarControls />
         </header>
-        {/* a guest is told that what they chose lives on this device, with the way to keep it and the way to erase it */}
-        <SavedNotice compact />
         <main id={mainId} tabIndex={-1} className="min-w-0 outline-none">
           <Suspense fallback={<PageSkeleton />}>
             <motion.div key={pathname} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, ease: ENTER }}>

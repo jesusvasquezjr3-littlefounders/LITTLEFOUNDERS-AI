@@ -2,6 +2,7 @@ import { AppIcon } from '@/components/AppIcon';
 import { sileo } from 'sileo';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { useGuest } from '@/features/app/guest';
 import { useAuthDialog } from '@/features/auth/AuthDialog';
 import { useSession } from '@/features/auth/session';
 import { useCoreCopy } from '@/i18n/useCopy';
@@ -55,11 +56,15 @@ function AccountMenu() {
   </DropdownMenu>;
 }
 
-/** The topbar's account control: the menu when signed in, the sign-in button when not. */
+/**
+ * The topbar's account control: the menu when signed in, the sign-in button when not. A guest (features/app/guest.ts)
+ * gets neither: they are already in, and the way to an account is the notice that says what is kept on the device.
+ */
 export function AccountControl() {
   const { status } = useSession();
+  const guest = useGuest();
 
-  if (status === 'loading') return null;
+  if (status === 'loading' || guest) return null;
 
   return status === 'signedIn' ? <AccountMenu /> : <SignInButton />;
 }

@@ -157,6 +157,10 @@ const LATER = `[...document.querySelectorAll('main button')].find((b) => b.offse
 const NOTICE = `[...document.querySelectorAll('aside')].find((a) => /guardado en este dispositivo/i.test(a.innerText))`;
 const DOCK = "document.querySelectorAll('.lg\\\\:hidden .lf-icon').length";
 const same = (list, expected) => JSON.stringify(list) === JSON.stringify(expected);
+const SIGN_IN = "[...document.querySelectorAll('header button, [data-cta=\"sign-in\"]')].some((b) => b.getClientRects().length && /iniciar sesión/i.test(b.textContent))";
+// the notice: at most 96 px tall, after the greeting's line and before the composition
+const SMALL_NOTICE = `(() => { const n = ${NOTICE}?.getBoundingClientRect(); const line = document.querySelector('main h1 + p')?.getBoundingClientRect(); const stage = document.querySelector('main video, main img')?.getBoundingClientRect(); return !!n && !!line && !!stage && n.height <= 96 && n.top >= line.bottom - 1 && n.bottom <= stage.top + 1; })()`;
+const SMALL_NOTICE_SHOW = `(() => { const n = ${NOTICE}?.getBoundingClientRect(); return n ? Math.round(n.width) + ' x ' + Math.round(n.height) + ' at ' + Math.round(n.top) : 'no notice'; })()`;
 const GREEN = ['keep-learning', 'keep-learning', 'keep-learning'];
 
 /** Opens the account menu and signs out. */
@@ -224,6 +228,7 @@ const flows = {
     await me.atHome('later: goes into the application as a guest, greeted by name, cover on top', (home) => home.path === '/home' && /Max/.test(home.h1 ?? '') && home.places === 5 && home.cover === 'cover' && !home.dialog);
     check('later: no session was made', (await me.sessionCookies()).length === 0);
     await me.sees('later: the guest is told what is kept, with the way to create the account', () => me.ev(`!!${NOTICE} && [...${NOTICE}.querySelectorAll('button')].length === 2`));
+    check('later: a guest is not offered to sign in: they are in', !(await me.ev(SIGN_IN)));
     await me.shot('1-guest-home');
     await me.go('/home');
     await me.atHome('later: a reload keeps the guest in', (home) => home.path === '/home' && /Max/.test(home.h1 ?? '') && !home.dialog);
@@ -233,12 +238,13 @@ const flows = {
     await me.sees('later: but not Family', async () => (await me.where()) === '/home', me.where);
     await me.go('/');
     await me.sees('later: on the site every call to action is the green one', async () => same(await me.ctas(), GREEN), async () => JSON.stringify(await me.ctas()));
+    check('later: nor on the site', !(await me.ev(SIGN_IN)));
     await me.shot('2-site');
     await me.click(`document.querySelector('[data-cta="keep-learning"][data-origin="landing-hero"]')`);
     await me.sees('later: which goes back to /home', async () => (await me.where()) === '/home', me.where);
 
     // the account, from inside the application
-    await me.click(`[...${NOTICE}.querySelectorAll('button')].find((b) => !b.className.includes('-ghost'))`);
+    await me.click(`${NOTICE}.querySelector('button:not([data-erase])')`);
     await me.sees('later: the notice opens the window', () => me.ev(`${DIALOG} !== null`));
     await me.emailAndCode();
 
@@ -266,7 +272,20 @@ const flows = {
     await me.sees('guest parent: the dock has five places (Family needs an account)', async () => (await me.ev(DOCK)) === 5, () => me.ev(DOCK));
     check('guest: nothing scrolls sideways', (await me.ev('document.documentElement.scrollWidth - document.documentElement.clientWidth')) <= 0);
     await me.shot('1-guest-phone');
-    await me.click(`[...${NOTICE}.querySelectorAll('button')].find((b) => b.className.includes('-ghost'))`);
+    await me.sees('guest: the notice is one small line, under the greeting and above the composition', () => me.ev(SMALL_NOTICE), () => me.ev(SMALL_NOTICE_SHOW));
+
+    // erasing asks first, and the safe answer is the one in hand
+    await me.click(`${NOTICE}.querySelector('[data-erase]')`);
+    await me.sees('erase: it asks before erasing, with the button that keeps everything in focus', () => me.ev(`${DIALOG} !== null && document.activeElement === ${DIALOG}.querySelector('[data-keep]')`));
+    await me.shot('2-asking');
+    check('erase: nothing was erased yet', await me.ev(`localStorage.getItem('lf.onboarding') !== null`));
+    await me.escape();
+    await me.sees('erase: closing the window keeps everything', async () => (await me.where()) === '/home' && await me.ev(`${DIALOG} === null && localStorage.getItem('lf.onboarding') !== null`), me.where);
+    await me.click(`${NOTICE}.querySelector('[data-erase]')`);
+    await me.click(`${DIALOG}.querySelector('[data-keep]')`);
+    await me.sees('erase: so does the button that keeps', async () => (await me.where()) === '/home' && await me.ev(`${DIALOG} === null && localStorage.getItem('lf.onboarding') !== null`), me.where);
+    await me.click(`${NOTICE}.querySelector('[data-erase]')`);
+    await me.click(`${DIALOG}.querySelector('[data-confirm-erase]')`);
     await me.sees('erase: erasing ends the visit, on the site, with no window', async () => (await me.where()) === '/' && await me.ev(`${DIALOG} === null`), me.where);
     check('erase: nothing is left in the browser', await me.ev(`localStorage.getItem('lf.onboarding') === null`));
     await me.sees('erase: the calls to action are the visitor\'s again', async () => { const ctas = await me.ctas(); return ctas.includes('start-parent') && !ctas.includes('keep-learning'); }, async () => JSON.stringify(await me.ctas()));

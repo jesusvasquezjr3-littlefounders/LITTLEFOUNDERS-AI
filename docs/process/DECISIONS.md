@@ -369,6 +369,19 @@ Date: 2026-10-11. Status: accepted (the owner asked for the option that keeps pr
 
 Core's limits are the same code and the same numbers everywhere. One setting, `RELAXED_LIMITS=true`, makes the limits that count how often something is asked for a hundred times wider (codes per network address and per email address, session and account calls, reads), so that a developer and the audit tools on one machine do not lock each other out. It is honored only when `NODE_ENV` is exactly `development`: with any other value, or none, Core refuses to start while it is set, so it cannot reach production by mistake. The limits that guard a code against guessing (five tries per code, thirty a day per address) and the things that happen once are never widened. The authentication service keeps its own minute between two emails to one address. [[RATE-LIMITING-AND-ABUSE]], [[ENVIRONMENT-SETUP]].
 
+### D-058: Fail safe is a priority of the project
+
+Date: 2026-10-12. Status: accepted (the owner: safe fails must be a documented priority; erasing a guest's answers asks for confirmation with a warning).
+
+Whatever goes wrong, and whatever a person presses by mistake, they keep what they had. It is rule 16 of `CLAUDE.md`, and it is how a design is judged before it is called finished:
+
+- **Erasing asks first.** An action that erases something or cannot be undone opens a window that says what will be lost. The button that keeps everything has the focus, so Enter or a careless press keeps it; Escape and a press outside keep it too. The button that erases is the quiet one.
+- **A failure loses nothing.** When a call fails, what the person typed or chose stays where it was, and the screen says what happened and what they can do.
+- **In doubt, refuse.** Where an account or a child's data is at stake, a check that cannot be made refuses instead of letting through (the limits that fail closed in [[RATE-LIMITING-AND-ABUSE]], `NODE_ENV` read as production unless it says otherwise).
+- **Nobody is left stuck.** Every screen has a way on and a way back.
+
+The first use is the guest's notice: "erase it" asks before erasing ([[F-004-application]]).
+
 ## Related
 
 - [[F-001-authentication]]

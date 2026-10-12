@@ -9,6 +9,7 @@ import { greetingFor } from '@/features/app/greeting';
 import { HomeCover, type DayTile } from '@/features/app/HomeCover';
 import type { Destination, Home as HomeRead } from '@/features/app/homeData';
 import { Loop } from '@/features/landing/LoopVideo';
+import { SavedNotice } from '@/features/onboarding/SavedNotice';
 import { useAppCopy, useLocale } from '@/i18n/useCopy';
 
 /*
@@ -83,6 +84,8 @@ export function HomeView({ home, values }: { home: HomeRead | null; values: DayV
         <h1 className="m-0 text-balance text-[30px] font-extrabold leading-[1.05] tracking-[-0.03em] sm:text-[40px]">{words.greeting}</h1>
         <p className="m-0 text-balance text-[16px] text-[color:var(--v-text-2)] sm:text-[18px]">{words.subtitle}</p>
       </div> : <div className="grid justify-items-center gap-2 lg:justify-items-start"><Skeleton className="h-10 w-64" /><Skeleton variant="line" className="w-56" /></div>}
+      {/* a guest is told, in one small line, that what they chose lives on this device (guest.ts) */}
+      <SavedNotice />
       <div className="aspect-[3/2] w-full max-w-[176px] sm:max-w-[400px] lg:max-w-[560px]">
         {composition ? <Loop src={`/stage/loops/${composition.name}`} width={1200} height={800} className="h-auto w-full" priority /> : <Skeleton variant="card" className="size-full" />}
       </div>
