@@ -209,7 +209,7 @@ Date: 2026-10-10. Status: accepted.
 
 Date: 2026-10-10. Status: accepted.
 
-The new version reads the variables production already has, under the same names, so the keys that work there (Google, Amazon SES, Supabase) are not re-entered or rotated by the change of version. The names were read from the production services on 2026-10-10 (names only, with the owner's permission) and are listed in [[ENVIRONMENT-SETUP]]. New settings get new names; an existing name is never repurposed.
+The new version reads the variables production already has, under the same names, so the keys that work there (Google, Amazon SES, Supabase) are not re-entered or rotated by the change of version. The names were read from the production services on 2026-10-10 (names only, with the owner's permission) and are listed in [[ENVIRONMENT-SETUP]]. New settings get new names; an existing name is never repurposed. (Since 2026-10-12 the mail relay is Brevo and its four variables have neutral names: D-060.)
 
 ### D-032: The emails are our own, written and sent by our services
 
@@ -384,7 +384,7 @@ The first use is the guest's notice: "erase it" asks before erasing ([[F-004-app
 
 ### D-059: The new version goes to production now, from zero
 
-Date: 2026-10-12. Status: accepted (the owner's decision).
+Date: 2026-10-12. Status: accepted (the owner's decision), and carried out the same day.
 
 The bases of the platform are built, and production holds no product and no real user: its accounts are tests and guests. So the new version is deployed now, to see everything work in the real environment before the advanced features are built. This lifts D-050 for this deployment: the lines of T-036 that can only be closed in production are closed there and reported, and the ones that are decisions stay open and are named below.
 
@@ -392,6 +392,20 @@ The bases of the platform are built, and production holds no product and no real
 - **What exists stays as it is.** No existing production variable is changed or removed, Google's sign-in keys above all. The new version only adds the variables it needs.
 - **A copy of the keys.** Every production service's variables were saved on 2026-10-12 on the owner's computer, outside the repository and outside any synced folder, readable by the owner's user only, because some (the AI services') will be used again. No value is in the repository or in any document.
 - **Accepted for now:** no legal pages (T-003), no reading by counsel of the age step, of analytics and of the guest entry for a child under 13 (T-020, T-036), and Google's sign-in not yet run end to end (T-019). Until the privacy notice is published the address is not announced or shared.
+
+### D-060: The mail relay is Brevo, not Amazon SES
+
+Date: 2026-10-12. Status: accepted (the owner's decision), and carried out the same day.
+
+Amazon SES kept the account in its sandbox, which delivers to verified addresses only, so sign-in codes did not arrive. The mail service (`email-server/`) now relays through Brevo. Its relay (Haraka, send-only, on localhost) forwards to `smtp-relay.brevo.com` on port 587 with STARTTLS, and signs in with a Brevo SMTP login and an SMTP key. The rest of the design in [[F-002-emails]] is as it was: TLS is required, the smarthost's certificate is verified, and the relay never delivers by itself. A probe and a real sign-in code were sent through Brevo in production to a test mailbox, and the owner confirmed that both arrived.
+
+- **Variables.** The names no longer carry a provider: `SES_RELAY_HOST` is `SMTP_RELAY_HOST`, `SES_RELAY_PORT` is `SMTP_RELAY_PORT`, `SES_SMTP_USER` is `SMTP_RELAY_USER` and `SES_SMTP_PASS` is `SMTP_RELAY_PASS`. Production has both sets today; the `SES_*` ones are removed once the version that reads the new names is deployed. This departs from D-031 and D-059, which keep production's variable names as they are.
+- **DNS of `littlefounders.ai`** (managed in Vercel). The five Amazon SES records were deleted: three `*._domainkey` CNAMEs to `dkim.amazonses.com`, and the `mail` MX and SPF TXT of the SES MAIL FROM. Added for Brevo: the CNAMEs `brevo1._domainkey` and `brevo2._domainkey` (to `b1.littlefounders-ai.dkim.brevo.com` and `b2.littlefounders-ai.dkim.brevo.com`) and a root TXT `brevo-code:...` that proves ownership. `_dmarc` now reads `v=DMARC1; p=none; rua=mailto:rua@dmarc.brevo.com`, so the aggregate reports go to Brevo, as its domain authentication asks. The domain is authenticated in Brevo. Receiving mail is untouched (MX to Google). Two dangling records of a deleted service were removed in the same pass: `tutor-b2c` (CNAME) and `_railway-verify.tutor-b2c` (TXT). The full list is in [[INFRASTRUCTURE]].
+- **A new processor.** For each email Brevo receives the recipient's address, the subject and the body: a sign-in code, or the welcome email. Amazon SES no longer receives anything ([[CHILD-SAFETY-AND-PRIVACY]]).
+- **Open: tracking.** Brevo's tracking of transactional email was set to "anonymous": opens and clicks are counted and not tied to a contact. That screen does not offer switching it fully off.
+- **Open: log retention.** Brevo keeps logs of transactional emails (recipient, subject, events) under its retention rules, which have not been reviewed.
+
+Both open points go to counsel with the other privacy questions (T-036 in [[BUILD-TASKS]]).
 
 ## Related
 

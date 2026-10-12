@@ -25,7 +25,7 @@ const LogsSummaryQuery = z.object({
 
 /*
  * What the Haraka SMTP plugin reports for mail it relayed: our own emails, once
- * Amazon SES accepted them. `to` is NOT z.string().email() here on purpose: this records what the relay
+ * the smarthost accepted them. `to` is NOT z.string().email() here on purpose: this records what the relay
  * actually accepted, and refusing to log an address the SMTP layer already
  * delivered to would put a hole in the audit trail. `detail` takes one known
  * field and nothing else, so no body or code can be stored through this route.
@@ -46,6 +46,18 @@ const DeliveryBody = z.object({
  * (src/mail/templates.ts). A caller cannot send words or HTML of its own: whoever holds the internal
  * key can ask for one of our emails and nothing else.
  */
+/** The mail library's codes for an email the relay answered "no" to, and for a relay that did not answer. */
+const REFUSED = new Set(['EENVELOPE', 'EMESSAGE']);
+const UNREACHABLE = new Set(['ECONNECTION', 'ETIMEDOUT', 'ESOCKET', 'EAUTH', 'EDNS', 'ETLS', 'ECONNREFUSED', 'ECONNRESET']);
+
+function relayFailure(code: string | undefined): { status: number; code: string; message: string } | null {
+  if (code && REFUSED.has(code)) return { status: 422, code: 'RELAY_REFUSED', message: 'The relay refused this email' };
+
+  if (code && UNREACHABLE.has(code)) return { status: 502, code: 'RELAY_UNAVAILABLE', message: 'The relay cannot be reached' };
+
+  return null;
+}
+
 export function createApp(adapter: EmailAdapter = new NoopAdapter(), options: { siteUrl: string } = { siteUrl: 'https://littlefounders.ai' }): express.Express {
   const app = express();
   app.use(express.json());
@@ -93,7 +105,7 @@ export function createApp(adapter: EmailAdapter = new NoopAdapter(), options: { 
   /*
    * Delivery capture for the SMTP path. Called by the Haraka plugin
    * (haraka/plugins/log_delivery.js) once a message has been successfully
-   * relayed to SES. For an email this service built, that turns its `queued`
+   * relayed to the smarthost. For an email this service built, that turns its `queued`
    * line into `relayed`; mail another service submitted over SMTP gets a line
    * of its own.
    */
@@ -159,8 +171,21 @@ export function createApp(adapter: EmailAdapter = new NoopAdapter(), options: { 
     const status = malformedBody ? 400 : 500;
     const code = malformedBody ? 'VALIDATION_ERROR' : 'INTERNAL_ERROR';
     const message = malformedBody ? 'Malformed JSON body' : 'Unexpected server error';
-    // The kind of failure and its code, never its text: a mail library's message can quote the address.
-    const failure = err instanceof Error ? { name: err.name, code: 'code' in err ? String(err.code) : undefined } : { name: 'unknown' };
+    // The kind of failure, its code and the relay's three-digit answer, never its text: a mail
+    // library's message can quote the address.
+    const failure = err instanceof Error
+      ? { name: err.name, code: 'code' in err ? String(err.code) : undefined, relayAnswer: 'responseCode' in err ? Number(err.responseCode) : undefined, command: 'command' in err ? String(err.command) : undefined }
+      : { name: 'unknown' };
+    const relay = relayFailure(failure.code);
+
+    // A caller can tell an email the relay refused (this recipient, this message) from a relay that
+    // cannot be reached at all: the second is everybody's problem, the first is not.
+    if (relay) {
+      console.error(`[${SERVICE}] ${relay.code}:`, JSON.stringify(failure));
+      res.status(relay.status).json({ data: null, error: { code: relay.code, message: relay.message } });
+
+      return;
+    }
 
     console.error(`[${SERVICE}] ${code}:`, JSON.stringify(failure));
     res.status(status).json({ data: null, error: { code, message } });

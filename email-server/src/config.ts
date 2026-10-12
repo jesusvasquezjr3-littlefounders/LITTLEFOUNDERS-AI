@@ -9,10 +9,10 @@ import { z } from 'zod';
  *   - 'smtp'   — submits to the SMTP server at SMTP_HOST:SMTP_PORT and nothing
  *                else: the local mail catcher, to read the emails in development.
  *   - 'haraka' — boots the Haraka SMTP engine (email-server/haraka) which
- *                relays outbound to Amazon SES. Requires the SES_* credentials.
+ *                relays outbound to the smarthost. Requires the SMTP_RELAY_* settings.
  *
  * Default engine is 'haraka' in production, 'noop' in development and test, so `npm run dev`
- * works without SES. INTERNAL_API_KEY has no default in production: a missing key must
+ * works without a smarthost. INTERNAL_API_KEY has no default in production: a missing key must
  * crash boot, not silently serve unauthenticated.
  */
 const Env = z.object({
@@ -42,12 +42,12 @@ const Env = z.object({
   HARAKA_LOCAL_PORT: z.coerce.number().int().positive().default(2525),
   HARAKA_HOSTNAME: z.string().min(1).default('email-server.railway.internal'),
 
-  // Amazon SES SMTP smarthost — the last-mile relay. Required when engine=haraka.
-  // SES_SMTP_USER/PASS are region-scoped SES SMTP credentials, NOT AWS keys.
-  SES_RELAY_HOST: z.string().min(1).optional(),
-  SES_RELAY_PORT: z.coerce.number().int().positive().default(587),
-  SES_SMTP_USER: z.string().min(1).optional(),
-  SES_SMTP_PASS: z.string().min(1).optional(),
+  // The SMTP smarthost every email leaves through (Brevo's relay since 2026-10-12). Required when
+  // engine=haraka. SMTP_RELAY_USER/PASS are the relay's own SMTP login and SMTP key.
+  SMTP_RELAY_HOST: z.string().min(1).optional(),
+  SMTP_RELAY_PORT: z.coerce.number().int().positive().default(587),
+  SMTP_RELAY_USER: z.string().min(1).optional(),
+  SMTP_RELAY_PASS: z.string().min(1).optional(),
 
   // Vault (the email_logs table) — the durable delivery history. OPTIONAL on
   // purpose: without them Courier still sends mail and still serves
@@ -75,10 +75,10 @@ export type Config = Readonly<{
   HARAKA_LOCAL_HOST: string;
   HARAKA_LOCAL_PORT: number;
   HARAKA_HOSTNAME: string;
-  SES_RELAY_HOST?: string;
-  SES_RELAY_PORT: number;
-  SES_SMTP_USER?: string;
-  SES_SMTP_PASS?: string;
+  SMTP_RELAY_HOST?: string;
+  SMTP_RELAY_PORT: number;
+  SMTP_RELAY_USER?: string;
+  SMTP_RELAY_PASS?: string;
   SUPABASE_URL?: string;
   MAIL_SERVICE_KEY?: string;
 }>;
@@ -107,12 +107,12 @@ export function getConfig(): Config {
   // Resolve the engine: explicit env wins, else haraka in prod / noop elsewhere.
   const engine: EmailEngine = parsed.EMAIL_ENGINE ?? (parsed.NODE_ENV === 'production' ? 'haraka' : 'noop');
 
-  // The Haraka engine cannot relay without its SES smarthost credentials.
+  // The Haraka engine cannot relay without its smarthost credentials.
   if (engine === 'haraka') {
     const missing = [
-      ['SES_RELAY_HOST', parsed.SES_RELAY_HOST],
-      ['SES_SMTP_USER', parsed.SES_SMTP_USER],
-      ['SES_SMTP_PASS', parsed.SES_SMTP_PASS],
+      ['SMTP_RELAY_HOST', parsed.SMTP_RELAY_HOST],
+      ['SMTP_RELAY_USER', parsed.SMTP_RELAY_USER],
+      ['SMTP_RELAY_PASS', parsed.SMTP_RELAY_PASS],
     ]
       .filter(([, v]) => !v)
       .map(([k]) => k);

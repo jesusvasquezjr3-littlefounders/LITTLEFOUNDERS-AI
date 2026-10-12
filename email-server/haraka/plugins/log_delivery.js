@@ -3,7 +3,7 @@
 // Courier delivery capture.
 //
 // Every email is built by Courier's HTTP API and submitted to this relay on
-// localhost. This hook tells that API when Amazon SES has accepted a message,
+// localhost. This hook tells that API when the smarthost has accepted a message,
 // so the email's line in the delivery history goes from `queued` to `relayed`.
 // The API owns the (typed) write to the email_logs table. The plugin deliberately holds no database credentials and contains no
 // SQL: Haraka's runtime is CommonJS and is excluded from our linter and
@@ -79,12 +79,21 @@ exports.hook_queue_ok = function (next, connection) {
         detail: { source: 'smtp' },
       })
 
-      fetch(`http://127.0.0.1:${port}/api/v1/logs`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-internal-api-key': key },
-        body,
-        signal: AbortSignal.timeout(HTTP_TIMEOUT_MS),
+      // Haraka runs a plugin in a sandbox that has fetch and the timers and not AbortSignal: naming
+      // it threw, the throw was swallowed below, and no email ever went from `queued` to `relayed`
+      // (found on 2026-10-12). The wait is bounded with a timer instead.
+      const tooLong = new Promise((resolve, reject) => {
+        setTimeout(() => reject(new Error('no answer in time')), HTTP_TIMEOUT_MS)
       })
+
+      Promise.race([
+        fetch(`http://127.0.0.1:${port}/api/v1/logs`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-internal-api-key': key },
+          body,
+        }),
+        tooLong,
+      ])
         .then((res) => {
           if (!res.ok) plugin.logwarn(`delivery log rejected (HTTP ${res.status}) for ${messageId}`)
         })

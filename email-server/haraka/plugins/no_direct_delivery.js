@@ -2,7 +2,7 @@
 
 // Courier never delivers an email by itself.
 //
-// Every email goes out through the Amazon SES smarthost (forward_secure). When
+// Every email goes out through the smarthost (forward_secure). When
 // that plugin cannot hand a message over (the smarthost is down, or its
 // certificate fails the check) it passes the message on, and Haraka's default
 // would then deliver it straight to the recipient's mail server: from an

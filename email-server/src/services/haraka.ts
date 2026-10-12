@@ -20,7 +20,7 @@ export function harakaDir(): string {
  * Render the two config files that carry env/secrets into Haraka, so nothing
  * secret is ever committed. Called once at boot before the engine spawns.
  *   - config/me               → the HELO/hostname Haraka announces.
- *   - config/smtp_forward.ini  → the Amazon SES smarthost + SMTP AUTH creds, and
+ *   - config/smtp_forward.ini  → the smarthost + SMTP AUTH creds, and
  *                                 the rule that its certificate is verified.
  * Both are git-ignored (see email-server/.gitignore).
  */
@@ -32,12 +32,12 @@ export async function renderHarakaConfig(config: Config): Promise<void> {
 
   const smtpForward = [
     '; RENDERED AT BOOT from env by src/services/haraka.ts — do not edit or commit.',
-    `host=${config.SES_RELAY_HOST}`,
-    `port=${config.SES_RELAY_PORT}`,
+    `host=${config.SMTP_RELAY_HOST}`,
+    `port=${config.SMTP_RELAY_PORT}`,
     'enable_tls=true',
     'auth_type=plain',
-    `auth_user=${config.SES_SMTP_USER}`,
-    `auth_pass=${config.SES_SMTP_PASS}`,
+    `auth_user=${config.SMTP_RELAY_USER}`,
+    `auth_pass=${config.SMTP_RELAY_PASS}`,
     'enable_outbound=true',
     '',
     '; The smarthost must prove who it is: its certificate is checked against the',
@@ -53,7 +53,7 @@ export async function renderHarakaConfig(config: Config): Promise<void> {
 
 /**
  * Ensure a TLS keypair exists in the config dir. Haraka's tls_socket (pulled in
- * by queue/smtp_forward for the encrypted SES hop) tries to load these at boot
+ * by queue/smtp_forward for the encrypted smarthost hop) tries to load these at boot
  * and logs ERRORs if absent — noise that could mask a real fault during the live
  * test. A boot-generated self-signed cert silences it and seeds the future
  * internal-TLS hardening. It does NOT enable inbound STARTTLS (the `tls` plugin,
@@ -101,7 +101,7 @@ const ENGINE_ENV = ['PATH', 'HOME', 'TMPDIR', 'TEMP', 'TMP', 'TZ', 'LANG', 'NODE
  * this child exits, the supervisor exits non-zero so Railway restarts the service.
  *
  * The child gets only the variables it uses, not this process's whole environment: the engine
- * runs third-party plugins and has no use for the database key or the SES password (which it
+ * runs third-party plugins and has no use for the database key or the smarthost's password (which it
  * reads from the file rendered above).
  */
 export function startHaraka(config: Config): ChildProcess {
@@ -117,7 +117,7 @@ export function startHaraka(config: Config): ChildProcess {
     env,
   });
   console.log(
-    `[email-server] haraka engine spawned (pid=${child.pid}) → relays to ${config.SES_RELAY_HOST}:${config.SES_RELAY_PORT}`,
+    `[email-server] haraka engine spawned (pid=${child.pid}) → relays to ${config.SMTP_RELAY_HOST}:${config.SMTP_RELAY_PORT}`,
   );
   return child;
 }

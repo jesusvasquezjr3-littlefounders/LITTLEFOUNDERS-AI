@@ -1,8 +1,8 @@
 # Courier engine — Haraka plugin list (order matters).
-# This is a SEND-ONLY outbound relay to Amazon SES; no inbound mail.
+# This is a SEND-ONLY outbound relay to the smarthost; no inbound mail.
 
 # CONNECT — mark connections from this machine (loopback) as relaying, so the
-# mail of the Courier HTTP API is forwarded outbound to the SES smarthost. Every
+# mail of the Courier HTTP API is forwarded outbound to the smarthost. Every
 # other source is refused. Custom plugin (email-server/haraka/plugins/relay_internal.js).
 relay_internal
 
@@ -11,7 +11,7 @@ relay_internal
 # us from being an open relay even though the listener is loopback-only.
 rcpt_to.in_host_list
 
-# QUEUE — forward every relaying message to the Amazon SES smarthost over
+# QUEUE — forward every relaying message to the smarthost over
 # TLS + SMTP AUTH. Config (secrets) rendered at boot into config/smtp_forward.ini.
 # forward_secure is Haraka's queue/smtp_forward plus one rule: nothing is sent
 # unless the connection is encrypted (email-server/haraka/plugins/forward_secure.js).

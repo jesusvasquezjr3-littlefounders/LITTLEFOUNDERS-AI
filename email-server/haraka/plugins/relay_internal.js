@@ -3,7 +3,7 @@
 // Courier relay policy: only this machine may submit mail.
 //
 // Marks a connection from the loopback address as `relaying`, so its mail is
-// forwarded outbound to the Amazon SES smarthost by queue/smtp_forward. The one
+// forwarded outbound to the smarthost by queue/smtp_forward. The one
 // sender is the Courier HTTP API in the same container, which accepts only the
 // internal key and builds every email from its own templates.
 //

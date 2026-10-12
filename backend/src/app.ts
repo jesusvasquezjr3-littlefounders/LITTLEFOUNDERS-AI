@@ -77,7 +77,7 @@ export function createApp(config: Config, limits: Limits): express.Express {
   app.use(requireOwnOrigin(config));
   app.use(express.json({ limit: '10kb', type: 'application/json' }));
 
-  app.use('/api/v1/auth', createAuthRouter({ config, gotrue, vault, cookies, knownDevices, challenges, limits, auth, verifyToken }));
+  app.use('/api/v1/auth', createAuthRouter({ config, gotrue, vault, cookies, knownDevices, challenges, limits, auth, verifyToken, mailer }));
   app.use('/api/v1/account', createAccountRouter({ vault, limits, auth, mailer, unsubscribe }));
   app.use('/api/v1/home', createHomeRouter({ home, limits, auth }));
   app.use('/api/v1/email', createEmailRouter({ vault, limits, unsubscribe }));

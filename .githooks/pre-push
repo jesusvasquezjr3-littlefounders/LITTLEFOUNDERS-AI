@@ -1,0 +1,10 @@
+#!/bin/sh
+# This repository keeps its hooks here (core.hooksPath), so Git LFS cannot install its own. Without
+# this file a push sends the pointers of the large files and not the files, and the site's
+# deployment fails when it asks for them (it happened on 2026-10-12).
+if ! command -v git-lfs >/dev/null 2>&1; then
+  echo "This repository uses Git LFS and git-lfs is not installed: the large files would not be pushed." >&2
+  exit 2
+fi
+
+git lfs pre-push "$@"
