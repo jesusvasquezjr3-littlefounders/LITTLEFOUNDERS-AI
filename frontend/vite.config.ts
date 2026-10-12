@@ -1,34 +1,38 @@
-/// <reference types="vitest/config" />
-import { defineConfig, searchForWorkspaceRoot } from 'vite';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { existsSync, realpathSync } from 'node:fs';
+import tailwindcss from '@tailwindcss/vite';
 import { fileURLToPath } from 'node:url';
 
-// A worktree whose node_modules is a junction into another checkout resolves
-// packages to that checkout's real path, outside this root, and Vite's file
-// guard then refuses asset imports such as the Lottie player's `?url` WASM.
-// Allowing the real node_modules path keeps the guard for everything else.
-const nodeModules = fileURLToPath(new URL('./node_modules', import.meta.url));
-const realNodeModules = existsSync(nodeModules) ? realpathSync(nodeModules) : nodeModules;
-
 export default defineConfig({
-  // Parallel checkouts that share one node_modules (e.g. worktrees joined by a
-  // junction) must not share Vite's dependency cache; VITE_CACHE_DIR separates them.
-  cacheDir: process.env.VITE_CACHE_DIR ?? 'node_modules/.vite',
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Stable libraries get their own files, so a deploy that only changes our code does not invalidate them in a returning visitor's cache.
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined;
+
+          if (/[/](react|react-dom|scheduler)[/]/.test(id)) return 'react';
+
+          if (/[/](motion|framer-motion|motion-dom|motion-utils)[/]/.test(id)) return 'motion';
+
+          if (/[/](react-router|react-router-dom|@remix-run)[/]/.test(id)) return 'router';
+
+          if (/[/](i18next|react-i18next|i18next-browser-languagedetector)[/]/.test(id)) return 'i18n';
+
+          return undefined;
+        },
+      },
+    },
+  },
   server: {
     port: 5173,
-    fs: { allow: [searchForWorkspaceRoot(process.cwd()), realNodeModules] },
-  },
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./src/test-setup.ts'],
-    include: ['src/**/*.test.{ts,tsx}'],
+    // Core allows this one origin: a second dev server stops here instead of moving to 5174, where nothing works
+    strictPort: true,
   },
 });

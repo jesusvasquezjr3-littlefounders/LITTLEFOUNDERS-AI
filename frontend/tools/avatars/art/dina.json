@@ -1,0 +1,583 @@
+{
+  "axis": 575,
+  "tolerance": 3.0,
+  "crop": [
+    20,
+    40,
+    1130,
+    1580
+  ],
+  "corner": 70,
+  "segment": {
+    "regions": 14,
+    "merge": 36,
+    "light": 0.05,
+    "min_area": 150
+  },
+  "layers": [
+    {
+      "name": "neck",
+      "kind": "smooth",
+      "points": [
+        [
+          575,
+          1060
+        ],
+        [
+          455,
+          1085
+        ],
+        [
+          400,
+          1180
+        ],
+        [
+          345,
+          1310
+        ],
+        [
+          285,
+          1440
+        ],
+        [
+          220,
+          1552
+        ],
+        [
+          575,
+          1556
+        ]
+      ],
+      "fill": {
+        "gradient": {
+          "type": "linear",
+          "x1": 0,
+          "y1": 1100,
+          "x2": 0,
+          "y2": 1550,
+          "stops": [
+            [
+              0,
+              "#e98a35"
+            ],
+            [
+              0.35,
+              "#ffa23a"
+            ],
+            [
+              1,
+              "#f48a2a"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "name": "neck-belly",
+      "kind": "smooth",
+      "points": [
+        [
+          575,
+          1190
+        ],
+        [
+          500,
+          1205
+        ],
+        [
+          470,
+          1320
+        ],
+        [
+          445,
+          1440
+        ],
+        [
+          420,
+          1556
+        ],
+        [
+          575,
+          1558
+        ]
+      ],
+      "fill": {
+        "gradient": {
+          "type": "linear",
+          "x1": 0,
+          "y1": 1170,
+          "x2": 0,
+          "y2": 1556,
+          "stops": [
+            [
+              0,
+              "#f2b265"
+            ],
+            [
+              1,
+              "#fddf9f"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "name": "head",
+      "kind": "smooth",
+      "points": [
+        [
+          575,
+          300
+        ],
+        [
+          500,
+          282
+        ],
+        [
+          420,
+          278
+        ],
+        [
+          325,
+          298
+        ],
+        [
+          240,
+          348
+        ],
+        [
+          158,
+          420
+        ],
+        [
+          105,
+          490
+        ],
+        [
+          78,
+          560
+        ],
+        [
+          58,
+          640
+        ],
+        [
+          40,
+          740
+        ],
+        [
+          28,
+          850
+        ],
+        [
+          38,
+          925
+        ],
+        [
+          70,
+          985
+        ],
+        [
+          138,
+          1040
+        ],
+        [
+          235,
+          1090
+        ],
+        [
+          350,
+          1135
+        ],
+        [
+          460,
+          1160
+        ],
+        [
+          575,
+          1168
+        ]
+      ],
+      "fill": {
+        "gradient": {
+          "type": "radial",
+          "cx": 575,
+          "cy": 650,
+          "r": 640,
+          "stops": [
+            [
+              0,
+              "#ffd36e"
+            ],
+            [
+              0.28,
+              "#ffb347"
+            ],
+            [
+              0.62,
+              "#ff9a30"
+            ],
+            [
+              1,
+              "#f57c1f"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "name": "chin-light",
+      "kind": "path",
+      "d": "M250 1070 C380 1180 770 1180 900 1070 C770 1130 380 1130 250 1070 Z",
+      "fill": "#ffb45a",
+      "opacity": 0.7
+    },
+    {
+      "name": "crest",
+      "kind": "path",
+      "d": "M565 62 C592 70 600 150 600 260 C600 340 606 395 590 430 L540 430 C524 395 530 340 530 260 C530 150 538 70 565 62 Z",
+      "fill": {
+        "gradient": {
+          "type": "linear",
+          "x1": 565,
+          "y1": 60,
+          "x2": 565,
+          "y2": 430,
+          "stops": [
+            [
+              0,
+              "#ffe27a"
+            ],
+            [
+              0.55,
+              "#ffcf3f"
+            ],
+            [
+              1,
+              "#fba52a"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "name": "crest-band-1",
+      "kind": "path",
+      "d": "M538 205 C548 182 582 182 592 205 C586 222 544 222 538 205 Z",
+      "fill": "#fff0a8",
+      "opacity": 0.55
+    },
+    {
+      "name": "crest-band-2",
+      "kind": "path",
+      "d": "M534 318 C546 288 584 288 596 318 C588 340 542 340 534 318 Z",
+      "fill": "#fff0a8",
+      "opacity": 0.45
+    },
+    {
+      "name": "cheek-l",
+      "kind": "path",
+      "fill": "#e9654f",
+      "opacity": 0.92,
+      "d": "M30 800 C60 770 150 780 175 830 C190 880 150 925 100 925 C50 925 15 870 30 800 Z",
+      "clip_to": "head"
+    },
+    {
+      "name": "cheek-r",
+      "mirror_of": "cheek-l",
+      "clip_to": "head"
+    },
+    {
+      "name": "nostril-l",
+      "kind": "ellipse",
+      "cx": 338,
+      "cy": 764,
+      "rx": 19,
+      "ry": 37,
+      "angle": -6,
+      "fill": "#2a0e0a"
+    },
+    {
+      "name": "nostril-r",
+      "mirror_of": "nostril-l"
+    },
+    {
+      "name": "nose-wrinkle-l",
+      "kind": "path",
+      "d": "M306 716 Q336 730 366 716",
+      "stroke": "#c76a28",
+      "width": 5,
+      "opacity": 0
+    },
+    {
+      "name": "nose-wrinkle-r",
+      "mirror_of": "nose-wrinkle-l"
+    },
+    {
+      "name": "brow-mark-l",
+      "kind": "path",
+      "d": "M92 566 Q128 476 208 512",
+      "stroke": "#7a2a14",
+      "width": 18
+    },
+    {
+      "name": "brow-mark-r",
+      "mirror_of": "brow-mark-l"
+    },
+    {
+      "name": "eye-l",
+      "kind": "path",
+      "d": "M126 712 C122 652 150 622 182 630 C218 642 232 700 224 760 C214 806 190 822 166 812 C132 795 128 752 126 712 Z",
+      "fill": {
+        "gradient": {
+          "type": "linear",
+          "x1": 0,
+          "y1": 625,
+          "x2": 0,
+          "y2": 822,
+          "stops": [
+            [
+              0,
+              "#0a0405"
+            ],
+            [
+              0.6,
+              "#0c0506"
+            ],
+            [
+              0.85,
+              "#8a1f18"
+            ],
+            [
+              1,
+              "#d8452a"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "name": "eye-r",
+      "mirror_of": "eye-l"
+    },
+    {
+      "name": "glint-big-l",
+      "kind": "circle",
+      "cx": 183,
+      "cy": 657,
+      "r": 18,
+      "fill": "#ffffff"
+    },
+    {
+      "name": "glint-mid-l",
+      "kind": "circle",
+      "cx": 180,
+      "cy": 790,
+      "r": 13,
+      "fill": "#d9d4d6",
+      "opacity": 0.7
+    },
+    {
+      "name": "glint-small-l",
+      "kind": "circle",
+      "cx": 152,
+      "cy": 772,
+      "r": 9,
+      "fill": "#ffffff"
+    },
+    {
+      "name": "glint-big-r",
+      "mirror_of": "glint-big-l"
+    },
+    {
+      "name": "glint-mid-r",
+      "mirror_of": "glint-mid-l"
+    },
+    {
+      "name": "glint-small-r",
+      "mirror_of": "glint-small-l"
+    },
+    {
+      "name": "lashes-l",
+      "kind": "path",
+      "d": "M132 650 L84 628 M140 636 L98 600 M152 626 L122 590",
+      "stroke": "#1a0c09",
+      "width": 8
+    },
+    {
+      "name": "lashes-r",
+      "mirror_of": "lashes-l"
+    },
+    {
+      "name": "mouth-shape",
+      "kind": "path",
+      "d": "M360 1060 C420 1130 730 1130 790 1060 C760 1180 640 1230 575 1230 C510 1230 390 1180 360 1060 Z",
+      "fill": "#6e1a16"
+    },
+    {
+      "name": "mouth-tongue",
+      "kind": "path",
+      "d": "M470 1180 C510 1150 640 1150 680 1180 C660 1215 600 1228 575 1228 C550 1228 490 1215 470 1180 Z",
+      "fill": "#e0605a"
+    },
+    {
+      "name": "smile",
+      "kind": "path",
+      "d": "M192 890 C242 1040 400 1114 575 1118 C750 1114 908 1040 958 890",
+      "stroke": "#25100b",
+      "width": 15
+    },
+    {
+      "name": "smile-corner-l",
+      "kind": "path",
+      "d": "M188 886 Q168 912 164 934",
+      "stroke": "#25100b",
+      "width": 10
+    },
+    {
+      "name": "smile-corner-r",
+      "mirror_of": "smile-corner-l"
+    },
+    {
+      "name": "chin-mark",
+      "kind": "path",
+      "d": "M508 1088 Q548 1108 592 1118 M642 1088 Q602 1108 558 1118",
+      "stroke": "#25100b",
+      "width": 8
+    }
+  ],
+  "rig": {
+    "eyes": [
+      {
+        "parts": [
+          "eye-l",
+          "glint-big-l",
+          "glint-mid-l",
+          "glint-small-l",
+          "lashes-l"
+        ],
+        "gaze": [
+          "glint-big-l",
+          "glint-mid-l",
+          "glint-small-l"
+        ],
+        "center": [
+          176,
+          722
+        ],
+        "range": 9,
+        "side": -1,
+        "pupil": []
+      },
+      {
+        "parts": [
+          "eye-r",
+          "glint-big-r",
+          "glint-mid-r",
+          "glint-small-r",
+          "lashes-r"
+        ],
+        "gaze": [
+          "glint-big-r",
+          "glint-mid-r",
+          "glint-small-r"
+        ],
+        "center": [
+          974,
+          722
+        ],
+        "range": 9,
+        "side": 1,
+        "pupil": []
+      }
+    ],
+    "brows": [
+      {
+        "part": "brow-mark-l",
+        "center": [
+          150,
+          530
+        ],
+        "side": -1
+      },
+      {
+        "part": "brow-mark-r",
+        "center": [
+          1000,
+          530
+        ],
+        "side": 1
+      }
+    ],
+    "face": [
+      {
+        "parts": [
+          "cheek-l",
+          "cheek-r"
+        ],
+        "depth": 0.7
+      }
+    ],
+    "mouth": {
+      "parts": [
+        "mouth-shape",
+        "mouth-tongue"
+      ],
+      "anchor": [
+        575,
+        1090
+      ],
+      "rest": {
+        "sx": 0.7,
+        "sy": 0.0
+      },
+      "open": {
+        "sx": 1.0,
+        "sy": 1.3
+      },
+      "fixed": [
+        "smile",
+        "smile-corner-l",
+        "smile-corner-r",
+        "chin-mark"
+      ],
+      "halfWidth": 383,
+      "reach": 135
+    },
+    "cheeks": [
+      "cheek-l",
+      "cheek-r"
+    ],
+    "head": {
+      "pivot": [
+        575,
+        1100
+      ],
+      "parts": [
+        "crest",
+        "crest-band-1",
+        "crest-band-2"
+      ]
+    },
+    "body": [
+      "neck",
+      "neck-belly"
+    ],
+    "nose": {
+      "parts": [],
+      "lines": [
+        "nose-wrinkle-l",
+        "nose-wrinkle-r"
+      ],
+      "flare": [
+        "nostril-l",
+        "nostril-r"
+      ],
+      "center": [
+        575,
+        764
+      ]
+    },
+    "gain": 1.4
+  }
+}

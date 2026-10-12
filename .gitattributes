@@ -1,0 +1,8 @@
+glb/** filter=lfs diff=lfs merge=lfs -text
+frontend/public/scenes/** filter=lfs diff=lfs merge=lfs -text
+
+# Files that run inside Linux containers keep Unix line endings on every machine: a shell script with
+# Windows line endings does not start (it took the gateway down on 2026-10-12).
+*.sh text eol=lf
+database/railway/** text eol=lf
+email-server/haraka/** text eol=lf

@@ -1,366 +1,145 @@
-import { getConfig } from '../config.js';
+import { z } from 'zod';
+import type { Config } from '../config.js';
 
 /*
- * Thin GoTrue (Supabase Auth) client over fetch — Core is the only service
- * the frontend talks to (/AGENTS.md §1.5), so auth flows proxy through here.
- * Social login (Google first, then Discord/Facebook…) plugs in later via
- * GoTrue's /authorize provider flow — same envelope, new route; nothing in
- * this module's shape needs to change.
+ * The authentication service (Supabase's GoTrue), reached through the gateway. It owns the
+ * accounts, issues and checks the one-time codes, talks to Google and signs the session tokens;
+ * Core never stores a code or a token of its own.
+ *
+ * Every call carries the service key as `apikey`, because the gateway lets nobody else through
+ * (database/railway/kong/kong.yml), and an explicit bearer: the anon key for a call made on behalf
+ * of somebody who has not signed in, or that person's own access token. The service key is never
+ * the bearer here, so no call below runs with administrator rights.
  */
+const Session = z.object({
+  access_token: z.string().min(20),
+  refresh_token: z.string().min(8),
+  expires_in: z.number().int().positive(),
+  user: z.object({ id: z.uuid() }),
+});
 
-export interface GotrueUser {
-  id: string;
-  /** null for a guest (anonymous) user — GoTrue never fabricates an email for one. */
-  email: string | null;
-  user_metadata?: Record<string, unknown>;
-  /** GoTrue's guest-session marker — distinct from, and unrelated to, the pre-signup `lf_aid` marketing visitor id. */
-  is_anonymous?: boolean;
-}
+export type Session = Readonly<{ accessToken: string; refreshToken: string; expiresInSeconds: number; userId: string }>;
 
-export interface GotrueSession {
-  access_token: string;
-  refresh_token: string;
-  expires_in: number;
-  user: GotrueUser;
-}
+/** What went wrong, as far as the caller needs to tell apart. */
+export type GotrueFailure = 'rejected' | 'rate_limited' | 'unavailable';
 
-export interface GotrueError {
-  status: number;
-  code: string;
-  message: string;
-}
+export type GotrueResult<T> = { ok: true; value: T } | { ok: false; failure: GotrueFailure };
 
-type GotrueResult<T> = { data: T; error: null } | { data: null; error: GotrueError };
+const Settings = z.object({ external: z.object({ google: z.boolean().optional() }) });
 
-function authHeaders(): Record<string, string> {
-  const { SUPABASE_ANON_KEY } = getConfig();
-  return { apikey: SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
-}
+const TIMEOUT_MS = 8000;
 
-/** GoTrue error payloads vary by version/endpoint — normalize them. */
-function normalizeError(status: number, body: Record<string, unknown>): GotrueError {
-  const message = String(body.msg ?? body.error_description ?? body.message ?? body.error ?? 'Auth error');
-  const lower = message.toLowerCase();
-  let code = 'INTERNAL';
-  if (lower.includes('already registered') || lower.includes('already been registered')) code = 'EMAIL_IN_USE';
-  else if (lower.includes('invalid login credentials') || lower.includes('invalid credentials')) code = 'INVALID_CREDENTIALS';
-  else if (lower.includes('not confirmed')) code = 'EMAIL_NOT_CONFIRMED';
-  // A.1 (F3-identity-site): the pause bans a child's account at GoTrue. GoTrue
-  // checks the ban BEFORE the password, so callers must not echo this code to
-  // an unauthenticated sign-in (routes/auth.ts keeps /login uniform, E.1).
-  else if (body.error_code === 'user_banned' || lower.includes('banned')) code = 'ACCOUNT_SUSPENDED';
-  else if (status === 429) code = 'RATE_LIMITED';
-  else if (status >= 400 && status < 500) code = 'VALIDATION_ERROR';
-  return { status, code, message };
-}
+export type Gotrue = ReturnType<typeof createGotrue>;
 
-async function gotrue<T>(path: string, init: RequestInit): Promise<GotrueResult<T>> {
-  const { SUPABASE_URL } = getConfig();
-  let res: globalThis.Response;
-  try {
-    res = await fetch(`${SUPABASE_URL}/auth/v1${path}`, init);
-  } catch {
-    return { data: null, error: { status: 502, code: 'INTERNAL', message: 'Auth service unreachable' } };
+export function createGotrue(config: Config) {
+  const base = `${config.supabaseUrl}/auth/v1`;
+
+  async function call(path: string, init: { method: 'GET' | 'POST'; bearer?: string; body?: object }): Promise<GotrueResult<string>> {
+    let response: Response;
+
+    try {
+      response = await fetch(`${base}${path}`, {
+        method: init.method,
+        headers: {
+          apikey: config.supabaseServiceRoleKey,
+          authorization: `Bearer ${init.bearer ?? config.supabaseAnonKey}`,
+          ...(init.body ? { 'content-type': 'application/json' } : {}),
+        },
+        ...(init.body ? { body: JSON.stringify(init.body) } : {}),
+        redirect: 'error',
+        signal: AbortSignal.timeout(TIMEOUT_MS),
+      });
+    } catch {
+      return { ok: false, failure: 'unavailable' };
+    }
+
+    if (response.ok) return { ok: true, value: await response.text() };
+    if (response.status === 429) return { ok: false, failure: 'rate_limited' };
+    if (response.status >= 500) return { ok: false, failure: 'unavailable' };
+
+    return { ok: false, failure: 'rejected' };
   }
-  if (res.status === 204) return { data: {} as T, error: null };
-  const body = (await res.json().catch(() => ({}))) as Record<string, unknown>;
-  if (!res.ok) return { data: null, error: normalizeError(res.status, body) };
-  return { data: body as T, error: null };
-}
 
-export interface SignUpInput {
-  email: string;
-  password: string;
-  displayName: string;
-  locale: string;
-  parentIntent: boolean;
-}
+  async function session(path: string, body: object): Promise<GotrueResult<Session>> {
+    const result = await call(path, { method: 'POST', body });
 
-/**
- * Sign up. With email autoconfirm ON (local) GoTrue returns a session; with
- * it OFF (production) it returns only the user — callers handle both.
- */
-export function signUp(input: SignUpInput): Promise<GotrueResult<Partial<GotrueSession> & { user?: GotrueUser; id?: string }>> {
-  return gotrue('/signup', {
-    method: 'POST',
-    headers: authHeaders(),
-    body: JSON.stringify({
-      email: input.email,
-      password: input.password,
-      data: {
-        display_name: input.displayName,
-        locale: input.locale,
-        parent_intent: input.parentIntent,
+    if (!result.ok) return result;
+
+    const parsed = Session.safeParse(parseJson(result.value));
+
+    if (!parsed.success) return { ok: false, failure: 'unavailable' };
+
+    return {
+      ok: true,
+      value: {
+        accessToken: parsed.data.access_token,
+        refreshToken: parsed.data.refresh_token,
+        expiresInSeconds: parsed.data.expires_in,
+        userId: parsed.data.user.id,
       },
-    }),
-  });
-}
+    };
+  }
 
-/*
- * KID ACCOUNTS ARE CREATED, NOT SIGNED UP. A child has no mailbox, so the
- * ordinary /signup path is wrong twice over: it would demand an address we must
- * not collect from a minor (§1.9), and with `GOTRUE_MAILER_AUTOCONFIRM=false`
- * in production it would then park the account behind a confirmation email
- * nobody can ever open.
- *
- * The admin endpoint creates the user already confirmed, with a synthetic
- * address on a `.invalid` domain - reserved by RFC 2606 precisely so it can
- * never resolve or receive mail. It exists only because `auth.users` needs an
- * identifier; nothing sends to it, and the child never sees or types it.
- *
- * Service role, and therefore Core-only. It is deliberately not exported
- * through any route the browser can reach on its own: the single caller is
- * POST /family/kids, behind a verified `parent`.
- */
-export function adminCreateUser(input: {
-  email: string;
-  password: string;
-  displayName: string;
-  locale: string;
-}): Promise<GotrueResult<GotrueUser>> {
-  const { SUPABASE_SERVICE_ROLE_KEY } = getConfig();
-  return gotrue('/admin/users', {
-    method: 'POST',
-    headers: {
-      apikey: SUPABASE_SERVICE_ROLE_KEY,
-      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-      'Content-Type': 'application/json',
+  return {
+    /**
+     * Emails a one-time code. With `createAccount`, an address nobody has used yet gets an account
+     * that stays unconfirmed until the code is entered; without it, an unknown address gets nothing.
+     */
+    async sendCode(email: string, options: { createAccount: boolean; locale: string }): Promise<GotrueResult<null>> {
+      const result = await call('/otp', {
+        method: 'POST',
+        body: { email, create_user: options.createAccount, data: { locale: options.locale } },
+      });
+
+      return result.ok ? { ok: true, value: null } : result;
     },
-    body: JSON.stringify({
-      email: input.email,
-      password: input.password,
-      email_confirm: true,
-      user_metadata: {
-        display_name: input.displayName,
-        locale: input.locale,
-        // Read by nothing that grants anything - the ROLE is the authority
-        // (user_roles, granted by Core). This is a hint for support and for
-        // GoTrue's own admin views, never a permission.
-        is_kid: true,
-      },
-    }),
-  });
-}
 
-/*
- * Rotate a child's passphrase. Service role, because the person doing it is the
- * PARENT and not the account holder: the child never had the old one to prove
- * they know it, and asking a parent to sign in as their child to change it
- * would teach exactly the wrong habit.
- *
- * Core's route is what enforces that the caller is that child's verified
- * guardian; this function trusts its caller by design and is therefore never
- * reachable from a browser.
- */
-export function adminUpdateUserPassword(userId: string, password: string): Promise<GotrueResult<GotrueUser>> {
-  const { SUPABASE_SERVICE_ROLE_KEY } = getConfig();
-  return gotrue(`/admin/users/${encodeURIComponent(userId)}`, {
-    method: 'PUT',
-    headers: {
-      apikey: SUPABASE_SERVICE_ROLE_KEY,
-      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-      'Content-Type': 'application/json',
+    /** Checks a code. The service accepts each code once and only until it expires. */
+    verifyCode: (email: string, code: string) => session('/verify', { type: 'email', email, token: code }),
+
+    refresh: (refreshToken: string) => session('/token?grant_type=refresh_token', { refresh_token: refreshToken }),
+
+    /** The second half of a Google sign-in: the code Google's round trip produced, plus the proof that this browser started it. */
+    exchangeOAuthCode: (authCode: string, codeVerifier: string) =>
+      session('/token?grant_type=pkce', { auth_code: authCode, code_verifier: codeVerifier }),
+
+    /** Ends this session only (other devices stay signed in) and revokes its refresh token. */
+    async signOut(accessToken: string): Promise<GotrueResult<null>> {
+      const result = await call('/logout?scope=local', { method: 'POST', bearer: accessToken });
+
+      return result.ok ? { ok: true, value: null } : result;
     },
-    body: JSON.stringify({ password }),
-  });
-}
 
-/*
- * Move a parent-created child's synthetic sign-in address (S-06, OD-28): the
- * address is derived from the username, so a guardian-initiated username
- * change moves both, and the caller undoes this if the profile cannot follow.
- * Confirmed at once: the `.invalid` address can never receive mail.
- */
-export function adminUpdateUserEmail(userId: string, email: string): Promise<GotrueResult<GotrueUser>> {
-  const { SUPABASE_SERVICE_ROLE_KEY } = getConfig();
-  return gotrue(`/admin/users/${encodeURIComponent(userId)}`, {
-    method: 'PUT',
-    headers: {
-      apikey: SUPABASE_SERVICE_ROLE_KEY,
-      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-      'Content-Type': 'application/json',
+    async googleEnabled(): Promise<boolean> {
+      const result = await call('/settings', { method: 'GET' });
+
+      if (!result.ok) return false;
+
+      const parsed = Settings.safeParse(parseJson(result.value));
+
+      return parsed.success && parsed.data.external.google === true;
     },
-    body: JSON.stringify({ email, email_confirm: true }),
-  });
-}
 
-/*
- * Delete an account outright. Two callers, both deliberate: the rollback for
- * the window between "auth user exists" and "the family link that makes it
- * legitimate exists" (§1.3 - a kid row without a verified link is a bug rather
- * than a state, so the user must not survive a failure to link it), and a
- * parent removing their child.
- *
- * This is a HARD delete and the cascade is the point: `auth.users` is
- * referenced ON DELETE CASCADE by profiles, user_roles, guardian_links and the
- * learning tables, so removing a child removes the child's data rather than
- * hiding it. Erasing a minor's record when their guardian asks is the whole
- * obligation; a soft flag would leave it all in place.
- */
-export function adminDeleteUser(userId: string): Promise<GotrueResult<Record<string, never>>> {
-  const { SUPABASE_SERVICE_ROLE_KEY } = getConfig();
-  return gotrue(`/admin/users/${encodeURIComponent(userId)}`, {
-    method: 'DELETE',
-    headers: {
-      apikey: SUPABASE_SERVICE_ROLE_KEY,
-      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-      'Content-Type': 'application/json',
+    /** Where the browser goes to choose a Google account. This one address is open at the gateway. */
+    googleAuthorizeUrl(params: { redirectTo: string; codeChallenge: string }): string {
+      const url = new URL(`${base}/authorize`);
+
+      url.searchParams.set('provider', 'google');
+      url.searchParams.set('redirect_to', params.redirectTo);
+      url.searchParams.set('code_challenge', params.codeChallenge);
+      url.searchParams.set('code_challenge_method', 's256');
+      // Always show the account chooser, so a shared computer does not sign the next person in as the last one.
+      url.searchParams.set('prompt', 'select_account');
+
+      return url.toString();
     },
-  });
+  };
 }
 
-/**
- * Revoke every live session for a user (GoTrue's admin endpoint). A.1's
- * suspension enforcement: a kid whose last verified guardian link is gone
- * must be unusable IMMEDIATELY — killing the sessions is the enforcement,
- * not a UI flag, so no already-authenticated socket or API call survives.
- * Idempotent: revoking a user with no live sessions succeeds.
- */
-export function adminRevokeUserSessions(userId: string): Promise<GotrueResult<Record<string, never>>> {
-  const { SUPABASE_SERVICE_ROLE_KEY } = getConfig();
-  return gotrue(`/admin/users/${encodeURIComponent(userId)}/sessions`, {
-    method: 'DELETE',
-    headers: {
-      apikey: SUPABASE_SERVICE_ROLE_KEY,
-      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-      'Content-Type': 'application/json',
-    },
-  });
-}
-
-/**
- * Guest session — GoTrue's native anonymous sign-in (`POST /signup` with no
- * email/password, gated server-side by `GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED`).
- * Creates a real `auth.users` row (`is_anonymous=true`), so every existing
- * trigger/RLS policy that only checks `auth.uid() IS NOT NULL` already
- * covers it — this is "guest" product vocabulary; do not call it "anonymous"
- * outside this GoTrue-facing layer (that word already means the unrelated
- * pre-signup `lf_aid` marketing visitor id elsewhere in this codebase).
- */
-export function signInAnonymously(): Promise<GotrueResult<GotrueSession>> {
-  return gotrue('/signup', {
-    method: 'POST',
-    headers: authHeaders(),
-    body: JSON.stringify({ data: {} }),
-  });
-}
-
-/**
- * Attaches a permanent email+password identity to the CURRENT guest session
- * (`PUT /user`, authenticated as the guest). GoTrue keeps the same
- * `auth.users.id` and flips `is_anonymous` to false in place — every row
- * already written under that id (profile, learning_stats, progress) carries
- * over with zero data migration. Never call this for an already-permanent
- * user; callers must check `isGuest` first (Core does, in the route).
- */
-export function upgradeAnonymousUser(
-  accessToken: string,
-  attrs: { email: string; password: string },
-): Promise<GotrueResult<GotrueUser>> {
-  return gotrue('/user', {
-    method: 'PUT',
-    headers: { ...authHeaders(), Authorization: `Bearer ${accessToken}` },
-    body: JSON.stringify(attrs),
-  });
-}
-
-export function signInWithPassword(email: string, password: string): Promise<GotrueResult<GotrueSession>> {
-  return gotrue('/token?grant_type=password', {
-    method: 'POST',
-    headers: authHeaders(),
-    body: JSON.stringify({ email, password }),
-  });
-}
-
-export function refreshSession(refreshToken: string): Promise<GotrueResult<GotrueSession>> {
-  return gotrue('/token?grant_type=refresh_token', {
-    method: 'POST',
-    headers: authHeaders(),
-    body: JSON.stringify({ refresh_token: refreshToken }),
-  });
-}
-
-/** `local` ends only this session; GoTrue's default (`global`) ends every session of the user. */
-export function signOut(accessToken: string, scope?: 'local' | 'global'): Promise<GotrueResult<Record<string, never>>> {
-  return gotrue(scope ? `/logout?scope=${scope}` : '/logout', {
-    method: 'POST',
-    headers: { ...authHeaders(), Authorization: `Bearer ${accessToken}` },
-  });
-}
-
-/**
- * Kicks off the password-recovery email (renders `recovery.html` via
- * Courier/GoTrue — email-server/AGENTS.md). GoTrue itself always answers 200
- * regardless of whether the address has an account, so this proxy leaks
- * nothing beyond what GoTrue already guards against. `redirectTo` must be in
- * `GOTRUE_URI_ALLOW_LIST`; the `type=recovery` fragment tokens land there,
- * NOT logged in — the frontend must exchange them for a password set, never
- * treat them as a normal session (unlike the OAuth/confirmation callback).
- */
-export function recover(email: string, redirectTo: string): Promise<GotrueResult<Record<string, never>>> {
-  const qs = new URLSearchParams({ redirect_to: redirectTo });
-  return gotrue(`/recover?${qs.toString()}`, {
-    method: 'POST',
-    headers: authHeaders(),
-    body: JSON.stringify({ email }),
-  });
-}
-
-/**
- * Updates the CURRENT session's user attributes (`PUT /user`). Password
- * changes apply immediately; an email change does not take effect until the
- * new address confirms via the `email_change.html` template — the user's
- * `auth.users.email` stays the old value until then, so callers must not
- * assume the new address is live from this response alone.
- */
-export function updateUser(
-  accessToken: string,
-  attrs: { email?: string; password?: string },
-  redirectTo?: string,
-): Promise<GotrueResult<GotrueUser>> {
-  const path = redirectTo ? `/user?${new URLSearchParams({ redirect_to: redirectTo }).toString()}` : '/user';
-  return gotrue(path, {
-    method: 'PUT',
-    headers: { ...authHeaders(), Authorization: `Bearer ${accessToken}` },
-    body: JSON.stringify(attrs),
-  });
-}
-
-export interface GotrueSettings {
-  /** Map of external (social) provider → enabled, e.g. { google: true }. */
-  external?: Record<string, boolean>;
-}
-
-/** Public GoTrue settings — tells us which social providers are enabled server-side. */
-export function getSettings(): Promise<GotrueResult<GotrueSettings>> {
-  return gotrue('/settings', { method: 'GET', headers: authHeaders() });
-}
-
-/**
- * Provider-specific extra params forwarded verbatim by GoTrue to the
- * provider's own OAuth authorize URL (verified live: GoTrue puts these
- * straight onto the `location` redirect, unmodified — this is not a GoTrue
- * feature we're guessing at). Google's `prompt=select_account` forces its
- * account chooser even when the browser already holds a single Google
- * session — without it Google silently re-uses that session and a user
- * with multiple Google accounts never gets to pick.
- */
-const PROVIDER_AUTHORIZE_PARAMS: Partial<Record<string, Record<string, string>>> = {
-  google: { prompt: 'select_account' },
-};
-
-/**
- * Build the GoTrue /authorize URL the browser is redirected to for social
- * login. Uses the PUBLIC SUPABASE_URL (Kong gateway) since the browser — not
- * Core — follows this redirect. `redirectTo` must be allow-listed in GoTrue's
- * GOTRUE_URI_ALLOW_LIST.
- */
-export function authorizeUrl(provider: string, redirectTo: string): string {
-  const { SUPABASE_URL } = getConfig();
-  const qs = new URLSearchParams({
-    provider,
-    redirect_to: redirectTo,
-    ...PROVIDER_AUTHORIZE_PARAMS[provider],
-  });
-  return `${SUPABASE_URL}/auth/v1/authorize?${qs.toString()}`;
+function parseJson(text: string): unknown {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
 }

@@ -1,82 +1,73 @@
+import * as z from 'zod/mini';
+
 /*
- * Envelope-aware client for Core — the ONLY service the frontend calls
- * (/AGENTS.md §1.5). Every response is { data, error } (§1.6); error codes
- * map to i18n keys `errors.api.<code>`.
+ * The one way the browser talks to Core, the backend. The session is two cookies the page cannot
+ * read (they are HttpOnly), so nothing here stores, reads or sends a token: `credentials: 'include'`
+ * lets the browser attach them. Every answer has the shape `{ data, error }` and is parsed before
+ * it is used; an error is a code, and the words for it come from the locale files.
  */
+const BASE = (import.meta.env.VITE_BACKEND_URL ?? '').replace(/\/+$/, '');
 
-// Exported for the ONE caller that cannot go through api(): the insights
-// beacon's pagehide flush needs `fetch(..., { keepalive: true })`.
-export const BASE_URL: string = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:4000';
-
-export interface ApiError {
-  code: string;
-  message: string;
-  /**
-   * An ISO instant, present ONLY on the Tutor's `SESSION_LIMIT` refusal — the
-   * server's own computed daily-cap reset time (next local midnight for the
-   * learner's locale), so the client can render a real time-remaining
-   * instead of guessing at midnight with its own clock/timezone. Absent on
-   * every other error code; do not depend on it existing.
-   */
-  resetAt?: string;
-  /**
-   * B.2's COURSE_PREREQUISITE_REQUIRED refusal carries the slugs of the
-   * prerequisite courses that are not completed yet. Absent on every other
-   * error code.
-   */
-  missingPrerequisites?: string[];
+/** The address of a Core route, for the two places that navigate to one (the Google sign-in). */
+export function apiUrl(path: string): string {
+  return `${BASE}${path}`;
 }
 
-/**
- * A.1 (F3-identity-site): Core answers ACCOUNT_SUSPENDED on any route once a
- * child's last verified Tutor link is gone. The session holder hears it at
- * once (AuthContext drops the session and shows the paused screen), not on
- * the next /auth/me.
- */
-export const ACCOUNT_SUSPENDED_EVENT = 'lf:account-suspended';
+const Failure = z.object({
+  error: z.object({ code: z.string(), retryAfterSeconds: z.optional(z.number()) }),
+});
 
-export type ApiResult<T> = { data: T; error: null } | { data: null; error: ApiError };
+export class ApiFailure extends Error {
+  readonly code: string;
+  readonly status: number;
+  readonly retryAfterSeconds: number | null;
 
-interface ApiOptions {
-  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  body?: unknown;
-  formData?: FormData;
-  token?: string | null;
-  /** Lets the request outlive the page (a `pagehide` flush, like the insights beacon). Only for small, idempotent calls. */
-  keepalive?: boolean;
+  constructor(code: string, status: number, retryAfterSeconds: number | null = null) {
+    super(code);
+    this.name = 'ApiFailure';
+    this.code = code;
+    this.status = status;
+    this.retryAfterSeconds = retryAfterSeconds;
+  }
 }
 
-export async function api<T>(path: string, options: ApiOptions = {}): Promise<ApiResult<T>> {
-  const headers: Record<string, string> = {};
-  if (options.token) headers.Authorization = `Bearer ${options.token}`;
-  if (options.body !== undefined) headers['Content-Type'] = 'application/json';
+type Request = { method?: 'GET' | 'POST' | 'PUT'; body?: Record<string, string | number | boolean> };
 
-  let res: Response;
+/** Calls Core and returns the parsed `data`. Throws `ApiFailure` for every other outcome. */
+export async function api<Output>(path: string, schema: z.ZodMiniType<Output>, request: Request = {}): Promise<Output> {
+  let response: Response;
+
   try {
-    res = await fetch(`${BASE_URL}/api/v1${path}`, {
-      method: options.method ?? (options.body !== undefined || options.formData ? 'POST' : 'GET'),
-      headers,
-      body: options.formData ?? (options.body !== undefined ? JSON.stringify(options.body) : undefined),
-      ...(options.keepalive ? { keepalive: true } : {}),
+    response = await fetch(apiUrl(path), {
+      method: request.method ?? 'GET',
+      credentials: 'include',
+      headers: request.body ? { 'content-type': 'application/json' } : undefined,
+      body: request.body ? JSON.stringify(request.body) : undefined,
     });
   } catch {
-    return { data: null, error: { code: 'INTERNAL', message: 'Network error' } };
+    throw new ApiFailure('NETWORK', 0);
   }
 
-  const body: unknown = await res.json().catch(() => null);
-  if (!body || typeof body !== 'object' || !('data' in body) || !('error' in body)) {
-    return { data: null, error: { code: 'INTERNAL', message: 'Malformed response' } };
+  const text = await response.text();
+  let payload: z.infer<typeof z.json> = null;
+
+  try {
+    payload = z.json().parse(JSON.parse(text));
+  } catch {
+    throw new ApiFailure('UNREADABLE', response.status);
   }
-  if (body.error !== null) {
-    const error = body.error;
-    if (body.data === null && error && typeof error === 'object'
-      && 'code' in error && typeof error.code === 'string'
-      && 'message' in error && typeof error.message === 'string') {
-      if (error.code === 'ACCOUNT_SUSPENDED' && typeof window !== 'undefined') window.dispatchEvent(new Event(ACCOUNT_SUSPENDED_EVENT));
-      return { data: null, error: error as ApiError };
-    }
-  } else if (res.ok && body.data !== null && body.data !== undefined) {
-    return { data: body.data as T, error: null };
+
+  if (!response.ok) {
+    const failure = Failure.safeParse(payload);
+
+    throw failure.success
+      ? new ApiFailure(failure.data.error.code, response.status, failure.data.error.retryAfterSeconds ?? null)
+      : new ApiFailure('UNREADABLE', response.status);
   }
-  return { data: null, error: { code: 'INTERNAL', message: 'Malformed response' } };
+
+  const success = z.object({ data: schema }).safeParse(payload);
+
+  if (!success.success) throw new ApiFailure('UNREADABLE', response.status);
+
+  return success.data.data;
 }

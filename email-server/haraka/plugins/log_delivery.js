@@ -2,15 +2,10 @@
 
 // Courier delivery capture.
 //
-// GoTrue submits auth mail (confirmation / recovery / magic-link / invite /
-// email-change) straight to this relay over SMTP :587. It never touches
-// Courier's HTTP API, so before this plugin existed NONE of the platform's
-// real mail appeared in the admin console — /admin/emails rendered an empty
-// table while SES was happily delivering.
-//
-// This hook reports every successfully relayed message to Courier's own HTTP
-// API on localhost, which owns the (typed, tested) write to the email_logs
-// table. The plugin deliberately holds no database credentials and contains no
+// Every email is built by Courier's HTTP API and submitted to this relay on
+// localhost. This hook tells that API when Amazon SES has accepted a message,
+// so the email's line in the delivery history goes from `queued` to `relayed`.
+// The API owns the (typed) write to the email_logs table. The plugin deliberately holds no database credentials and contains no
 // SQL: Haraka's runtime is CommonJS and is excluded from our linter and
 // type-checker (see email-server/eslint.config.js), so the less logic that
 // lives here, the better.
@@ -20,7 +15,7 @@
 
 const HTTP_TIMEOUT_MS = 2000
 
-/** RFC 2047 encoded-word decoder — GoTrue subjects are trilingual and accented. */
+/** RFC 2047 encoded-word decoder — subjects are in three languages and accented. */
 function decodeWords(raw) {
   return raw.replace(/=\?([^?]+)\?([BbQq])\?([^?]*)\?=/g, (match, charset, encoding, text) => {
     try {
@@ -81,7 +76,7 @@ exports.hook_queue_ok = function (next, connection) {
         subject,
         status: 'relayed',
         templateType: 'auth',
-        detail: { source: 'smtp', from: String(txn.mail_from || ''), remoteIp: connection.remote && connection.remote.ip },
+        detail: { source: 'smtp' },
       })
 
       fetch(`http://127.0.0.1:${port}/api/v1/logs`, {
@@ -91,10 +86,10 @@ exports.hook_queue_ok = function (next, connection) {
         signal: AbortSignal.timeout(HTTP_TIMEOUT_MS),
       })
         .then((res) => {
-          if (!res.ok) plugin.logwarn(`delivery log rejected (HTTP ${res.status}) for ${address}`)
+          if (!res.ok) plugin.logwarn(`delivery log rejected (HTTP ${res.status}) for ${messageId}`)
         })
         .catch((err) => {
-          plugin.logwarn(`delivery log failed for ${address}: ${err && err.message}`)
+          plugin.logwarn(`delivery log failed for ${messageId}: ${err && err.message}`)
         })
     }
   } catch (err) {

@@ -7,7 +7,7 @@
      custom image for exactly this reason).
 
      Memory: sized for a SMALL pre-launch instance and deliberately trimmed for
-     Railway cost (the bill is ~95% memory-GB-minutes — RUNBOOK.md § Pulse cost).
+     Railway cost (the bill is ~95% memory-GB-minutes).
      Our event volume is tiny, so a 1 GiB server cap and a 256 MB mark cache are
      still far more than any dashboard query needs, while shaving steady-state
      RAM. max_server_memory_usage stays well under the Railway service limit so

@@ -2,27 +2,38 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "headers": [
     {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'none'; script-src 'self' 'sha256-Ue3kjD2AYuemi1hsoG6p3cuQaDMGCaxy7BLRP/5RjiU=' https://pulse-plausible-production.up.railway.app https://pulse-umami-production.up.railway.app https://*.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.google-analytics.com https://*.googletagmanager.com; font-src 'self'; media-src 'self'; connect-src 'self' https://api-b2c.littlefounders.ai https://pulse-plausible-production.up.railway.app https://pulse-umami-production.up.railway.app https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com; manifest-src 'self'; worker-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+        },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        {
+          "key": "Permissions-Policy",
+          "value": "accelerometer=(), bluetooth=(), browsing-topics=(), camera=(), display-capture=(), geolocation=(), gyroscope=(), hid=(), magnetometer=(), microphone=(), midi=(), payment=(), serial=(), usb=(), xr-spatial-tracking=()"
+        }
+      ]
+    },
+    {
       "source": "/assets/(.*)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
     },
     {
       "source": "/fonts/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=2592000" }]
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=2592000" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
     },
     {
-      "source": "/basis/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=2592000" }]
-    },
-    {
-      "source": "/(lottie|sounds|scenes|course-badges|marketing|og)/(.*)",
+      "source": "/(landing|brand|og|loading|email|onboarding|stage)/(.*)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }]
     }
   ],
   "rewrites": [
-    {
-      "source": "/badge/:token",
-      "destination": "/api/badge/:token"
-    },
     {
       "source": "/(.*)",
       "destination": "/app-shell.html"

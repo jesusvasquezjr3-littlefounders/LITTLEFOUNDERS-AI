@@ -1,0 +1,182 @@
+{
+ "prefix": "rho-",
+ "viewBox": [
+  30,
+  40,
+  1260,
+  1520
+ ],
+ "eyes": [
+  {
+   "parts": [
+    "eye-white-l",
+    "iris-l",
+    "pupil-l",
+    "glint-l",
+    "glint-small-l"
+   ],
+   "gaze": [
+    "iris-l",
+    "pupil-l",
+    "glint-l",
+    "glint-small-l"
+   ],
+   "center": [
+    465,
+    847
+   ],
+   "range": 20,
+   "side": -1,
+   "pupil": [
+    "iris-l",
+    "pupil-l"
+   ]
+  },
+  {
+   "parts": [
+    "eye-white-r",
+    "iris-r",
+    "pupil-r",
+    "glint-r",
+    "glint-small-r"
+   ],
+   "gaze": [
+    "iris-r",
+    "pupil-r",
+    "glint-r",
+    "glint-small-r"
+   ],
+   "center": [
+    855,
+    847
+   ],
+   "range": 20,
+   "side": 1,
+   "pupil": [
+    "iris-r",
+    "pupil-r"
+   ]
+  }
+ ],
+ "brows": [
+  {
+   "part": "brow-l",
+   "center": [
+    465,
+    627
+   ],
+   "side": -1
+  },
+  {
+   "part": "brow-r",
+   "center": [
+    857,
+    626
+   ],
+   "side": 1
+  }
+ ],
+ "face": [
+  {
+   "parts": [
+    "glasses",
+    "glasses-bridge"
+   ],
+   "depth": 1.0
+  },
+  {
+   "parts": [
+    "mustache"
+   ],
+   "depth": 1.15
+  },
+  {
+   "parts": [
+    "cheek-l",
+    "cheek-r"
+   ],
+   "depth": 0.7
+  },
+  {
+   "parts": [
+    "mouth-shape",
+    "mouth-tongue",
+    "mouth-teeth"
+   ],
+   "depth": 1.0
+  }
+ ],
+ "mouth": {
+  "parts": [
+   "mouth-shape",
+   "mouth-tongue",
+   "mouth-teeth"
+  ],
+  "anchor": [
+   660,
+   1236
+  ],
+  "rest": {
+   "sx": 0.8,
+   "sy": 0.05
+  },
+  "open": {
+   "sx": 1.15,
+   "sy": 1.35
+  },
+  "halfWidth": 66,
+  "reach": 20,
+  "follow": [
+   {
+    "part": "mustache",
+    "open": -26,
+    "smile": -12,
+    "stretch": 0.05
+   }
+  ]
+ },
+ "cheeks": [
+  "cheek-l",
+  "cheek-r"
+ ],
+ "head": {
+  "pivot": [
+   660,
+   1300
+  ],
+  "parts": [
+   "cap",
+   "hair-side-l",
+   "hair-side-r",
+   "hair-fringe"
+  ]
+ },
+ "body": [
+  "vest",
+  "vest-shade",
+  "sleeve-l",
+  "sleeve-r",
+  "shirt",
+  "shirt-shade",
+  "tie",
+  "pin",
+  "pin-core"
+ ],
+ "nose": {
+  "parts": [
+   "nose",
+   "nose-light",
+   "nose-shadow"
+  ],
+  "lines": [
+   "nose-wrinkle-l",
+   "nose-wrinkle-r"
+  ],
+  "flare": [],
+  "center": [
+   660,
+   962
+  ]
+ },
+ "gain": 1.0
+}

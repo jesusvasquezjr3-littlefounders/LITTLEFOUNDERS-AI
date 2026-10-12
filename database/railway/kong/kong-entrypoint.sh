@@ -46,4 +46,10 @@ awk '{
 # Remove empty key-auth credentials (unconfigured opaque keys)
 sed -i '/^[[:space:]]*- key:[[:space:]]*$/d' "$KONG_DECLARATIVE_CONFIG"
 
+# Ours, not upstream's (found on 2026-10-12, with the first deployment of the closed gateway): a key
+# whose variable is not set at all is left by the substitution above as its own name, and the name
+# then worked as a key. Sending the text "$SUPABASE_SECRET_KEY" was let through as the service
+# consumer. A credential that is still a variable's name is removed, like an empty one.
+sed -i '/^[[:space:]]*- key:[[:space:]]*\$[A-Za-z_][A-Za-z_0-9]*[[:space:]]*$/d' "$KONG_DECLARATIVE_CONFIG"
+
 exec /entrypoint.sh kong docker-start

@@ -1,148 +1,110 @@
-import express from 'express';
+import express, { type NextFunction, type Request, type Response } from 'express';
 import helmet from 'helmet';
-import { cors } from './middleware/cors.js';
-import { gamesRateLimiter, globalRateLimiter } from './middleware/rateLimit.js';
-import { accountDeletionSweepRouter, accountRouter } from './routes/account.js';
-import { adminRouter } from './routes/admin.js';
-import { analyticsRouter } from './routes/analytics.js';
-import { badgeLinkSweepRouter, badgePublicRouter } from './routes/badgePublic.js';
-import { socialRetentionSweepRouter } from './routes/socialRetention.js';
-import { opsHeartbeatRouter } from './routes/opsHeartbeat.js';
-import { learningRetentionSweepRouter } from './routes/learningRetention.js';
-import { bankingRouter } from './routes/banking.js';
-import { familyRouter } from './routes/family.js';
-import { familyLearningRouter } from './routes/familyLearning.js';
-import { coopGoalsRouter, familyCoopGoalsRouter } from './routes/coopGoals.js';
-import { familyPlayLimitsRouter } from './routes/games.js';
-import { authRouter } from './routes/auth.js';
-import { eventsRouter } from './routes/events.js';
-import { learnRouter } from './routes/learn.js';
-import { onboardingRouter } from './routes/onboarding.js';
-import { placementRouter } from './routes/placement.js';
-import { ownProfileRouter, publicProfilesRouter } from './routes/profile.js';
-import { tasksRouter } from './routes/tasks.js';
-import { tutorRouter } from './routes/tutor.js';
-import { verificationRouter } from './routes/verification.js';
-import { walletRouter } from './routes/wallet.js';
-import { familyGovernanceRouter } from './routes/familyGovernance.js';
-import { ACTIVE_ACCOUNT_PATHS, requireActiveAccount } from './middleware/accountAdmission.js';
+import type { Config } from './config.js';
+import { ApiError, sendData, sendError } from './lib/http.js';
+import { describeError, log, toError } from './lib/log.js';
+import { createAuthMiddleware } from './middleware/auth.js';
+import { createChallenges } from './services/challenge.js';
+import { cors, noStore, requireOwnOrigin } from './middleware/security.js';
+import { createAccountRouter } from './routes/account.js';
+import { createAdminRouter } from './routes/admin.js';
+import { createAuthRouter } from './routes/auth.js';
+import { createEmailRouter, createOneClickRouter } from './routes/email.js';
+import { createHomeRouter } from './routes/home.js';
+import { createHooksRouter } from './routes/hooks.js';
+import { createCookies } from './services/cookies.js';
+import { createGotrue } from './services/gotrue.js';
+import { createHome } from './services/home.js';
+import { createKnownDevices } from './services/knownDevice.js';
+import { visitorKey, type Limits } from './services/limits.js';
+import { createMailer } from './services/mailer.js';
+import { createUnsubscribe } from './services/unsubscribe.js';
+import { createTokenVerifier } from './services/tokens.js';
+import { createVault, VaultError } from './services/vault.js';
 
-export const SERVICE = 'backend';
+export const SERVICE = 'core';
 export const VERSION = '0.1.0';
 
-/** HTTP status carried by a thrown middleware error, or 500 if it has none. */
-function errorStatus(err: unknown): number {
-  if (err instanceof Error && err.name === 'MulterError') return 400;
-  const raw = (err as { status?: unknown; statusCode?: unknown } | null)?.status
-    ?? (err as { statusCode?: unknown } | null)?.statusCode;
-  return typeof raw === 'number' && raw >= 400 && raw <= 599 ? raw : 500;
-}
-
-export function createApp(): express.Express {
+/*
+ * Core: the only server the browser talks to. Order matters below: the visitor's address is
+ * established first (limits count by it), then headers, then the capacity limit, then the origin
+ * check, and only then is a body read.
+ *
+ * Two callers are not browsers and are let in before the origin check, each proving itself its own
+ * way: the authentication service's hook (a signature, routes/hooks.ts) and a mail program's
+ * one-click unsubscribe (the token in the link, routes/email.ts).
+ */
+export function createApp(config: Config, limits: Limits): express.Express {
   const app = express();
-  // Core runs behind exactly one reverse proxy (Railway's edge). Without this,
-  // req.ip is the proxy address and EVERY client shares one rate-limit bucket —
-  // so trust one hop and key rate limits on the real client IP (X-Forwarded-For).
-  app.set('trust proxy', 1);
-  app.use(helmet());
+  const gotrue = createGotrue(config);
+  const vault = createVault(config);
+  const cookies = createCookies(config);
+  const knownDevices = createKnownDevices(config, cookies);
+  const challenges = createChallenges(config);
+  const verifyToken = createTokenVerifier(config);
+  const auth = createAuthMiddleware({ cookies, verifyToken, vault });
+  const mailer = createMailer(config);
+  const unsubscribe = createUnsubscribe(config);
+  const home = createHome(config);
 
-  // /health is mounted ABOVE the rate limiter on purpose. It is Railway's
-  // liveness probe: it must not consume the caller's 200-req/15-min budget
-  // (the platform polls it continuously), and it must not depend on the Redis
-  // store being reachable. Previously a Redis outage made the limiter error on
-  // every request — including this one — so a degraded rate limiter failed the
-  // healthcheck and took the whole service down.
-  app.get('/health', (_req, res) => {
-    res.json({ data: { service: SERVICE, version: VERSION, status: 'ok' }, error: null });
+  app.disable('x-powered-by');
+  app.set('trust proxy', config.trustProxyHops);
+
+  // Core answers JSON and redirects, never a page: nothing may be loaded, framed or sniffed from it.
+  app.use(helmet({
+    contentSecurityPolicy: { useDefaults: false, directives: { defaultSrc: ["'none'"], frameAncestors: ["'none'"], baseUri: ["'none'"], formAction: ["'none'"] } },
+    crossOriginResourcePolicy: { policy: 'same-site' },
+    // Off on purpose: Core serves no page, and this header on the redirect that ends a Google
+    // sign-in would cut the small sign-in window off from the page that is waiting for it.
+    crossOriginOpenerPolicy: false,
+    referrerPolicy: { policy: 'no-referrer' },
+    strictTransportSecurity: config.isProduction ? { maxAge: 31_536_000, includeSubDomains: true } : false,
+  }));
+  app.use(noStore);
+
+  // The platform's health check. It says nothing about what is behind Core.
+  app.get('/health', (_req, res) => sendData(res, { service: SERVICE, version: VERSION, status: 'ok' }));
+
+  // Before the per-address capacity limit: every call comes from the authentication service's one address.
+  app.use('/api/v1/hooks', createHooksRouter({ config, vault, mailer, unsubscribe, limits }));
+
+  app.use(cors(config));
+  app.use(async (req, _res, next) => {
+    await limits.consume('ipGlobal', visitorKey(req.ip));
+    next();
   });
+  app.use('/api/v1/email', createOneClickRouter({ vault, limits, unsubscribe }));
+  app.use(requireOwnOrigin(config));
+  app.use(express.json({ limit: '10kb', type: 'application/json' }));
 
-  // cors BEFORE the limiter: a 429 is a response the SPA must be able to read.
-  // With the limiter first, the RATE_LIMITED envelope went out without
-  // Access-Control-Allow-Origin, so the browser discarded it and the user saw
-  // an opaque network error instead of "slow down".
-  app.use(cors);
-  // Telemetry sits ABOVE the global limiter with its own budget + json
-  // parser (events.ts): beacon traffic must not drain the per-IP pool that
-  // lessons and auth depend on, and a 429 here is invisible by design.
-  // A.1 (F3-identity-site): a paused child's still-valid access token is refused
-  // on every product router, not only on /auth/me (middleware/accountAdmission.ts).
-  app.use([...ACTIVE_ACCOUNT_PATHS], requireActiveAccount);
-  app.use('/api/v1/events', eventsRouter());
-  // Games: heartbeats come every 30-60 s for as long as a child plays, so they get their own
-  // budget (the global limiter skips this prefix) and a body limit that fits the 64 KB save.
-  app.use('/api/v1/learn/games', gamesRateLimiter, express.json({ limit: '80kb' }));
-  app.use(globalRateLimiter);
-  app.use(express.json({ limit: '64kb' }));
+  app.use('/api/v1/auth', createAuthRouter({ config, gotrue, vault, cookies, knownDevices, challenges, limits, auth, verifyToken }));
+  app.use('/api/v1/account', createAccountRouter({ vault, limits, auth, mailer, unsubscribe }));
+  app.use('/api/v1/home', createHomeRouter({ home, limits, auth }));
+  app.use('/api/v1/email', createEmailRouter({ vault, limits, unsubscribe }));
+  app.use('/api/v1/admin', createAdminRouter({ vault, auth }));
 
-  // Public, session-less: the tracker gate asks whether THIS visitor's address
-  // is on the internal-traffic exclusion list before mounting any analytics
-  // script (routes/analytics.ts). One call per browser session.
-  app.use('/api/v1/analytics', analyticsRouter());
-  // Public, unauthenticated: the legacy badge-link read a stranger's browser
-  // hits directly while pre-OD-20 links live (see routes/badgePublic.ts
-  // header); retired outright from BADGE_LINK_ROUTE_RETIRES_AT. The sweep
-  // beside it is internal-key only.
-  app.use('/api/v1/badges', badgePublicRouter());
-  app.use('/api/v1/internal/badge-links', badgeLinkSweepRouter());
-  app.use('/api/v1/internal/account-deletions', accountDeletionSweepRouter());
-  app.use('/api/v1/internal/social-retention', socialRetentionSweepRouter());
-  // H.4: the backup and drift-probe heartbeats and their status (internal key only).
-  app.use('/api/v1/internal/ops', opsHeartbeatRouter());
-  app.use('/api/v1/internal/learning-retention', learningRetentionSweepRouter());
-  app.use('/api/v1/auth', authRouter());
-  app.use('/api/v1/account', accountRouter());
-  app.use('/api/v1/verification', verificationRouter());
-  app.use('/api/v1/learn', learnRouter());
-  app.use('/api/v1/onboarding', onboardingRouter());
-  app.use('/api/v1/placement', placementRouter());
-  app.use('/api/v1/tutor', tutorRouter());
-  // S05.3c (B.10, B.13): mounted before /family so its own gate answers its paths.
-  app.use('/api/v1/family/learning', familyLearningRouter());
-  // L-04 (OD-27 (1)): the Tutor's opt-in for a 13-to-17 child, before /family for the same reason.
-  app.use('/api/v1/family/coop-goals', familyCoopGoalsRouter());
-  // Games: the verified Tutor lowers a child's play limits (docs/games/KRV1-CONTRACT.md), before /family likewise.
-  app.use('/api/v1/family/play-limits', familyPlayLimitsRouter());
-  app.use('/api/v1/family', familyRouter());
-  app.use('/api/v1/tasks', tasksRouter());
-  app.use('/api/v1/banking', bankingRouter());
-  app.use('/api/v1/wallet', walletRouter());
-  app.use('/api/v1/family-hub', familyGovernanceRouter());
-  app.use('/api/v1/profile', ownProfileRouter());
-  app.use('/api/v1/profiles', publicProfilesRouter());
-  // L-04 (OD-27 (1)): teen cooperative goals.
-  app.use('/api/v1/coop-goals', coopGoalsRouter());
-  app.use('/api/v1/admin', adminRouter());
+  app.use((_req, _res, next) => next(new ApiError('NOT_FOUND')));
 
-  app.use((_req, res) => {
-    res.status(404).json({ data: null, error: { code: 'NOT_FOUND', message: 'Route not found' } });
-  });
+  // One place turns anything thrown into an answer. The cause is logged; the caller gets a code.
+  app.use((thrown: unknown, req: Request, res: Response, next: NextFunction) => {
+    if (res.headersSent) return next(thrown);
+    if (thrown instanceof ApiError) return sendError(res, thrown);
 
-  // Envelope error handler (multer size limits, JSON parse errors, …).
-  // Express identifies error middleware by arity — the 4th param must exist.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-    if (process.env.NODE_ENV === 'test') {
-      console.error('TEST 500 ERROR:', err);
-    } else {
-      console.error(`[${SERVICE}] unhandled error:`, err);
-    }
-    // body-parser and multer both attach an HTTP `status` to their errors
-    // (400 entity.parse.failed, 413 entity.too.large). Honour it instead of
-    // flattening every client mistake into 500 INTERNAL, which told the caller
-    // "we broke" when in fact their body was malformed or oversized.
-    const status = errorStatus(err);
-    const clientError = status >= 400 && status < 500;
-    const code = status === 413 ? 'PAYLOAD_TOO_LARGE' : clientError ? 'VALIDATION_ERROR' : 'INTERNAL';
-    const message =
-      status === 413
-        ? 'Request body is too large'
-        : err instanceof Error && err.name === 'MulterError'
-          ? 'Upload rejected (size/shape)'
-          : clientError
-            ? 'Malformed request body'
-            : 'Unexpected error';
-    res.status(status).json({ data: null, error: { code, message } });
+    const error = toError(thrown);
+
+    // A body that is not valid JSON, or is too large, is the caller's mistake.
+    if (error.name === 'SyntaxError' || error.name === 'PayloadTooLargeError') return sendError(res, new ApiError('BAD_REQUEST'));
+
+    log.error('request.failed', { method: req.method, route: routeOf(req), ...describeError(error) });
+    sendError(res, new ApiError(error instanceof VaultError ? 'UNAVAILABLE' : 'INTERNAL'));
   });
 
   return app;
+}
+
+/** The route pattern, never the raw path or its query string. */
+function routeOf(req: Request): string {
+  const pattern: unknown = req.route && typeof req.route === 'object' && 'path' in req.route ? req.route.path : undefined;
+
+  return `${req.baseUrl}${typeof pattern === 'string' ? pattern : ''}` || 'unmatched';
 }

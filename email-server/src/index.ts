@@ -9,14 +9,16 @@ import { renderHarakaConfig, startHaraka } from './services/haraka.js';
  * Courier entrypoint / supervisor.
  *
  * With EMAIL_ENGINE=haraka it runs TWO cooperating processes in one container:
- *   1. the Haraka SMTP engine (email-server/haraka) — the private SMTP endpoint
- *      GoTrue talks to, and the outbound relay to Amazon SES;
+ *   1. the Haraka SMTP engine (email-server/haraka) — the outbound relay to
+ *      Amazon SES, listening on localhost only;
  *   2. this Express HTTP API — /health (Railway healthcheck) and POST
- *      /api/v1/send, whose SmtpAdapter submits into Haraka on localhost.
+ *      /api/v1/send, which builds an email from its templates (src/mail) and
+ *      whose SmtpAdapter submits it into Haraka on localhost.
  * If the engine dies, the supervisor exits non-zero so Railway restarts cleanly.
  *
  * With EMAIL_ENGINE=noop (dev/test default) it runs only the HTTP API over a
- * no-op adapter, so `npm run dev` / tests need no SMTP.
+ * no-op adapter, so `npm run dev` / tests need no SMTP. With EMAIL_ENGINE=smtp
+ * the emails go to a local mail catcher, to be read there.
  */
 const config = getConfig();
 
@@ -37,12 +39,15 @@ if (config.EMAIL_ENGINE === 'haraka') {
     );
     process.exit(1);
   });
+} else if (config.EMAIL_ENGINE === 'smtp') {
+  adapter = new SmtpAdapter({ host: config.SMTP_HOST, port: config.SMTP_PORT, from: config.MAIL_FROM });
+  console.log(`[${SERVICE}] engine=smtp (mail goes to ${config.SMTP_HOST}:${config.SMTP_PORT} and no further)`);
 } else {
   adapter = new NoopAdapter();
   console.log(`[${SERVICE}] engine=noop (no real SMTP; set EMAIL_ENGINE=haraka to relay via SES)`);
 }
 
-const server = createApp(adapter).listen(config.PORT, () => {
+const server = createApp(adapter, { siteUrl: config.FRONTEND_URL }).listen(config.PORT, () => {
   console.log(`[${SERVICE}] HTTP listening on :${config.PORT} (engine=${config.EMAIL_ENGINE})`);
 });
 

@@ -5,7 +5,7 @@
 # e.g. v1.26.07). Local dev AND production deploys both run the docker stack
 # from this clone, so everything is reproducible from one version string.
 #
-# Upgrade procedure (also in database/AGENTS.md):
+# Upgrade procedure:
 #   1. Check the release is functional/approved: https://github.com/supabase/supabase/releases
 #   2. Edit database/SUPABASE_VERSION to the new tag.
 #   3. Re-run this script, then `npm run db:reset` twice + `npm test`.

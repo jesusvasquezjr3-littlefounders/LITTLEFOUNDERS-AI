@@ -1,0 +1,361 @@
+/*
+ * LittleFounders brand tokens for the UI libraries.
+ *
+ * Cojeev's components, shadcn and Bklit all read one set of CSS variables
+ * (`--v-*`, `--primary`, `--chart-*`). This file re-points them at the
+ * LittleFounders palette in light and dark, and is imported last so it wins.
+ * Cojeev's accent slots keep their library names but hold our hues:
+ * `--v-pink` is our orange (the call-to-action color), `--v-blue` our sky,
+ * `--v-yellow` our reward gold, `--v-olive` our mint.
+ * Colors are the old design system's, measured for contrast there.
+ */
+:root {
+  --font-display: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-text: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+
+  --v-canvas: #f4f5fd;
+  --v-paper: #ffffff;
+  --v-beige: #eaecf6;
+  --v-beige-2: #f0f2fb;
+  --v-cream-pill: #ffffff;
+  --v-ink: #11132a;
+  --v-ink-soft: #3d4057;
+  --v-on-ink: #ffffff;
+  --v-on-accent: #11132a;
+  --v-text: #11132a;
+  --v-text-2: #4a4d63;
+  --v-text-3: #595c71;
+  --v-border: #d5d8e7;
+  --v-edge: #83869a;
+  --v-brand: #4438cf;
+  --v-scrim: rgba(17, 19, 42, 0.5);
+
+  --v-pink: #eb7301;
+  --v-pink-deep: #d16800;
+  --v-pink-soft: #feece2;
+  --v-blue: #4b94ff;
+  --v-blue-deep: #3476d4;
+  --v-blue-soft: #e8f1fe;
+  --v-yellow: #ebb806;
+  --v-yellow-deep: #d4a506;
+  --v-yellow-soft: #ffefc9;
+  --v-olive: #05a893;
+  --v-olive-deep: #018675;
+  --v-olive-soft: #c7fef1;
+  --v-olive-ink: #07796a;
+  --v-accent-ink: #ab5202;
+  --v-danger: #db1b2b;
+  --v-danger-fill: #c4172a;
+  --v-danger-ink: #ac001a;
+  --v-danger-soft: #ffebe9;
+  /* The red of the large "Error 404" on the not-found page: 5.5:1 on the light canvas. */
+  --lf-error: #c4172a;
+
+
+  /*
+   * Touch targets. 48 px is the floor everywhere and 56 px the default. Surfaces where a young
+   * child answers or plays use --ctl-xl, 76 px = 2 cm, the size Nielsen Norman Group recommends
+   * for young children (docs/design/RESEARCH-FOUNDATION.md).
+   */
+  --ctl-sm: 48px;
+  --ctl-md: 56px;
+  --ctl-lg: 64px;
+  --ctl-xl: 76px;
+}
+
+:root[data-mode='dark'] {
+  --v-canvas: #0b0d1b;
+  --v-paper: #131627;
+  --v-beige: #1c1f32;
+  --v-beige-2: #131627;
+  --v-cream-pill: #131627;
+  --v-ink: #f5f6fe;
+  --v-ink-soft: #c5c8dc;
+  --v-on-ink: #0b0d1b;
+  --v-on-accent: #11132a;
+  --v-text: #f5f6fe;
+  --v-text-2: #b3b6cb;
+  --v-text-3: #9b9eb4;
+  --v-border: #2c3046;
+  --v-edge: #7a7d92;
+  --v-brand: #7a84ff;
+  --v-scrim: rgba(0, 0, 0, 0.66);
+
+  --v-pink: #eb7301;
+  --v-pink-deep: #d16800;
+  --v-pink-soft: #451d00;
+  --v-blue: #4b94ff;
+  --v-blue-deep: #3476d4;
+  --v-blue-soft: #10294e;
+  --v-yellow: #ebb806;
+  --v-yellow-deep: #d4a506;
+  --v-yellow-soft: #362801;
+  --v-olive: #05a893;
+  --v-olive-deep: #018675;
+  --v-olive-soft: #01322b;
+  --v-olive-ink: #3fd1bd;
+  --v-accent-ink: #ffa45c;
+  --v-danger-ink: #fe7f7e;
+  --v-danger-soft: #491816;
+  /* The same red, brighter for the dark canvas: 6.3:1. */
+  --lf-error: #ff5a5f;
+
+  --v-structure: #060713;
+  --card: var(--v-paper);
+  --popover: var(--v-paper);
+}
+
+/* Cojeev paints the default button with its accent in dark; ours stays primary in both modes. */
+:root[data-mode='dark'] .v-btn[data-slot]:not(.-accent):not(.-secondary):not(.-ghost):not(.-outline):not(.-danger):not(:disabled):not([aria-disabled='true']) {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+/* Text-size use of the brand indigo: the stronger step in light, the lighter in dark, both at AA. */
+:root { --primary-ink: #5850f8; }
+:root[data-mode='dark'] { --primary-ink: #7a84ff; }
+
+/*
+ * The semantic roles shadcn, Cojeev and Bklit read. The registry installs
+ * rewrite a ":root, :root[data-mode]" block in app.css with their own values
+ * after this file is imported, so these selectors are one step more specific
+ * to keep the brand values winning however many times a component is added.
+ */
+html:root,
+html:root[data-mode] {
+  --primary: #5c55fd;
+  --primary-foreground: #ffffff;
+
+  /*
+   * "Go on": the color of the button that takes a signed-in person back to their home. Green, the
+   * color of going ahead, kept apart from the orange of a first step and the indigo of the brand.
+   * White on it is 4.6 to 1.
+   */
+  --lf-positive: #018675;
+  --lf-positive-hover: #016e60;
+  --lf-on-positive: #ffffff;
+
+  /*
+   * The playing cards of the home (features/app/Deck.tsx). A card is paper: its face is light and
+   * its ink dark in both color modes, and each place has its own pale tint.
+   */
+  --lf-card-ink: #11132a;
+  --lf-card-back: #4f47e6;
+  --lf-card-home: #fff8e6;
+  --lf-card-learn: #e3efff;
+  --lf-card-mentor: #ebe8ff;
+  --lf-card-wallet: #fff0c4;
+  --lf-card-tasks: #dbf6ee;
+  --lf-card-family: #ffe4ee;
+
+  /* The flat tiles of the board on the cover (HomeCover.tsx): one full color each, the card's ink on all. */
+  --lf-tile-scene: #d6d0ff;
+  --lf-tile-learn: #bcd9ff;
+  --lf-tile-tasks: #b4ecd9;
+  --lf-tile-seeds: #ffdc7a;
+  --lf-tile-streak: #ffc9b0;
+
+  /*
+   * Round, soft shapes everywhere, with no vertices (D-051). Cojeev's own scale starts at a 4 px corner, which
+   * reads as a corner; ours starts where a shape already reads as round and grows from there. A control that can
+   * be a capsule is one (buttons, chips and inputs take --r-pill in the library); these are for what cannot:
+   * cards, panels, sheets, and the small things inside them.
+   */
+  --r-xs: 10px;
+  --r-sm: 14px;
+  --r-md: 18px;
+  --r-card-sm: 24px;
+  --r-card: 32px;
+  --r-panel: 36px;
+  --r-sheet: 40px;
+  --r-frame: 48px;
+
+  /* Bklit charts: series colors follow the brand palette in both modes. */
+  --chart-background: var(--v-canvas);
+  --chart-foreground: var(--v-text);
+  --chart-foreground-muted: var(--v-text-2);
+  --chart-label: var(--v-text-2);
+  --chart-1: #5c55fd;
+  --chart-2: #eb7301;
+  --chart-3: #ebb806;
+  --chart-4: #4b94ff;
+  --chart-5: #05a893;
+}
+
+/*
+ * Sileo toasts. Its own stylesheet is injected after ours, so the state colors
+ * are set on its viewport element, which beats anything it inherits from :root.
+ * Sileo's theme names the toast's text: 'light' is a dark toast (bright state
+ * colors), 'dark' a light toast (deep state colors). The toast is deliberately
+ * the opposite of the page; see ThemedToaster in App.tsx.
+ */
+[data-sileo-viewport][data-theme='light'] {
+  --sileo-state-success: #3ea56b;
+  --sileo-state-error: #fe7f7e;
+  --sileo-state-warning: #ebb806;
+  --sileo-state-info: #6aa8ff;
+  --sileo-state-action: #8a93ff;
+  --sileo-state-loading: #b3b6cb;
+}
+
+[data-sileo-viewport][data-theme='dark'] {
+  --sileo-state-success: #028048;
+  --sileo-state-error: #c4172a;
+  --sileo-state-warning: #856600;
+  --sileo-state-info: #1d68ce;
+  --sileo-state-action: #4438cf;
+  --sileo-state-loading: #595c71;
+}
+
+[data-sileo-viewport] [data-sileo-title] {
+  text-transform: none;
+}
+
+/*
+ * Rule 3: no text is ever cut. Cojeev's button is one fixed-height line that never wraps; here a label
+ * wraps and the button grows (icon-only buttons keep their fixed square), and long words break instead
+ * of overflowing their box.
+ */
+.v-btn[data-slot]:not([data-icon-only]) {
+  height: auto;
+  min-height: var(--ctl-md);
+  padding-block: var(--s-3);
+  line-height: 1.2;
+  text-align: center;
+  white-space: normal;
+}
+
+.v-btn.-sm[data-slot]:not([data-icon-only]) {
+  min-height: var(--ctl-sm);
+}
+
+.v-btn.-lg[data-slot]:not([data-icon-only]) {
+  min-height: var(--ctl-lg);
+}
+
+:where(h1, h2, h3, h4, p, li, label, a, button) {
+  overflow-wrap: break-word;
+}
+
+/*
+ * Shared interaction states (docs/engineering/FRONTEND-GUIDE.md, "Interaction and motion").
+ * Hover only where a hand can hover, so a tap never leaves a hover state stuck on a phone.
+ */
+@media (hover: hover) {
+  [data-slot='breadcrumb-link']:hover { color: var(--v-text); text-decoration: underline; text-underline-offset: 4px; }
+  a[data-brand-link] img { transition: opacity 160ms ease, transform 160ms ease; }
+  a[data-brand-link]:hover img { opacity: 0.82; }
+}
+
+/* The floating controls give the screen back to the cookie banner while it is open. */
+:root[data-consent-banner] [data-fab] { display: none; }
+
+/*
+ * The loading window's runner: the sprite sheet (12 frames side by side) steps one frame at a time. A still image stepped
+ * by a transform, so the browser decodes it once and the compositor does the rest; with reduced motion it stays on the
+ * first frame. This is the one CSS keyframe in the product that Motion does not replace: stepping a sheet is what CSS
+ * `steps()` is for.
+ */
+@keyframes lf-run {
+  to { transform: translateX(calc(var(--lf-frames) * var(--lf-frame) * -1)); }
+}
+
+.lf-run > img { animation: lf-run 600ms steps(var(--lf-frames)) infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lf-run > img { animation: none; }
+}
+
+/*
+ * The Seed (components/icons/seed.tsx) when it is animated: it breathes, and a glint crosses it.
+ * It holds still for anybody who asked for less motion.
+ */
+@keyframes lf-seed-breathe {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.06) rotate(-3deg); }
+}
+
+@keyframes lf-seed-glint {
+  0%, 55%, 100% { stroke-opacity: 0.15; }
+  70% { stroke-opacity: 0.95; }
+}
+
+[data-seed='animated'] .lf-seed {
+  transform-box: fill-box;
+  transform-origin: 50% 62%;
+  animation: lf-seed-breathe 3.2s ease-in-out infinite;
+}
+
+[data-seed='animated'] .lf-seed-glint {
+  animation: lf-seed-glint 3.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-seed='animated'] .lf-seed,
+  [data-seed='animated'] .lf-seed-glint { animation: none; }
+}
+
+/*
+ * The application's own icons (components/AppIcon.tsx, D-054). An icon is a small picture in its own colors, the
+ * same on the light page, the dark page and the dark sidebar. The few plain signs (a chevron, a cross) are drawn
+ * in the text color instead: their layers carry a class, here and in the frame the Lottie player draws.
+ */
+.lf-icon {
+  position: relative;
+  display: inline-grid;
+  flex: none;
+  inline-size: 1.5em;
+  block-size: 1.5em;
+  vertical-align: middle;
+}
+
+.lf-icon > * {
+  grid-area: 1 / 1;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: visible;
+}
+
+/* once the player draws the icon, the rest frame under it is not drawn twice */
+.lf-icon[data-live] > .lf-icon-rest {
+  visibility: hidden;
+}
+
+/*
+ * The library hides every span of the sidebar's header when the sidebar is collapsed. An icon of ours is made of
+ * spans, and the one it plays in is among them: without this the chevron that opens the sidebar disappears the
+ * first time a pointer touches it. The button itself stays a round of 44 px.
+ */
+[data-slot="sidebar"].-mini .v-brand .v-collapse .lf-icon {
+  display: inline-grid;
+}
+
+[data-slot="sidebar"].-mini .v-brand .v-collapse .lf-icon-stage {
+  display: block;
+}
+
+[data-slot="sidebar"] .v-brand .v-collapse {
+  block-size: 44px;
+  min-block-size: 44px;
+}
+
+.lf-icon .ink-stroke path {
+  stroke: currentColor;
+}
+
+.lf-icon .ink-fill path {
+  fill: currentColor;
+}
+
+/*
+ * The application's sidebar follows the color mode. The library draws it dark in both; in light
+ * mode it takes the page's paper and ink instead (features/app/AppLayout.tsx).
+ */
+.lf-sidebar-light {
+  --v-structure: var(--v-paper);
+  --on-structure: var(--v-text);
+  --sidebar-foreground: var(--v-text);
+  --sidebar-muted: var(--v-text-2);
+  border: 1px solid var(--v-border);
+  box-shadow: 0 10px 30px rgba(17, 19, 42, 0.06);
+}

@@ -1,0 +1,676 @@
+{
+  "axis": 660,
+  "tolerance": 3.0,
+  "crop": [
+    30,
+    40,
+    1290,
+    1560
+  ],
+  "corner": 70,
+  "segment": {
+    "regions": 14,
+    "merge": 21,
+    "min_area": 150
+  },
+  "layers": [
+    {
+      "name": "head-base",
+      "all": true,
+      "close": 50,
+      "fill": "#3a1a0b",
+      "clip": [
+        [
+          0,
+          0
+        ],
+        [
+          1322,
+          0
+        ],
+        [
+          1322,
+          880
+        ],
+        [
+          0,
+          880
+        ]
+      ]
+    },
+    {
+      "name": "vest",
+      "kind": "path",
+      "d": "M318 1304 C300 1380 302 1450 334 1520 L986 1520 C1018 1450 1020 1380 1002 1304 C930 1268 780 1258 660 1258 C540 1258 390 1268 318 1304 Z",
+      "fill": "#3d3b36"
+    },
+    {
+      "name": "vest-shade",
+      "kind": "path",
+      "d": "M318 1304 C390 1268 540 1258 660 1258 C780 1258 930 1268 1002 1304 C930 1296 780 1290 660 1290 C540 1290 390 1296 318 1304 Z",
+      "fill": "#2c2b27"
+    },
+    {
+      "name": "sleeve-l",
+      "kind": "path",
+      "d": "M346 1300 C336 1380 342 1456 362 1520 L420 1520 L420 1290 C392 1288 364 1292 346 1300 Z",
+      "fill": "#f2d8b0"
+    },
+    {
+      "name": "sleeve-r",
+      "mirror_of": "sleeve-l"
+    },
+    {
+      "name": "shirt",
+      "kind": "path",
+      "d": "M486 1286 C560 1318 612 1332 660 1332 C708 1332 760 1318 834 1286 L744 1472 C706 1496 614 1496 576 1472 Z",
+      "fill": "#f5dcb5"
+    },
+    {
+      "name": "shirt-shade",
+      "kind": "path",
+      "d": "M486 1286 C560 1318 612 1332 660 1332 C708 1332 760 1318 834 1286 C770 1318 710 1348 660 1348 C610 1348 550 1318 486 1286 Z",
+      "fill": "#e2c79e"
+    },
+    {
+      "name": "tie",
+      "kind": "path",
+      "d": "M630 1340 L690 1340 L714 1440 L660 1520 L606 1440 Z",
+      "fill": "#d3ba93"
+    },
+    {
+      "name": "pin",
+      "kind": "circle",
+      "cx": 880,
+      "cy": 1466,
+      "r": 44,
+      "fill": "#cf4a78"
+    },
+    {
+      "name": "pin-core",
+      "kind": "circle",
+      "cx": 880,
+      "cy": 1466,
+      "r": 22,
+      "fill": "#e56b95"
+    },
+    {
+      "name": "head-skin",
+      "pieces": [
+        1,
+        5,
+        7,
+        8,
+        11,
+        13,
+        12,
+        26,
+        28,
+        29,
+        32,
+        37,
+        38,
+        39,
+        43
+      ],
+      "close": 40,
+      "symmetrize": "left",
+      "fill": "#f9a079",
+      "clip": [
+        [
+          0,
+          0
+        ],
+        [
+          1322,
+          0
+        ],
+        [
+          1322,
+          1330
+        ],
+        [
+          0,
+          1330
+        ]
+      ],
+      "sigma": 14
+    },
+    {
+      "name": "lower-face",
+      "kind": "path",
+      "d": "M290 1060 C290 1200 440 1340 660 1345 C880 1340 1030 1200 1030 1060 Z",
+      "fill": "#f9a079"
+    },
+    {
+      "name": "cheek-l",
+      "kind": "circle",
+      "cx": 320,
+      "cy": 1010,
+      "r": 150,
+      "fill": {
+        "radial": [
+          "#ee8a68",
+          "#ee8a68",
+          0
+        ]
+      },
+      "opacity": 0.85,
+      "clip_to": "head-skin"
+    },
+    {
+      "name": "cheek-r",
+      "mirror_of": "cheek-l",
+      "clip_to": "head-skin"
+    },
+    {
+      "name": "shade-face-l",
+      "kind": "ellipse",
+      "cx": 300,
+      "cy": 980,
+      "rx": 110,
+      "ry": 260,
+      "angle": 0,
+      "fill": "#d9704c",
+      "opacity": 0.55,
+      "blur": 34,
+      "clip_to": "head-skin"
+    },
+    {
+      "name": "shade-face-r",
+      "kind": "ellipse",
+      "cx": 1020,
+      "cy": 980,
+      "rx": 110,
+      "ry": 260,
+      "angle": 0,
+      "fill": "#d9704c",
+      "opacity": 0.55,
+      "blur": 34,
+      "clip_to": "head-skin"
+    },
+    {
+      "name": "shade-forehead",
+      "kind": "ellipse",
+      "cx": 660,
+      "cy": 470,
+      "rx": 320,
+      "ry": 46,
+      "angle": 0,
+      "fill": "#d06a46",
+      "opacity": 0.5,
+      "blur": 22,
+      "clip_to": "head-skin"
+    },
+    {
+      "name": "shade-jaw",
+      "kind": "ellipse",
+      "cx": 660,
+      "cy": 1290,
+      "rx": 330,
+      "ry": 50,
+      "angle": 0,
+      "fill": "#d4724d",
+      "opacity": 0.55,
+      "blur": 28,
+      "clip_to": "lower-face"
+    },
+    {
+      "name": "ear-inner-l",
+      "pieces": [
+        17
+      ],
+      "close": 14,
+      "fill": "#d9825f",
+      "sigma": 8
+    },
+    {
+      "name": "ear-inner-r",
+      "mirror_of": "ear-inner-l"
+    },
+    {
+      "name": "hair-side-l",
+      "pieces": [
+        3
+      ],
+      "close": 30,
+      "fill": "#3a1a0a",
+      "sigma": 12,
+      "shade": {
+        "levels": [
+          9
+        ],
+        "blur": 8
+      }
+    },
+    {
+      "name": "hair-light-l",
+      "kind": "ellipse",
+      "cx": 200,
+      "cy": 520,
+      "rx": 40,
+      "ry": 150,
+      "angle": -20,
+      "fill": "#5b2d14",
+      "opacity": 0.6,
+      "blur": 24,
+      "clip_to": "hair-side-l"
+    },
+    {
+      "name": "hair-side-r",
+      "mirror_of": "hair-side-l"
+    },
+    {
+      "name": "hair-fringe",
+      "pieces": [
+        9
+      ],
+      "close": 24,
+      "fill": "#3d1b0b",
+      "sigma": 10
+    },
+    {
+      "name": "cap",
+      "pieces": [
+        0,
+        10
+      ],
+      "close": 18,
+      "fill": "#5b1411",
+      "sigma": 12,
+      "shade": {
+        "levels": [
+          -8,
+          8
+        ],
+        "blur": 10,
+        "max": 2
+      }
+    },
+    {
+      "name": "cap-light",
+      "kind": "ellipse",
+      "cx": 520,
+      "cy": 200,
+      "rx": 230,
+      "ry": 70,
+      "angle": -18,
+      "fill": "#842a24",
+      "opacity": 0.7,
+      "blur": 44,
+      "clip_to": "cap"
+    },
+    {
+      "name": "cap-dark",
+      "kind": "ellipse",
+      "cx": 900,
+      "cy": 330,
+      "rx": 200,
+      "ry": 60,
+      "angle": 10,
+      "fill": "#3d0d0c",
+      "opacity": 0.5,
+      "blur": 40,
+      "clip_to": "cap"
+    },
+    {
+      "name": "cap-brim",
+      "pieces": [
+        10
+      ],
+      "close": 18,
+      "fill": "#4d160e",
+      "opacity": 0.9,
+      "sigma": 10
+    },
+    {
+      "name": "nose",
+      "kind": "ellipse",
+      "cx": 660,
+      "cy": 962,
+      "rx": 92,
+      "ry": 84,
+      "angle": 0,
+      "fill": {
+        "linear": [
+          "#fbb08c",
+          "#ee8b6c",
+          80
+        ]
+      },
+      "opacity": 0.95
+    },
+    {
+      "name": "nose-light",
+      "kind": "ellipse",
+      "cx": 636,
+      "cy": 928,
+      "rx": 26,
+      "ry": 15,
+      "angle": -20,
+      "fill": "#ffc9a8",
+      "opacity": 0.7
+    },
+    {
+      "name": "nose-wrinkle-l",
+      "kind": "path",
+      "d": "M606 888 Q630 900 640 918 M598 906 Q620 916 630 936",
+      "stroke": "#b45a3c",
+      "width": 7,
+      "opacity": 0
+    },
+    {
+      "name": "nose-wrinkle-r",
+      "mirror_of": "nose-wrinkle-l"
+    },
+    {
+      "name": "nose-shadow",
+      "kind": "ellipse",
+      "cx": 660,
+      "cy": 1040,
+      "rx": 120,
+      "ry": 26,
+      "angle": 0,
+      "fill": "#cf6e4c",
+      "opacity": 0.6,
+      "blur": 14,
+      "clip_to": "head-skin"
+    },
+    {
+      "name": "brow-l",
+      "pieces": [
+        14
+      ],
+      "close": 12,
+      "fill": "#3c1b0b",
+      "sigma": 7
+    },
+    {
+      "name": "brow-r",
+      "mirror_of": "brow-l"
+    },
+    {
+      "name": "eye-white-l",
+      "pieces": [
+        20
+      ],
+      "kind": "ellipse",
+      "fill": "#fbfbf8"
+    },
+    {
+      "name": "eye-white-r",
+      "mirror_of": "eye-white-l"
+    },
+    {
+      "name": "iris-l",
+      "pieces": [
+        30
+      ],
+      "kind": "ellipse",
+      "fill": "#17607a"
+    },
+    {
+      "name": "iris-r",
+      "mirror_of": "iris-l"
+    },
+    {
+      "name": "pupil-l",
+      "pieces": [
+        35
+      ],
+      "kind": "ellipse",
+      "fill": "#050607"
+    },
+    {
+      "name": "pupil-r",
+      "mirror_of": "pupil-l"
+    },
+    {
+      "name": "glint-l",
+      "kind": "circle",
+      "cx": 512,
+      "cy": 838,
+      "r": 11,
+      "fill": "#ffffff"
+    },
+    {
+      "name": "glint-small-l",
+      "kind": "circle",
+      "cx": 462,
+      "cy": 884,
+      "r": 6,
+      "fill": "#cfe9f2"
+    },
+    {
+      "name": "glint-r",
+      "mirror_of": "glint-l"
+    },
+    {
+      "name": "glint-small-r",
+      "mirror_of": "glint-small-l"
+    },
+    {
+      "name": "glasses",
+      "kind": "ring",
+      "piece": 4,
+      "fill": "#0e0f10",
+      "thickness": 1.25
+    },
+    {
+      "name": "glasses-bridge",
+      "kind": "path",
+      "d": "M566 800 Q660 742 754 800",
+      "stroke": "#0e0f10",
+      "width": 24
+    },
+    {
+      "name": "mouth-shape",
+      "kind": "path",
+      "d": "M586 1236 C592 1338 728 1338 734 1236 C700 1248 620 1248 586 1236 Z",
+      "fill": "#7a1f1f"
+    },
+    {
+      "name": "mouth-tongue",
+      "kind": "path",
+      "d": "M618 1312 C640 1290 680 1290 702 1312 C694 1334 626 1334 618 1312 Z",
+      "fill": "#d9687a"
+    },
+    {
+      "name": "mouth-teeth",
+      "kind": "path",
+      "d": "M604 1244 C640 1256 680 1256 716 1244",
+      "stroke": "#fbf6f0",
+      "width": 12
+    },
+    {
+      "name": "mustache",
+      "pieces": [
+        2
+      ],
+      "close": 22,
+      "fill": "#391a0a",
+      "sigma": 10,
+      "shade": {
+        "levels": [
+          8
+        ],
+        "blur": 6
+      }
+    }
+  ],
+  "rig": {
+    "eyes": [
+      {
+        "parts": [
+          "eye-white-l",
+          "iris-l",
+          "pupil-l",
+          "glint-l",
+          "glint-small-l"
+        ],
+        "gaze": [
+          "iris-l",
+          "pupil-l",
+          "glint-l",
+          "glint-small-l"
+        ],
+        "center": [
+          465,
+          847
+        ],
+        "range": 20,
+        "side": -1,
+        "pupil": [
+          "iris-l",
+          "pupil-l"
+        ]
+      },
+      {
+        "parts": [
+          "eye-white-r",
+          "iris-r",
+          "pupil-r",
+          "glint-r",
+          "glint-small-r"
+        ],
+        "gaze": [
+          "iris-r",
+          "pupil-r",
+          "glint-r",
+          "glint-small-r"
+        ],
+        "center": [
+          855,
+          847
+        ],
+        "range": 20,
+        "side": 1,
+        "pupil": [
+          "iris-r",
+          "pupil-r"
+        ]
+      }
+    ],
+    "brows": [
+      {
+        "part": "brow-l",
+        "center": [
+          465,
+          627
+        ],
+        "side": -1
+      },
+      {
+        "part": "brow-r",
+        "center": [
+          857,
+          626
+        ],
+        "side": 1
+      }
+    ],
+    "face": [
+      {
+        "parts": [
+          "glasses",
+          "glasses-bridge"
+        ],
+        "depth": 1.0
+      },
+      {
+        "parts": [
+          "mustache"
+        ],
+        "depth": 1.15
+      },
+      {
+        "parts": [
+          "cheek-l",
+          "cheek-r"
+        ],
+        "depth": 0.7
+      },
+      {
+        "parts": [
+          "mouth-shape",
+          "mouth-tongue",
+          "mouth-teeth"
+        ],
+        "depth": 1.0
+      }
+    ],
+    "mouth": {
+      "parts": [
+        "mouth-shape",
+        "mouth-tongue",
+        "mouth-teeth"
+      ],
+      "anchor": [
+        660,
+        1236
+      ],
+      "rest": {
+        "sx": 0.8,
+        "sy": 0.05
+      },
+      "open": {
+        "sx": 1.15,
+        "sy": 1.35
+      },
+      "halfWidth": 66,
+      "reach": 20,
+      "follow": [
+        {
+          "part": "mustache",
+          "open": -26,
+          "smile": -12,
+          "stretch": 0.05
+        }
+      ]
+    },
+    "cheeks": [
+      "cheek-l",
+      "cheek-r"
+    ],
+    "head": {
+      "pivot": [
+        660,
+        1300
+      ],
+      "parts": [
+        "cap",
+        "hair-side-l",
+        "hair-side-r",
+        "hair-fringe"
+      ]
+    },
+    "body": [
+      "vest",
+      "vest-shade",
+      "sleeve-l",
+      "sleeve-r",
+      "shirt",
+      "shirt-shade",
+      "tie",
+      "pin",
+      "pin-core"
+    ],
+    "nose": {
+      "parts": [
+        "nose",
+        "nose-light",
+        "nose-shadow"
+      ],
+      "lines": [
+        "nose-wrinkle-l",
+        "nose-wrinkle-r"
+      ],
+      "flare": [],
+      "center": [
+        660,
+        962
+      ]
+    },
+    "gain": 1.0
+  }
+}

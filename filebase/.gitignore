@@ -1,3 +1,0 @@
-# Local content-addressed store (default FILEBASE_ROOT=./data) — never
-# tracked; production uses a Railway volume, not the git tree.
-/data/

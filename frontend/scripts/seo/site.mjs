@@ -61,13 +61,12 @@ export const SITE = {
   languageNames: { 'en-US': 'English', 'es-MX': 'Spanish (Mexico)', 'pt-BR': 'Portuguese (Brazil)' },
   twitter: null, // No verified account yet — an invented @handle is worse than none.
   /*
-   * Browser chrome and the web app manifest, in the rebuilt tokens (Frontend
-   * Bible 02 D8: one system for marketing too). check-seo-surface fails on any
-   * value that is not a colour in frontend/src/rebuild/design/tokens.css.
+   * Browser chrome and the web app manifest, in the rebuilt tokens: every
+   * value is a colour in frontend/src/styles/lf-theme.css.
    */
   themeColor: '#5c55fd', // --primary
   manifestBackground: '#0b0d1b', // --base (dark), the splash behind the icon
-  /** The structured-data logo: the brand mark's 512 px raster (scripts/seo/render-icons.mjs, manifest `brand.mark`). */
+  /** The structured-data logo: the brand mark's 512 px raster. */
   logoPath: '/icon-512.png',
 
   /*
@@ -110,11 +109,11 @@ export const SITE = {
  */
 export const ELEVATOR = {
   'en-US':
-    'LittleFounders is a family learning platform where children and teenagers build real money skills (saving, spending, earning, entrepreneurship and investing) by making decisions inside guided stories rather than by watching lessons. Four Mentor characters guide the way and answer questions. Parents open a Tutor account and see every Mentor conversation. Available in English, Spanish and Portuguese, and free to start without an account.',
+    'LittleFounders helps children and teenagers learn about money. Available in English, Spanish and Portuguese, and free to start without an account.',
   'es-MX':
-    'LittleFounders es una plataforma de aprendizaje familiar donde niñas, niños y adolescentes desarrollan habilidades reales con el dinero (ahorrar, gastar, ganar, emprender e invertir) tomando decisiones dentro de historias guiadas, no viendo lecciones. Cuatro personajes Mentor los acompañan y responden sus preguntas. Los padres abren una cuenta Tutor y ven cada conversación con el Mentor. Disponible en español, inglés y portugués, y gratis para empezar sin crear cuenta.',
+    'LittleFounders ayuda a niñas, niños y adolescentes a aprender sobre el dinero. Disponible en español, inglés y portugués, y gratis para empezar sin crear cuenta.',
   'pt-BR':
-    'LittleFounders é uma plataforma de aprendizagem familiar onde crianças e adolescentes desenvolvem habilidades reais com dinheiro (poupar, gastar, ganhar, empreender e investir) tomando decisões dentro de histórias guiadas, em vez de assistir a aulas. Quatro personagens Mentor conduzem o caminho e respondem perguntas. Os responsáveis abrem uma conta Tutor e veem cada conversa com o Mentor. Disponível em português, espanhol e inglês, e grátis para começar sem criar conta.',
+    'LittleFounders ajuda crianças e adolescentes a aprender sobre dinheiro. Disponível em português, espanhol e inglês, e grátis para começar sem criar conta.',
 };
 
 /** Short positioning line for the share card. Kept under ~70 characters so it sets large. */
@@ -133,12 +132,6 @@ export const CARD_KICKER = {
 /*
  * ── The public surface ──────────────────────────────────────────────────────
  *
- * `index: false` is a deliberate marketing decision, not an oversight. A thin
- * placeholder page indexed alongside real ones drags the whole domain's
- * quality signal down and wastes the crawl budget of a site nobody has heard
- * of yet. `/families` and `/faq` are placeholders today; the day they carry
- * real content, flip the flag and they enter the sitemap automatically.
- *
  * `priority` and `changefreq` are hints, not instructions — search engines are
  * free to ignore them, and the ordering is what actually communicates intent.
  *
@@ -153,204 +146,40 @@ export const CARD_KICKER = {
  * really does change.
  *
  * So: bump the date when the page's CONTENT changes for a reader. Not when the
- * build runs, not when a title is reworded. Six pages, changed rarely — a hand
- * date that is right beats an automatic one that is wrong. `seo:check` refuses
- * a malformed or future date.
+ * build runs, not when a title is reworded. One page, changed rarely — a hand
+ * date that is right beats an automatic one that is wrong.
  */
 export const PAGES = [
   {
     path: '/',
     index: true,
-    lastmod: '2026-10-02',
+    lastmod: '2026-10-09',
     priority: '1.0',
     changefreq: 'weekly',
     /** Included in llms.txt so an agent knows what the page is for. */
-    agentSummary: 'What LittleFounders is, who it is for, and how to start.',
+    agentSummary: 'What LittleFounders is and how to start.',
     meta: {
       'en-US': {
-        title: 'Financial literacy for kids and teens | LittleFounders',
+        title: 'A playground where kids and teens practice money | LittleFounders',
         description:
-          'Help your child save, solve problems and develop ideas through interactive challenges and an AI Mentor. Free to start.',
-        h1: 'Help your child understand the value of money.',
+          'A playground for ages 13 to 18 to practice money habits, saving, staying out of debt and starting a business, with no real money.',
+        h1: "Let your kids practice money before it's real.",
       },
       'es-MX': {
-        title: 'Educación financiera para niños y adolescentes | LittleFounders',
+        title: 'Un espacio donde niños y jóvenes practican con el dinero | LittleFounders',
         description:
-          'Ayúdalo a ahorrar, resolver problemas y crear ideas con retos interactivos y un Mentor de IA. Gratis para empezar.',
-        h1: 'Que tu hijo entienda el valor del dinero.',
+          'Un espacio para que niños y jóvenes de 13 a 18 años practiquen hábitos con el dinero, ahorro, evitar deudas y emprender, sin dinero real.',
+        h1: 'Que tus hijos practiquen con el dinero antes de que sea real.',
       },
       'pt-BR': {
-        title: 'Educação financeira para crianças e adolescentes | LittleFounders',
+        title: 'Um playground onde crianças e jovens praticam com dinheiro | LittleFounders',
         description:
-          'Ajude a poupar, resolver problemas e criar ideias com desafios interativos e um Mentor de IA. Grátis para começar.',
-        h1: 'Ajude seu filho a entender o valor do dinheiro.',
+          'Um playground para quem tem de 13 a 18 anos praticar hábitos com dinheiro, poupança, evitar dívidas e empreender, sem dinheiro de verdade.',
+        h1: 'Deixe seus filhos praticarem com dinheiro antes de ser de verdade.',
       },
-    },
-  },
-  {
-    path: '/how-it-works',
-    index: true,
-    lastmod: '2026-09-26',
-    priority: '0.9',
-    changefreq: 'monthly',
-    agentSummary:
-      'How the learning works: decisions with consequences, four Mentors who answer questions, and no account required to try it.',
-    meta: {
-      'en-US': {
-        title: 'How it works: decisions, not lectures | LittleFounders',
-        description:
-          'Every lesson puts your child inside a choice that has a consequence. Four Mentors guide it and answer back, and you can try it without an account.',
-        h1: 'From curiosity to financial confidence',
-      },
-      'es-MX': {
-        title: 'Cómo funciona: decisiones, no lecciones | LittleFounders',
-        description:
-          'Cada lección pone a tu hijo dentro de una decisión que tiene consecuencia. Cuatro Mentores la guían y responden, y puedes probarlo sin crear cuenta.',
-        h1: 'De la curiosidad a la confianza financiera',
-      },
-      'pt-BR': {
-        title: 'Como funciona: decisões, não aulas | LittleFounders',
-        description:
-          'Cada lição coloca seu filho dentro de uma escolha que tem consequência. Quatro Mentores conduzem e respondem, e dá para testar sem criar conta.',
-        h1: 'Da curiosidade à confiança financeira',
-      },
-    },
-  },
-  {
-    path: '/families',
-    index: true, // Flag flipped 2026-09-14: the page now carries real content (see the note above PAGES).
-    lastmod: '2026-09-27',
-    priority: '0.8',
-    changefreq: 'monthly',
-    agentSummary:
-      'What a Tutor (verified parent) account controls: every Mentor conversation in full, chores with real rewards, a practice Wallet in coins, and how to create a Tutor account and link a child to it.',
-    meta: {
-      'en-US': {
-        title: 'For families: the Tutor account | LittleFounders',
-        description:
-          'Read every Mentor conversation, set chores with real rewards, keep usage analytics off by default. How to create your Tutor account and link your family.',
-        h1: 'Here, you decide.',
-      },
-      'es-MX': {
-        title: 'Para familias: la cuenta Tutor | LittleFounders',
-        description:
-          'Lee cada conversación con el Mentor, fija tareas con recompensa real y deja la analítica apagada. Cómo crear tu cuenta Tutor y vincular tu familia.',
-        h1: 'Aquí decides tú.',
-      },
-      'pt-BR': {
-        title: 'Para famílias: a conta Tutor | LittleFounders',
-        description:
-          'Leia cada conversa com o Mentor, defina tarefas com recompensa real e deixe a análise desligada. Como criar sua conta Tutor e vincular sua família.',
-        h1: 'Aqui, você decide.',
-      },
-    },
-  },
-  {
-    path: '/faq',
-    index: true, // Flag flipped 2026-09-15: the page now carries real content (see the note above PAGES).
-    lastmod: '2026-09-26',
-    priority: '0.6',
-    changefreq: 'monthly',
-    agentSummary:
-      'Answers to the specific objections people have right before signing up: is it free to start, is it private, does a child talk to an AI (the Mentor), what the coins are, and how Tutor accounts and data privacy work.',
-    meta: {
-      'en-US': {
-        title: 'Frequently asked questions | LittleFounders',
-        description:
-          'Is it free to start? Is it private? Does my child talk to an AI? Real answers about Tutor accounts, coins and data privacy, without marketing spin.',
-        h1: 'Frequently asked questions',
-      },
-      'es-MX': {
-        title: 'Preguntas frecuentes | LittleFounders',
-        description:
-          '¿Es gratis para empezar? ¿Es privado? ¿Mi hijo habla con una IA? Respuestas reales sobre la cuenta Tutor, las monedas y la privacidad de tus datos.',
-        h1: 'Preguntas frecuentes',
-      },
-      'pt-BR': {
-        title: 'Perguntas frequentes | LittleFounders',
-        description:
-          'É grátis para começar? É privado? Meu filho conversa com uma IA? Respostas reais sobre a conta Tutor, as moedas e a privacidade dos seus dados.',
-        h1: 'Perguntas frequentes',
-      },
-    },
-  },
-  {
-    // /badge/:token — one row per share (0072/0073), never a fixed page, so
-    // there is nothing here for build-seo.mjs to prerender per-badge. This
-    // entry exists only to (a) satisfy assertRoutesAgree's app/site
-    // agreement check against src/lib/analytics.tsx's MARKETING_PREFIXES,
-    // and (b) provide a safe generic fallback if the bare, tokenless
-    // /badge path is ever hit directly. The REAL per-share title/description
-    // /image an unfurler sees comes from frontend/api/badge/[token].ts at
-    // request time, not from this file.
-    path: '/badge',
-    index: false, // Personal share link — never sitemapped, never search-indexed.
-    lastmod: '2026-09-07',
-    priority: '0.1',
-    changefreq: 'monthly',
-    agentSummary: null,
-    meta: {
-      'en-US': { title: 'Achievement badge | LittleFounders', description: 'A LittleFounders learner just earned an achievement badge.', h1: 'Achievement badge' },
-      'es-MX': { title: 'Insignia de logro | LittleFounders', description: 'Un alumno de LittleFounders acaba de ganar una insignia de logro.', h1: 'Insignia de logro' },
-      'pt-BR': { title: 'Selo de conquista | LittleFounders', description: 'Um aluno da LittleFounders acabou de conquistar um selo.', h1: 'Selo de conquista' },
-    },
-  },
-  {
-    path: '/legal/terms',
-    index: true,
-    lastmod: '2026-08-11',
-    priority: '0.3',
-    changefreq: 'yearly',
-    agentSummary: 'Terms and conditions of use.',
-    meta: {
-      'en-US': { title: 'Terms & Conditions | LittleFounders', description: 'The terms that govern the use of LittleFounders: who may open an account, how family and child accounts work, and the rules that apply to everyone using it.', h1: 'Terms & Conditions' },
-      'es-MX': { title: 'Términos y Condiciones | LittleFounders', description: 'Los términos que rigen el uso de LittleFounders: quién puede abrir una cuenta, cómo funcionan las cuentas familiares e infantiles, y las reglas que aplican a todos.', h1: 'Términos y Condiciones' },
-      'pt-BR': { title: 'Termos e Condições | LittleFounders', description: 'Os termos que regem o uso do LittleFounders: quem pode abrir uma conta, como funcionam as contas familiares e infantis, e as regras que valem para todos.', h1: 'Termos e Condições' },
-    },
-  },
-  {
-    path: '/legal/privacy',
-    index: true,
-    lastmod: '2026-08-11',
-    priority: '0.3',
-    changefreq: 'yearly',
-    agentSummary: 'Privacy notice, including how children’s data is handled.',
-    meta: {
-      'en-US': { title: 'Privacy Notice | LittleFounders', description: 'What we collect, what we never collect, and how children’s data is protected.', h1: 'Privacy Notice' },
-      'es-MX': { title: 'Aviso de Privacidad | LittleFounders', description: 'Qué recopilamos, qué nunca recopilamos y cómo se protegen los datos de menores.', h1: 'Aviso de Privacidad' },
-      'pt-BR': { title: 'Aviso de Privacidade | LittleFounders', description: 'O que coletamos, o que nunca coletamos e como os dados de menores são protegidos.', h1: 'Aviso de Privacidade' },
     },
   },
 ];
-
-/*
- * The four mentors, by name, because an AI assistant answering "who teaches on
- * LittleFounders" should be able to say. Names only — no character backstory,
- * no internal role vocabulary.
- */
-export const MENTORS = ['Dina', 'Liruf', 'Dr. Rho', 'Zara'];
-
-/*
- * What a learner can actually study. Described by outcome, never by how the
- * catalogue is produced.
- */
-export const SUBJECTS = {
-  'en-US': [
-    { name: 'Financial Education', about: 'Saving, spending, earning, budgeting and avoiding fraud: the everyday habits money rests on.' },
-    { name: 'Entrepreneurship', about: 'Turning an idea into an offer someone will pay for, and running it without losing money.' },
-    { name: 'Investing', about: 'Risk, patience, compounding and the difference between investing and gambling.' },
-  ],
-  'es-MX': [
-    { name: 'Educación Financiera', about: 'Ahorrar, gastar, ganar, presupuestar y evitar fraudes: los hábitos diarios sobre los que descansa el dinero.' },
-    { name: 'Emprendimiento', about: 'Convertir una idea en una oferta por la que alguien pague, y sostenerla sin perder dinero.' },
-    { name: 'Inversiones', about: 'Riesgo, paciencia, interés compuesto y la diferencia entre invertir y apostar.' },
-  ],
-  'pt-BR': [
-    { name: 'Educação Financeira', about: 'Poupar, gastar, ganhar, fazer orçamento e evitar fraudes: os hábitos diários sobre os quais o dinheiro se apoia.' },
-    { name: 'Empreendedorismo', about: 'Transformar uma ideia em uma oferta que alguém pague, e mantê-la sem perder dinheiro.' },
-    { name: 'Investimentos', about: 'Risco, paciência, juros compostos e a diferença entre investir e apostar.' },
-  ],
-};
 
 /*
  * ── Crawler policy ──────────────────────────────────────────────────────────
@@ -358,8 +187,7 @@ export const SUBJECTS = {
  * AI crawlers are ALLOWED, deliberately and by owner decision (2026-08-27).
  * The usual reason to block them is to protect proprietary content from
  * training. That calculation does not apply here: the marketing site holds no
- * proprietary content, the lessons sit behind authentication where no crawler
- * reaches them, and being the answer when someone asks an assistant how to
+ * proprietary content, and being the answer when someone asks an assistant how to
  * teach their child about money is worth more to a company nobody has heard of
  * than the theoretical cost of the pages being read.
  *
@@ -387,40 +215,6 @@ export const AI_CRAWLERS = [
   'cohere-ai',
   'Diffbot',
   'omgili',
-];
-
-/**
- * Paths no crawler should fetch at all.
- *
- * Deliberately short. `Disallow` stops a fetch but does NOT stop indexing of a
- * URL somebody links to — a disallowed page can still appear in results as a
- * bare title, and because the crawler may not fetch it, it can never see a
- * `noindex` telling it otherwise. So this list holds only what must never be
- * REQUESTED; everything that merely should not RANK is handled with a
- * `noindex` tag on a page crawlers are free to read (see NOINDEX_PREFIXES).
- */
-export const DISALLOWED_PREFIXES = ['/admin', '/dev/', '/auth/'];
-
-/**
- * Fetchable, but must never rank.
- *
- * These are served by the SPA fallback, which build-seo.mjs marks `noindex` by
- * default — so this list is documentation and a test fixture rather than a
- * second mechanism. Anything not deliberately given a page above stays out of
- * the index by construction, which is the safe direction to fail in.
- */
-export const NOINDEX_PREFIXES = [
-  '/signup',
-  '/login',
-  '/reset-password',
-  '/verify-parent',
-  '/onboarding',
-  '/dashboard',
-  '/learn',
-  '/tutor',
-  '/tasks',
-  '/profile',
-  '/@',
 ];
 
 /** Absolute URL for a site-relative path, without a double slash or a trailing one. */

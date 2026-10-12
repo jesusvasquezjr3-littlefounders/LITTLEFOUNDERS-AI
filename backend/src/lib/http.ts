@@ -1,26 +1,62 @@
 import type { Response } from 'express';
 
-/**
- * Envelope error response (/AGENTS.md §1.6).
- *
- * `extra` merges additional, typed fields onto `error` alongside `code` and
- * `message` — the envelope shape itself (`{ data: null, error: {...} }`)
- * never changes, only what `error` carries. Used sparingly: today, only the
- * Tutor's `SESSION_LIMIT` refusal, which needs the actual computed reset
- * instant on the wire rather than making the client guess at local midnight
- * with its own (possibly wrong) clock and timezone.
+/*
+ * One shape for every answer: `{ data, error }`, the same as the mail service. An error is a code,
+ * never a sentence: the words a person reads live in the frontend's locale files, in three
+ * languages.
  */
-export function fail(
-  res: Response,
-  status: number,
-  code: string,
-  message: string,
-  extra?: Record<string, unknown>,
-): Response {
-  return res.status(status).json({ data: null, error: { code, message, ...extra } });
+export const ERROR_STATUS = {
+  BAD_REQUEST: 400,
+  CODE_INVALID: 400,
+  AGE_OUT_OF_RANGE: 400,
+  PERMISSION_REQUIRED: 400,
+  USERNAME_INVALID: 400,
+  NAME_INVALID: 400,
+  PROOF_REQUIRED: 400,
+  ROLE_NOT_GRANTABLE: 400,
+  TARGET_NOT_ELIGIBLE: 400,
+  UNAUTHENTICATED: 401,
+  SESSION_EXPIRED: 401,
+  FORBIDDEN: 403,
+  AGE_REQUIRED: 403,
+  ORIGIN_NOT_ALLOWED: 403,
+  NOT_FOUND: 404,
+  USERNAME_TAKEN: 409,
+  UNSUPPORTED_MEDIA_TYPE: 415,
+  RATE_LIMITED: 429,
+  TOO_MANY_ATTEMPTS: 429,
+  INTERNAL: 500,
+  UNAVAILABLE: 503,
+} as const;
+
+export type ErrorCode = keyof typeof ERROR_STATUS;
+
+export class ApiError extends Error {
+  readonly code: ErrorCode;
+  /** Seconds the caller should wait before trying again, when that is known. */
+  readonly retryAfterSeconds: number | undefined;
+
+  constructor(code: ErrorCode, retryAfterSeconds?: number) {
+    super(code);
+    this.name = 'ApiError';
+    this.code = code;
+    this.retryAfterSeconds = retryAfterSeconds;
+  }
 }
 
-/** Envelope success response. */
-export function ok<T>(res: Response, data: T, status = 200): Response {
-  return res.status(status).json({ data, error: null });
+export function isErrorCode(value: string): value is ErrorCode {
+  return Object.hasOwn(ERROR_STATUS, value);
+}
+
+export function sendData(res: Response, data: object, status = 200): void {
+  res.status(status).json({ data, error: null });
+}
+
+export function sendError(res: Response, error: ApiError): void {
+  if (error.retryAfterSeconds !== undefined) res.set('Retry-After', String(error.retryAfterSeconds));
+
+  res.status(ERROR_STATUS[error.code]).json({
+    data: null,
+    error: { code: error.code, ...(error.retryAfterSeconds === undefined ? {} : { retryAfterSeconds: error.retryAfterSeconds }) },
+  });
 }

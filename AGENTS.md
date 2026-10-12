@@ -1,127 +1,33 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for AI agents working in this repository. `AGENTS.md` is the same file under a second name for another tool: any edit to one is applied to the other in the same change.
 
-## Read this first
+`README.md` says what exists and how to run it.
 
-**`README.md` is the single operational document of this repo** — service map, local setup, every test/deploy command, migration procedure, DNS records, and the non-obvious invariants section. This file only adds what's specific to working as Claude Code here; consult `README.md` for anything operational.
+## Where the project is
 
-**`CLAUDE.md` and `AGENTS.md` must always be identical.** They are the same content published under two filenames for two different agent tools. Any edit to one must be applied to the other in the same change — never let them drift.
+On 9 October 2026 the owner decided to restart LittleFounders from zero. Everything of the previous version was deleted except the landing page, the 3D character files, the pinned Supabase setup, the Pulse observability stack and, restored on the owner's decision because it worked in production, the `email-server/` mail service (D-014). The previous version lives only in the git tag `archive/pre-restart-2026-10-09`.
 
-For course or lesson authoring, read `.github/skills/course-authoring/SKILL.md` and the shared workflow it references. Financial Education also uses `.github/skills/financial-lesson-authoring/SKILL.md`. Forge, Codex and Claude must use the same curriculum contract and verification; switching authoring tools is not a quality gate.
+- **Nothing in this repo is a requirement unless the owner said it in the current conversation or it is in a document whose status is `accepted`.** The documents under `docs/` start as scaffolds that record structure, not decisions; `docs/process/DECISIONS.md` lists what the owner has decided. If you find yourself deferring to something you read in an old file, a tag or a memory, stop and ask the owner.
+- **Do not consult the archive tag to decide how to build something.** It exists so production data can be migrated and so history is not lost, not as a design reference. Read from it only when the owner points you at a specific thing.
+- **Each feature is designed from scratch with the owner**, one at a time, to the highest standards of security, privacy and engineering. The owner will define the frontend rules and the security baseline as they go.
+- **Documentation is a system, not a pile.** Start at [[INDEX]]. Do not add documents outside it, and do not fill a scaffold with content the owner has not decided: write it with the owner, then raise its status.
 
-## Mandatory rules — non-negotiable
+## Rules
 
-These gates are not optional, not skippable under time pressure, and not satisfied by "it looked fine":
-
-1. **Don't work against an unprovisioned checkout — but provision only what the task actually needs.** Editing code, running a service's commands or querying the DB against a checkout that has no `node_modules`, no `.env` files or no container stack produces failures that look like product bugs. Check what's missing and fix that much.
-
-   **`npm run setup` is from-zero provisioning and it is destructive:** `scripts/setup-dev.sh` calls `db:reset` unconditionally, which nukes every container volume before re-migrating. Never run it on a working checkout to "make sure" — it will delete a local database that was fine. On a checkout that only lacks dependencies, `npm install` in the packages you're touching is the whole fix, and plenty of work (docs, gates, a single service's unit tests) needs no database at all.
-
-
-
-2. **Before starting any work, establish the local machine's actual capabilities — measure them, don't inherit a limit from another machine.** Collaborator machines here differ by an order of magnitude (see README's "Dev machines here differ" invariant): one is an 8 GB Apple M2 that swaps under parallel subagents + headless Chrome + multiple Vite servers, another is a 32 GB / 16-thread Windows box that does not. Pace the work to the machine you are actually on. Before assuming what you can run in parallel, or that a tool/CLI is available, check:
-   ```bash
-   node -v            # must match .nvmrc (24.x)
-   docker info         # Docker Desktop running? required for the DB container stack
-   npm -v
-   supabase --version  # only if you'll touch migrations/types
-   railway --version   # only if you'll deploy/inspect Railway
-   gh --version         # only if you'll drive CI/workflows
-   ```
-   Plus available RAM/CPU and how many dev servers/containers are already running. Do not start multiple heavy watchers, headless browser sessions, or DB resets in parallel without knowing the machine can take it — a swapping machine fails as flaky timing tests, not as a loud error.
-
-3. **Work first, then verify, in three tiers — the full gates run once per push, and a push is never made without them.** A commit is local and reversible; a push is a deploy. So the full battery guards the push, and everything before it runs only what the change can actually break. Never run a gate before the change it would judge exists, and never re-run a gate whose result is still valid.
-
-   | Tier | When | What runs |
-   |---|---|---|
-   | **Build loop** | While implementing | Do the work first. Then one targeted check: `cd <service> && npm run type-check` plus the focused test file (`npm run test -- <path>`; for `agent/tools`, `node --test <file>`). No aggregates, no browser gates, no lint of the world. |
-   | **Commit gate** | Before `git commit` | Only the service(s) the commit touches: `npm run type-check && npm run lint && npm run test`. A docs-only commit (only `*.md` / `docs/`, no code, no migrations) runs `npm run secrets:check` and `npm run spec:check` and nothing else. |
-   | **Push gate** | Once, on the final tree, before `git push` | `npm run typecheck:all && npm run lint:all && npm run test:all`, `npm run secrets:check`, `npm run tools:test`, `npm run build` in each touched service, plus every conditional gate for the area touched (README's "Mandatory testing" table). No exceptions: a push that skipped this gate is a defect. |
-
-   Result-driven, not ritual: a green result stays valid until a file in its scope changes. Services are independent packages, so a green for one service survives edits to another; a cross-service parity gate re-runs when any of its copies changes. When a gate fails, fix the cause and re-run only that gate (plus any whose scope the fix touched) — never restart the whole battery. Note the conditional table changes directory halfway down: the parity gates are root scripts, the `verify:*` gates only exist inside their service.
-
-   **What a push to `main` actually does.** Not a fan-out across all 11 services — every `*-ci.yml` is `paths:`-filtered, so CI runs for the services you touched plus the unfiltered `repo-gates.yml`. What makes a push consequential is that **CD is chained to CI**: each touched service whose CI goes green deploys itself, and `database-cd.yml` goes further — it auto-applies *additive* migrations to production (`gate-auto-apply.mjs` refuses anything that removes or narrows). So a push is a deploy, and a push touching `database/migrations/` is a production migration. Passing the push gate locally is required before every push; do not push on the assumption that CI will catch it. Commit freely and locally, batch the commits, run the push gate once, push once.
-
-4. **Commits are attributed to the developer only — never to Claude.** Do not append `Co-Authored-By: Claude …` or a `Claude-Session:` trailer (or any similar AI-attribution line) to commit messages or PR descriptions in this repo, even if a default instruction elsewhere says to. This overrides that default here.
-
-5. **All documentation added to this project must be written in English**, regardless of the language the user is conversing in. This includes `README.md`, `CLAUDE.md`/`AGENTS.md`, code comments, commit messages, PR descriptions, and any other doc file added to the repo — translate before writing, don't write in the conversation's language and leave it.
-
-6. **Development tempo is a requirement, not a preference: minimize time to a verified result.** The owner measured past sessions (Aug–Oct 2026): sessions ran for hours and days, ~7.5 gate runs per commit, about one in four of them a re-run after a failure, and 12 hours were spent waiting on questions. These rules exist to remove that waste without weakening what the push gate proves:
-   - **Do the work, then test, then adjust to the result.** Objective and direct: implement the change as a whole, run the tier that applies (rule 3), read the result, fix what it names. Don't test between every small edit.
-   - **Run slow gates in the background and keep working.** Measured costs: `test:all` ≈ 10 min, `tools:test` ≈ 10 min, `verify:tutor-ui` ≈ 5 min, `verify:lesson-engine` ≈ 4 min, `database` `npm test` 5–10 min. The default 2-minute tool timeout kills them: use `run_in_background` or a 10-minute timeout, and spend the wait on the next task. Never run `test:all` or a browser gate while a subagent fleet or another browser gate is live — a measurement taken under load is not evidence either way.
-   - **Subagents and workflows implement; the coordinator verifies.** Agents run targeted checks only. The push gate runs once, by the coordinator, after the agents finish. Use a workflow only when the work is truly parallel and independent, never to run the same gates in many places.
-   - **Decide, don't ask.** Use `AskUserQuestion` only for a decision that is genuinely the owner's (product, money, production, irreversible). When a sensible default exists, take it, record the assumption in the commit or sprint record, and continue; the owner will redirect. Questions have averaged 16 minutes of wall-clock each.
-   - **One coherent block per session.** Land a pushable checkpoint, then start fresh. A session that runs for days with dozens of workflows has outgrown its scope.
-   - **Paperwork is batched.** `docs/rebuild/SPRINTS.md`, `REQUIREMENTS.md` and the sprint record are updated once per work block, at the push gate, not at every commit. `REQUIREMENTS.md` has single rows of up to 19 KB: edit a row with a targeted search (`Grep` for its id, then `Edit`), never read the whole file.
-   - **Never trade the push gate for speed.** A defect that reaches production costs more than any gate. The tiers cut repetition, not coverage.
-
-## What this is
-
-LittleFounders: a gamified financial-literacy and entrepreneurship platform for kids/families — gamified courses, an AI tutor, parent-assigned tasks with rewards, under verified parental control. TypeScript + Express (ESM, Node 24) on 9 of the 11 independent npm packages (no workspaces). The other two run no server: `frontend/` is a React 18 + Vite + Tailwind SPA, and `database/` is migrations, seeds and generated types. Supabase self-hosted for the DB; deployed to Railway (backend services) and Vercel (frontend).
-
-## Commands
-
-```bash
-npm run setup                                          # from-zero provisioning (all 11 packages + DB + seeds)
-DEV_PROFILE=core DEV_DB=1 npm run dev                   # frontend + Core + Supabase containers
-
-npm run typecheck:all && npm run lint:all && npm run test:all   # push gate: once per push, not per commit
-npm run secrets:check && npm run tools:test                      # push gate (secrets:check also on docs-only commits)
-
-npm run release:readiness -- <course>   # before production: all gates + zero-spend dry-runs
-npm run production:preflight            # read-only Railway check, operator-only, never CI
-```
-
-`README.md`'s "Mandatory testing" table lists which conditional gate to run for the area you touched (i18n, SEO, provider parity, whiteboard/demonstrate-step parity, tutor context/pedagogy, lesson-engine, tutor UI, migrations). Run the gate for your area at the push gate — CI enforces the repo-wide set but is the backstop, not the gate.
-
-Single-service work: `cd <service> && npm run type-check && npm run lint && npm run test`. **The hyphen is load-bearing:** services name it `type-check`, and only the root aggregate drops the hyphen (`typecheck:all`), so `npm run typecheck` inside a service is `Missing script` every time. `database/` is the exception to the whole line — it defines `test` and the `db:*` scripts only, so `run-all.sh` skips it for type-check, lint and build; its CI is `npm test` plus the secrets scan.
-
-Per-service `package.json` also carries service-specific scripts: `verify:tutor`, `verify:pedagogy`, `gym:pedagogy` in `oracle/`; `verify:lesson-engine`, `verify:rig`, `verify:placement` and the Mentor-stage gate `audit:gate -- --suite mentor-stage` (it runs `scripts/verify-mentor-stage.mjs`, which has no npm alias; `--suite all` adds the text-fit, proportion and Copy Budget audits) in `frontend/`; `seed:kc` and the tutor audit scripts in `backend/`.
-
-## Architecture — what requires reading multiple files
-
-- **No shared types across the 11 packages, by design.** Wire shapes (whiteboard instruments, `demonstrate` steps, provider config, roleplay voices) are hand-mirrored across 2–6 files each. A `check-*-parity` gate exists for each and must stay green — don't "fix" drift by picking one copy as canonical, update all copies and let the gate confirm.
-- **Only `backend/` (Core) is called by the SPA.** Every other service is either internal-only (behind `x-internal-api-key`) or has one narrow public surface (Depot reads, Oracle's `/ws/tutor` websocket). `database/types/database.ts` is the one generated, shared artifact — regenerate it with `db:types`, never hand-edit.
-- **Oracle (`oracle/`) is the AI Tutor runtime**: live sessions, voice (Inworld), moderation, pedagogy controller. Its context schema is `.strict()` and pinned to 14 fields by test (`oracle/src/__tests__/privacy-contract-docs.test.ts`) — widening what reaches the model about a child is a reviewed decision, not a refactor. Voice providers are reachable only through `oracle/src/voice/provider.ts`.
-- **Coursegen (Forge) and Oracle both call DeepSeek/Qwen** and must agree on base URLs/models (`provider:check`). The tutor model must stay non-reasoning (`deepseek-chat`).
-- **Deploy ordering matters when a wire shape changes**: e.g. adding a whiteboard kind needs Core deployed before Oracle, since Core's body union has no fallback member and 400s the whole turn on an unknown `kind`.
-- **CD is CI-triggered per service** (`.github/workflows/<service>-cd.yml` on that service's CI going green on `main`), not a GitHub App. CI is `paths:`-filtered, so a push runs only the CI of the services it touched — and deploys each one that passes. Batch commits and push once at the end.
-
-See `README.md`'s "Non-obvious invariants & traps" section for the full list (cost/billing discipline, measuring the machine you are on, the Windows CRLF/WSL traps, synthetic-click hit-testing, DuckDB's single shared connection, `families` derived from `guardian_links`, Railway CLI exit codes, etc.) — those are load-bearing and each was learned the expensive way.
-
-Source files cite a rulebook (`/ORACLE.md §16`, `DESIGN.md`, `TUTOR_3D.md`, …) that was removed in commit `77b55596`; ~480 files still point at it. Read any of it with `git show 77b55596^:ORACLE.md`, and treat it as history, not authority — see the note opening README's invariants section.
-
-## LittleFounders specification (reference)
-
-The product and frontend specification lives in `docs/littlefounders-spec/`. It records the owner's product intent and the frontend design system. It is a **reference**, not an absolute authority: shipping a working product, direct user feedback and the owner's latest instruction outrank any document here, and they always may. Read it for intent; do not treat stale wording as law. Precedence when documents disagree (a reading order, not a gate):
-
-1. `product/13-OWNER-DECISION-LOG.md`
-2. `product/10-PRODUCT-GOLD-STANDARD-REQUIREMENTS.md` and its appendices
-3. `frontend/frontend-bible/02-FOUNDATIONS.md`, then `01`, `03`–`08` (a chapter written for one subject, such as `08` for the Mentor, refines `02` on that subject)
-4. `frontend/mockup/littlefounders-mockup.html`: a visual reference only, minus `frontend/mockup/KNOWN-DEVIATIONS.md`
-5. `product/reviews/`: history, never implement from it
-
-External sources, cited by name:
-
-- `COSMIC_NARRATIVE.md`: `docs/product-audit/COSMIC_NARRATIVE.md`
-- 3D Mentor characters: `glb/{Rho,Zara,Liruf,Dina}.glb`; optimized delivery: `frontend/public/scenes/{rho,zara,liruf,dina}.glb`
-- Diorama: `frontend/public/scenes/diorama-{a,b}.glb`; scene and placement: `frontend/src/tutor-scene/Diorama.tsx`
-- Pose catalogue: `frontend/src/tutor-scene/poseLibrary.ts`; authored clips: `frontend/public/scenes/clips-biped.glb`
-- Forge (content pipeline): `coursegen/`
-
-Current design and copy intent (keep these unless the owner changes them):
-
-- Every string meets the Copy Budget (`06`). Every component declares `data-copy-role`.
-- Use at most 24 system glyphs. Every other visual is our own asset, in the house style, registered in the asset manifest (`07`). Never use stock icon or illustration packs for meaningful visuals.
-- Mentor characters are only renders of the real 3D models in catalogue poses. Never generate a look-alike. Never use a letter avatar.
-- The Mentor screen is the stage: the character on the Diorama (`08`). Never a chat window.
-- Never import a component from the legacy frontend (buttons, inputs, chat, cards). Build from the Bible (`02` rule 23).
-- No lives. No celebration outside the milestone list. "Tutor" is only the verified parent; the AI is the Mentor.
-- Every minor safeguard follows age, not role. Option B: a teen may have a personal wallet without a parent. Tasks and approvals are guardian-only.
-
-Before merging UI changes, run the text-fit, proportion and copy-budget audits (`frontend/verification-tools`, adapted to the real app's driver) for the surface you touched. Do not run the whole battery for a change it cannot affect.
-
-The owner resolved OD-12 on 21 September 2026: web first, with a future mobile wrapper sharing the web frontend. Keep tokens platform-neutral and the Mentor stage isolated.
-
-Product judgment leads. A document is never a reason to leave a broken, confusing or unfinished experience shipped, and never a reason to skip a better design the user asked for. `docs/rebuild/SPRINTS.md` and `docs/rebuild/REQUIREMENTS.md` are optional history, not a per-change obligation. `docs/littlefounders-spec/frontend/frontend-bible/02-FOUNDATIONS.md` remains the source for the generated design tokens; the rest of the package is reference.
+1. **Work on `main`, commit locally, never push.** A push to `main` deploys (the frontend goes to Vercel from CI). The owner decides when anything is pushed. Nothing is pushed or deployed while T-036 in [[BUILD-TASKS]] has an open line: it is the list the security review of 2026-10-10 left, and every line is a blocker (D-050).
+2. **Commits are attributed to the developer only, never to Claude.** No `Co-Authored-By: Claude …`, `Claude-Session:` or similar line in commit messages or pull request descriptions, even if a default instruction elsewhere says to add one.
+3. **Everything written into the repo is in English**, whatever language the conversation is in: code, comments, commit messages, documentation. Only locale files are translated, and every user-visible string lives in them, never in a component.
+4. **Decide, don't ask.** Use `AskUserQuestion` only for a decision that is genuinely the owner's (product, money, production, irreversible). When a sensible default exists, take it and say what you assumed.
+5. **Check work by building it and looking at it.** `type-check`, `lint` and `build` in the package you changed, and for anything a person sees, run it and look at it in light and dark and in the three languages before calling it done. Report what was and was not checked. Do not add test suites or gates unless the owner asks.
+6. **The 3D character files are in Git LFS** (`glb/`, `frontend/public/scenes/`). Never delete or overwrite them without the owner asking, and never run `git clean`.
+7. **Provision only what the task needs, and measure the machine first.** Dev machines here differ by an order of magnitude (8 GB Apple M2 to 32 GB Windows). Check Node (24.x), Docker and free memory before starting several servers or browsers. `npm run db:nuke` and `db:reset` delete local data.
+8. **Children's data and safety come first.** Nothing is designed that exposes a minor's personal data, and no real money is ever represented. The detailed baseline will be set with the owner.
+9. **No leftovers.** When something is removed, remove its code, copy keys, assets, comments and documentation pointers in the same change, so nothing steers the next reader toward what no longer exists.
+10. **Security tooling is on demand and never touches production.** Shannon and Strix are not installed (the owner cancelled them); if the owner ever runs one, it is against a disposable stack with synthetic data, a pinned version and a dedicated spend-capped key, and every finding is triaged by a person. New TypeScript is checked with `npm run lint:slop` in `frontend/` (the vendored anti-slop Oxlint rules): parse input at the boundary, no `unknown` parameters, no chained or unjustified type assertions. Details: [[ai-pentesting]] and [[SECURITY-GUIDE]].
+11. **Documentation is part of the change.** Every document is in English, links the documents it depends on with Obsidian-style wikilinks (`[[NAME]]`) and is reachable from [[INDEX]]. A change that alters behavior, structure, a rule or a task updates the affected documents, their `updated` date and [[CHANGELOG]] in the same commit. `node scripts/check-docs.mjs` checks this; it runs as a pre-commit hook (enable it once per clone with `git config core.hooksPath .githooks`) and in CI. Never bypass it without telling the owner. See [[AI-WORKFLOW]].
+12. **Words a person reads are written to the humanizer standard, always.** Every string a user sees (interface text, errors, toasts, empty states, emails, notifications, and any message the agent writes to the owner about the product) is drafted or checked with the `humanizer` skill (`.claude/skills/humanizer/`) in the language it will be read in: no staged contrasts, forced triads, inflated claims or filler; say the specific thing. The frontend design skills (`impeccable`, `design-taste-frontend`, `redesign-existing-projects`, `high-end-visual-design`, `minimalist-ui`, `industrial-brutalist-ui`, `full-output-enforcement`, `stitch-design-taste`, `layout-grid`) are manual-only: use one only when the owner invokes it by name. They never override [[UI-LIBRARIES]]. See [[AI-WORKFLOW]].
+13. **Five frontend rules are non-negotiable.** (1) Every visible word is an i18n key in en-US, es-MX and pt-BR, nothing hardcoded. (2) Desktop and mobile each optimized, on clear mobile-first grids, checked from 320 to 1440 px. (3) Text is never cut: no ellipsis, line clamp or clipping. (4) Every icon and symbol is our own: a 2D picture in full color, with no outlines, kept as a Lottie file, alive and with micro-interactions (D-054); none comes from an icon library. (5) Design claims follow the graded literature in [[RESEARCH-FOUNDATION]]. Before any change under `frontend/`, read [[FRONTEND-GUIDE]] (stack, structure, conventions, how a change is checked) and [[FRONTEND-TOOLKIT]] (which skill or library to use, the repeating procedures, how each check is run).
+14. **Every route path is in English** (`/sign-up`, not `/crear-cuenta`), whatever the interface language; only words on screen are translated. **Scenes with the characters follow [[CHARACTER-COMPOSITIONS]]**: Dina is a large animal, bright light in both color modes, no visible edges, nothing colliding, delivered as video. See [[DECISIONS]] D-011 and D-012.
+15. **Nothing is called working until its flow was walked. This is mandatory and not negotiable.** The interface is the product: a screen that looks right and leads nowhere is a defect, and so is a flow whose screens contradict each other. Before saying that anything a person uses works, walk it as that person does, from the first screen to the last, and say which flows were walked and which were not. **The local environment is kept in order, and a flow is tested from nothing.** Before starting a server, look at what is already running; one dev server (5173), one Core (4000), one mail service (4005), and stop what you started. A person's flow is checked through the interface, in a browser with no cookies and nothing stored, to every one of its endings (creating the account, "later", closing half way, erasing, signing out, coming back), and `npm run audit:flows` runs after any change to the site's buttons, the sign-in window, the onboarding or the application's guard. A walk that passes only on its second run has a cause: find it before reporting. The rules and what broke without them: [[ENVIRONMENT-SETUP]].
+16. **Fail safe.** Whatever goes wrong, and whatever a person presses by mistake, they keep what they had. An action that erases something or cannot be undone asks first, in a window that says what will be lost; the choice that keeps everything is the one in focus, and closing the window any other way keeps everything too. When a call fails, nothing the person typed or chose is thrown away, and the screen says what happened and what to do. A check that cannot be made refuses rather than lets through where an account or a child's data is at stake. A design that can leave a person stuck, or lose their work without asking, is not finished (D-058).

@@ -4,7 +4,7 @@ name: Pulse Dependabot automerge
 # has succeeded on the PR — gated explicitly via workflow_run, so no
 # branch-protection/required-checks repo config is needed and non-pulse PRs
 # are unaffected. Minor/major bumps stay open for human review (upstream
-# majors have carried data migrations — pulse/AGENTS.md § upgrade protocol).
+# majors have carried data migrations).
 
 on:
   workflow_run:

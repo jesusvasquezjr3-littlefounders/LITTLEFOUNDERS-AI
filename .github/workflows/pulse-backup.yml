@@ -5,7 +5,7 @@ name: Pulse backup
 # and mechanism as vault-backup.yml (separate disk & service from the live
 # volume; `railway ssh` writes straight to the container filesystem).
 # ClickHouse events are deliberately NOT dumped here: the raw analytics
-# store is loss-tolerant by decision (RUNBOOK.md § Pulse) and a ClickHouse
+# store is loss-tolerant by decision and a ClickHouse
 # logical dump at this size isn't worth a daily cron.
 
 on:
@@ -21,19 +21,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      # H.5 (Appendix O 1.2): the dump is encrypted on the runner before it is
-      # stored anywhere, with the tested OD-9 backup tool (AES-256-GCM, a
-      # manifest with the key fingerprint, the plaintext deleted). The full
-      # checkout also carries scripts/ops-heartbeat.sh (H.4).
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 24
 
       - name: Write backup encryption key
+        env:
+          BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
         run: |
           set -euo pipefail
-          printf '%s' "${{ secrets.BACKUP_ENCRYPTION_KEY }}" > "$RUNNER_TEMP/backup.key"
+          printf '%s' "$BACKUP_ENCRYPTION_KEY" > "$RUNNER_TEMP/backup.key"
           chmod 600 "$RUNNER_TEMP/backup.key"
           # No key, no backup: an unencrypted dump is never stored.
           test -s "$RUNNER_TEMP/backup.key"
@@ -42,9 +40,11 @@ jobs:
         run: npm i -g @railway/cli@5.43.1
 
       - name: Write SSH key
+        env:
+          RAILWAY_SSH_PRIVATE_KEY: ${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}
         run: |
           mkdir -p ~/.ssh
-          printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_backup_key
+          printf '%s\n' "$RAILWAY_SSH_PRIVATE_KEY" > ~/.ssh/railway_backup_key
           chmod 600 ~/.ssh/railway_backup_key
           # Railway's SSH proxy host is ephemeral per-session (see
           # vault-backup.yml for why strict host checking can't work here).
@@ -105,7 +105,7 @@ jobs:
 
           # Encrypt before the dump leaves the runner; the tool deletes the
           # plaintext. Fail on an empty ciphertext or a surviving plaintext.
-          node database/migration-od9/backup-crypto.mjs encrypt --in "$FILE" --out "$FILE.lfbk" --key-file "$RUNNER_TEMP/backup.key"
+          node database/scripts/backup-crypto.mjs encrypt --in "$FILE" --out "$FILE.lfbk" --key-file "$RUNNER_TEMP/backup.key"
           test -s "$FILE.lfbk"
           test -s "$FILE.lfbk.manifest.json"
           test ! -e "$FILE"
@@ -131,7 +131,7 @@ jobs:
         run: |
           set -euo pipefail
           # Encrypted backups and their manifests; the last pattern ages out the
-          # plaintext dumps written before H.5 was closed.
+          # plaintext dumps written before dumps were encrypted.
           for PATTERN in 'pulse-*.dump.lfbk' 'pulse-*.dump.lfbk.manifest.json' 'pulse-*.dump'; do
             n=1
             until railway ssh --service filebase -i ~/.ssh/railway_backup_key -- \
@@ -141,21 +141,6 @@ jobs:
               n=$((n + 1)); sleep 20
             done
           done
-
-      # H.4: leave the run in Core's audit trail (scripts/ops-heartbeat.sh);
-      # ops-job-watch.yml notifies a human when this job goes quiet.
-      - name: Record the heartbeat
-        if: success()
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: bash scripts/ops-heartbeat.sh pulse_backup true "${{ steps.dump.outputs.bytes }}"
-
-      - name: Record the failed run
-        if: failure()
-        continue-on-error: true
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: bash scripts/ops-heartbeat.sh pulse_backup false
 
       - name: Remove the backup key and any local dump
         if: always()

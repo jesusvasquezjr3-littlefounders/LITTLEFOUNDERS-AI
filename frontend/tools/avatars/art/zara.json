@@ -1,0 +1,843 @@
+{
+  "axis": 808,
+  "crop": [
+    60,
+    50,
+    1550,
+    1560
+  ],
+  "segment": {
+    "regions": 14,
+    "merge": 21,
+    "min_area": 150
+  },
+  "layers": [
+    {
+      "name": "head-base",
+      "all": true,
+      "close": 50,
+      "fill": "#2d1914",
+      "clip": [
+        [
+          0,
+          0
+        ],
+        [
+          1610,
+          0
+        ],
+        [
+          1610,
+          1270
+        ],
+        [
+          0,
+          1270
+        ]
+      ]
+    },
+    {
+      "name": "hair",
+      "select": {
+        "near": "#2d1914",
+        "dist": 55,
+        "bbox": [
+          0,
+          0,
+          1610,
+          1600
+        ]
+      },
+      "close": 40,
+      "fill": {
+        "linear": [
+          "#42251c",
+          "#2a1612",
+          90
+        ]
+      },
+      "arc": {
+        "y": 1500,
+        "sag": 52,
+        "half": 770,
+        "power": 2.2
+      },
+      "sigma": 16,
+      "corner": 999
+    },
+    {
+      "name": "hair-light",
+      "kind": "ellipse",
+      "cx": 808,
+      "cy": 260,
+      "rx": 360,
+      "ry": 100,
+      "angle": 0,
+      "fill": "#6f3f2f",
+      "opacity": 0.75,
+      "blur": 48,
+      "clip_to": "hair"
+    },
+    {
+      "name": "hair-light-l",
+      "kind": "ellipse",
+      "cx": 470,
+      "cy": 800,
+      "rx": 46,
+      "ry": 420,
+      "angle": 12,
+      "fill": "#5c3428",
+      "opacity": 0.55,
+      "blur": 26,
+      "clip_to": "hair"
+    },
+    {
+      "name": "hair-light-r",
+      "kind": "ellipse",
+      "cx": 1146,
+      "cy": 800,
+      "rx": 46,
+      "ry": 420,
+      "angle": -12,
+      "fill": "#5c3428",
+      "opacity": 0.55,
+      "blur": 26,
+      "clip_to": "hair"
+    },
+    {
+      "name": "neck",
+      "kind": "smooth",
+      "tension": 1.0,
+      "points": [
+        [
+          804,
+          880
+        ],
+        [
+          740,
+          884
+        ],
+        [
+          738,
+          960
+        ],
+        [
+          736,
+          1030
+        ],
+        [
+          716,
+          1062
+        ],
+        [
+          674,
+          1084
+        ],
+        [
+          642,
+          1112
+        ],
+        [
+          640,
+          1180
+        ],
+        [
+          804,
+          1200
+        ]
+      ],
+      "fill": "#fcc5a3"
+    },
+    {
+      "name": "shoulders",
+      "select": {
+        "near": "#fccaa4",
+        "dist": 45,
+        "bbox": [
+          300,
+          1090,
+          1330,
+          1600
+        ]
+      },
+      "close": 22,
+      "fill": "#fcc5a3",
+      "arc": {
+        "y": 1500,
+        "sag": 52,
+        "half": 770,
+        "power": 2.2
+      },
+      "sigma": 14
+    },
+    {
+      "name": "tank",
+      "select": {
+        "near": "#730725",
+        "dist": 70,
+        "bbox": [
+          540,
+          1060,
+          1080,
+          1600
+        ]
+      },
+      "close": 18,
+      "fill": "#730725",
+      "arc": {
+        "y": 1500,
+        "sag": 52,
+        "half": 770,
+        "power": 2.2
+      },
+      "sigma": 10,
+      "shade": {
+        "levels": [
+          -9,
+          9
+        ],
+        "blur": 8,
+        "max": 2
+      }
+    },
+    {
+      "name": "face",
+      "close": 30,
+      "fill": "#fcc5a3",
+      "sigma": 12,
+      "pieces": [
+        5,
+        15,
+        17,
+        14,
+        26,
+        19,
+        24,
+        21,
+        28,
+        27,
+        29
+      ],
+      "clip": [
+        [
+          0,
+          0
+        ],
+        [
+          1610,
+          0
+        ],
+        [
+          1610,
+          705
+        ],
+        [
+          0,
+          705
+        ]
+      ]
+    },
+    {
+      "name": "jaw",
+      "kind": "smooth",
+      "tension": 1.0,
+      "points": [
+        [
+          804,
+          540
+        ],
+        [
+          542,
+          560
+        ],
+        [
+          528,
+          620
+        ],
+        [
+          520,
+          680
+        ],
+        [
+          521,
+          730
+        ],
+        [
+          530,
+          760
+        ],
+        [
+          549,
+          790
+        ],
+        [
+          558,
+          805
+        ],
+        [
+          572,
+          820
+        ],
+        [
+          588,
+          835
+        ],
+        [
+          599,
+          850
+        ],
+        [
+          622,
+          865
+        ],
+        [
+          646,
+          880
+        ],
+        [
+          670,
+          895
+        ],
+        [
+          694,
+          910
+        ],
+        [
+          720,
+          925
+        ],
+        [
+          742,
+          940
+        ],
+        [
+          766,
+          948
+        ],
+        [
+          804,
+          955
+        ],
+        [
+          842,
+          948
+        ],
+        [
+          866,
+          940
+        ],
+        [
+          888,
+          925
+        ],
+        [
+          914,
+          910
+        ],
+        [
+          938,
+          895
+        ],
+        [
+          962,
+          880
+        ],
+        [
+          986,
+          865
+        ],
+        [
+          1009,
+          850
+        ],
+        [
+          1020,
+          835
+        ],
+        [
+          1036,
+          820
+        ],
+        [
+          1050,
+          805
+        ],
+        [
+          1059,
+          790
+        ],
+        [
+          1078,
+          760
+        ],
+        [
+          1087,
+          730
+        ],
+        [
+          1088,
+          680
+        ],
+        [
+          1080,
+          620
+        ],
+        [
+          1066,
+          560
+        ]
+      ],
+      "fill": "#fcc5a3",
+      "mirror": false
+    },
+    {
+      "name": "chin-shadow",
+      "kind": "ellipse",
+      "cx": 804,
+      "cy": 970,
+      "rx": 84,
+      "ry": 30,
+      "angle": 0,
+      "fill": "#eba386",
+      "opacity": 0.9,
+      "blur": 5,
+      "clip_to": "neck"
+    },
+    {
+      "name": "chin-edge",
+      "kind": "path",
+      "d": "M724 934 C750 950 780 956 804 956 C828 956 858 950 884 934",
+      "stroke": "#e0987b",
+      "width": 4,
+      "opacity": 0.6,
+      "blur": 2
+    },
+    {
+      "name": "shade-bangs",
+      "kind": "ellipse",
+      "cx": 808,
+      "cy": 505,
+      "rx": 270,
+      "ry": 34,
+      "angle": 0,
+      "fill": "#e6a083",
+      "opacity": 0.6,
+      "blur": 14,
+      "clip_to": "face"
+    },
+    {
+      "name": "shade-jaw",
+      "kind": "ellipse",
+      "cx": 808,
+      "cy": 930,
+      "rx": 230,
+      "ry": 38,
+      "angle": 0,
+      "fill": "#e8a688",
+      "opacity": 0.55,
+      "blur": 18,
+      "clip_to": "face"
+    },
+    {
+      "name": "ear-l",
+      "kind": "path",
+      "d": "M533 650 C483 650 468 730 513 780 C533 800 553 790 553 770 Z",
+      "fill": "#f8b794"
+    },
+    {
+      "name": "ear-r",
+      "mirror_of": "ear-l"
+    },
+    {
+      "name": "sideburn-l",
+      "kind": "path",
+      "d": "M498 484 C514 492 527 520 529 560 C531 604 524 648 512 700 C505 656 499 590 497 540 C496 516 496 498 498 484 Z",
+      "fill": "#2d1914"
+    },
+    {
+      "name": "sideburn-light-l",
+      "kind": "path",
+      "d": "M512 520 C520 556 520 620 512 676 C508 620 508 560 512 520 Z",
+      "fill": "#4a2b20",
+      "opacity": 0.7,
+      "blur": 4
+    },
+    {
+      "name": "sideburn-r",
+      "mirror_of": "sideburn-l"
+    },
+    {
+      "name": "sideburn-light-r",
+      "mirror_of": "sideburn-light-l"
+    },
+    {
+      "name": "cheek-l",
+      "kind": "circle",
+      "cx": 603,
+      "cy": 725,
+      "r": 95,
+      "fill": {
+        "radial": [
+          "#f39a86",
+          "#f39a86",
+          0
+        ]
+      },
+      "opacity": 0.6
+    },
+    {
+      "name": "cheek-r",
+      "mirror_of": "cheek-l"
+    },
+    {
+      "name": "eye-white-l",
+      "kind": "ellipse",
+      "cx": 653,
+      "cy": 632,
+      "r": 62,
+      "fill": "#fbfaf8",
+      "rx": 73,
+      "ry": 62,
+      "angle": 0
+    },
+    {
+      "name": "eye-white-r",
+      "mirror_of": "eye-white-l"
+    },
+    {
+      "name": "iris-l",
+      "kind": "circle",
+      "cx": 661,
+      "cy": 640,
+      "r": 47,
+      "fill": {
+        "radial": [
+          "#a85a1e",
+          "#4e230d",
+          1
+        ]
+      },
+      "clip_ellipse": [
+        653,
+        632,
+        73,
+        62
+      ]
+    },
+    {
+      "name": "iris-r",
+      "mirror_of": "iris-l",
+      "clip_ellipse": [
+        963,
+        632,
+        73,
+        62
+      ]
+    },
+    {
+      "name": "pupil-l",
+      "kind": "circle",
+      "cx": 663,
+      "cy": 643,
+      "r": 21,
+      "fill": "#1a0f0b"
+    },
+    {
+      "name": "pupil-r",
+      "mirror_of": "pupil-l"
+    },
+    {
+      "name": "glint-l",
+      "kind": "circle",
+      "cx": 638,
+      "cy": 619,
+      "r": 9,
+      "fill": "#ffffff"
+    },
+    {
+      "name": "glint-small-l",
+      "kind": "circle",
+      "cx": 676,
+      "cy": 651,
+      "r": 4.5,
+      "fill": "#ffffff"
+    },
+    {
+      "name": "glint-r",
+      "mirror_of": "glint-l"
+    },
+    {
+      "name": "glint-small-r",
+      "mirror_of": "glint-small-l"
+    },
+    {
+      "name": "lash-l",
+      "kind": "path",
+      "d": "M544 632 C554 598 606 565 662 565 C707 565 729 590 734 618 C718 602 696 595 662 595 C622 595 586 610 559 638 Z",
+      "fill": "#150d0b"
+    },
+    {
+      "name": "lash-r",
+      "mirror_of": "lash-l"
+    },
+    {
+      "name": "brow-l",
+      "kind": "path",
+      "d": "M561 548 C589 518 655 502 725 526 C663 518 603 536 566 560 Z",
+      "fill": "#1e1412"
+    },
+    {
+      "name": "brow-r",
+      "mirror_of": "brow-l"
+    },
+    {
+      "name": "nostril-l",
+      "kind": "path",
+      "d": "M785 758 Q793 765 801 758 ",
+      "stroke": "#e69a82",
+      "width": 5
+    },
+    {
+      "name": "nostril-r",
+      "mirror_of": "nostril-l"
+    },
+    {
+      "name": "nose-wrinkle-l",
+      "kind": "path",
+      "d": "M782 686 Q796 698 800 716 M774 700 Q788 710 792 726",
+      "stroke": "#df977a",
+      "width": 4.5,
+      "opacity": 0
+    },
+    {
+      "name": "nose-wrinkle-r",
+      "mirror_of": "nose-wrinkle-l"
+    },
+    {
+      "name": "mouth",
+      "kind": "path",
+      "d": "M703 788 C743 812 783 818 808 818 C833 818 873 812 913 790 C901 840 863 872 808 884 C755 872 717 840 703 788 Z",
+      "fill": "#a52424"
+    },
+    {
+      "name": "tongue",
+      "kind": "path",
+      "d": "M749 840 C775 828 841 828 867 840 C859 866 835 880 808 884 C781 880 757 866 749 840 Z",
+      "fill": "#f0a3a0"
+    },
+    {
+      "name": "teeth",
+      "kind": "path",
+      "d": "M715 794 C758 813 793 817 808 817 C823 817 858 813 901 794 ",
+      "stroke": "#fdf7f3",
+      "width": 15
+    },
+    {
+      "name": "chain",
+      "kind": "path",
+      "d": "M676 1080 C700 1160 760 1200 806 1204 C852 1200 912 1160 936 1080",
+      "stroke": "#b9bfc4",
+      "width": 6
+    },
+    {
+      "name": "pendant",
+      "kind": "circle",
+      "cx": 806,
+      "cy": 1224,
+      "r": 23,
+      "fill": "#dfe4e8"
+    },
+    {
+      "name": "pendant-core",
+      "kind": "circle",
+      "cx": 806,
+      "cy": 1224,
+      "r": 11,
+      "fill": "#aab3bb"
+    }
+  ],
+  "tolerance": 3.0,
+  "rig": {
+    "eyes": [
+      {
+        "parts": [
+          "eye-white-l",
+          "iris-l",
+          "pupil-l",
+          "glint-l",
+          "glint-small-l",
+          "lash-l"
+        ],
+        "gaze": [
+          "iris-l",
+          "pupil-l",
+          "glint-l",
+          "glint-small-l"
+        ],
+        "center": [
+          653,
+          632
+        ],
+        "range": 13,
+        "side": -1,
+        "pupil": [
+          "iris-l",
+          "pupil-l"
+        ]
+      },
+      {
+        "parts": [
+          "eye-white-r",
+          "iris-r",
+          "pupil-r",
+          "glint-r",
+          "glint-small-r",
+          "lash-r"
+        ],
+        "gaze": [
+          "iris-r",
+          "pupil-r",
+          "glint-r",
+          "glint-small-r"
+        ],
+        "center": [
+          963,
+          632
+        ],
+        "range": 13,
+        "side": 1,
+        "pupil": [
+          "iris-r",
+          "pupil-r"
+        ]
+      }
+    ],
+    "brows": [
+      {
+        "part": "brow-l",
+        "center": [
+          643,
+          530
+        ],
+        "side": -1
+      },
+      {
+        "part": "brow-r",
+        "center": [
+          973,
+          530
+        ],
+        "side": 1
+      }
+    ],
+    "face": [
+      {
+        "parts": [
+          "cheek-l",
+          "cheek-r"
+        ],
+        "depth": 0.7
+      },
+      {
+        "parts": [
+          "mouth",
+          "tongue",
+          "teeth"
+        ],
+        "depth": 1.0
+      },
+      {
+        "parts": [
+          "ear-l",
+          "ear-r"
+        ],
+        "depth": -0.6
+      }
+    ],
+    "mouth": {
+      "parts": [
+        "mouth",
+        "tongue",
+        "teeth"
+      ],
+      "anchor": [
+        808,
+        790
+      ],
+      "rest": {
+        "sx": 0.9,
+        "sy": 0.4
+      },
+      "open": {
+        "sx": 1.0,
+        "sy": 1.05
+      },
+      "halfWidth": 110,
+      "reach": 26
+    },
+    "cheeks": [
+      "cheek-l",
+      "cheek-r"
+    ],
+    "head": {
+      "pivot": [
+        808,
+        1000
+      ],
+      "parts": [
+        "hair",
+        "hair-light",
+        "hair-light-l",
+        "hair-light-r"
+      ]
+    },
+    "body": [
+      "tank",
+      "chain",
+      "pendant",
+      "pendant-core",
+      "shoulders"
+    ],
+    "nose": {
+      "parts": [],
+      "lines": [
+        "nose-wrinkle-l",
+        "nose-wrinkle-r"
+      ],
+      "flare": [
+        "nostril-l",
+        "nostril-r"
+      ],
+      "center": [
+        808,
+        758
+      ]
+    },
+    "gain": 1.1,
+    "expressionScale": 0.85,
+    "strands": [
+      {
+        "parts": [
+          "sideburn-l",
+          "sideburn-light-l"
+        ],
+        "root": [
+          512,
+          490
+        ],
+        "side": -1
+      },
+      {
+        "parts": [
+          "sideburn-r",
+          "sideburn-light-r"
+        ],
+        "root": [
+          1104,
+          490
+        ],
+        "side": 1
+      }
+    ]
+  }
+}

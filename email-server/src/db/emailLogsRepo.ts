@@ -2,23 +2,24 @@ import { getConfig } from '../config.js';
 import type { EmailLogEntry, EmailLogSummary, EmailLogPage } from '../services/emailLog.js';
 
 /*
- * Service-role PostgREST access to `email_logs`
- * (database/migrations/0021_email_logs.sql) — the DURABLE delivery history.
+ * PostgREST access to `email_logs`, the DURABLE delivery history
+ * (database/migrations/0002_email.sql), with this service's own key: the role
+ * `mail_service` of 0004_mail_least_privilege.sql, which can add a line, read
+ * the history and change a line's status, and nothing else in the database.
  *
  * Before this, Courier's history was a 1000-entry in-process ring buffer that
  * was wiped by every redeploy, every Railway restart, and every Haraka
  * child-process death (src/index.ts exits non-zero on purpose so the platform
- * restarts us). The admin dashboard therefore showed an empty table in
- * production almost all of the time.
+ * restarts us). The history therefore came back empty in production almost
+ * all of the time.
  *
  * The ring buffer survives as the development fallback: SUPABASE_URL and
- * SUPABASE_SERVICE_ROLE_KEY are optional, so `npm run dev` and `npm test` need
- * no database and behave exactly as before. A configured Vault outage is
+ * MAIL_SERVICE_KEY are optional, so `npm run dev` needs no database. A configured Vault outage is
  * returned to the caller instead of being hidden by partial in-memory data.
  *
- * Posture matches 0017/0018: RLS is on with ZERO client policies, so the
- * service role is the only access path and the browser reaches this data only
- * through Core's authenticated /api/v1/admin/emails/* proxy.
+ * Posture: row-level security on, with policies for the role `mail_service`
+ * alone, so this service is the only access path and a browser can reach this
+ * data only through an authenticated server route.
  */
 
 /** A row as stored. snake_case — this is the wire shape of the table. */
@@ -48,9 +49,9 @@ const SELECT = 'id,message_id,to_address,subject,template_type,locale,user_id,st
  */
 function vaultCreds(): { url: string; key: string } | null {
   try {
-    const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = getConfig();
-    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return null;
-    return { url: SUPABASE_URL, key: SUPABASE_SERVICE_ROLE_KEY };
+    const { SUPABASE_URL, MAIL_SERVICE_KEY } = getConfig();
+    if (!SUPABASE_URL || !MAIL_SERVICE_KEY) return null;
+    return { url: SUPABASE_URL, key: MAIL_SERVICE_KEY };
   } catch {
     return null;
   }
@@ -152,12 +153,31 @@ export async function insertEmailLog(entry: EmailLogEntry): Promise<boolean> {
     detail: entry.detail ?? {},
     created_at: entry.createdAt,
   };
-  const res = await rest<unknown>('/email_logs', {
+  const write = (body: typeof row) => rest<unknown>('/email_logs', {
     method: 'POST',
     headers: { Prefer: 'return=minimal' },
-    body: JSON.stringify(row),
+    body: JSON.stringify(body),
   });
-  return res.ok;
+  const res = await write(row);
+  if (res.ok || row.user_id === null) return res.ok;
+  // The first code of a brand-new account is sent while that account is still being created, so
+  // the database cannot see it yet and refuses the link to it. The line is written without the
+  // link rather than lost: it then leaves with the 90-day rule instead of with the account.
+  return (await write({ ...row, user_id: null })).ok;
+}
+
+/**
+ * Sets the status of the line an email already has, found by its message id. Returns whether a
+ * line was there: mail this service did not build has none, and the caller then writes one.
+ */
+export async function updateEmailLogStatus(messageId: string, status: string): Promise<boolean> {
+  if (!isVaultConfigured()) return false;
+  const res = await rest<unknown[]>(`/email_logs?message_id=eq.${encodeURIComponent(messageId)}`, {
+    method: 'PATCH',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify({ status }),
+  });
+  return res.ok && Array.isArray(res.body) && res.body.length > 0;
 }
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -198,8 +218,8 @@ export async function listEmailLogs(opts: { limit: number; offset: number; q?: s
  * (`backend/src/routes/admin.ts`) that fan-out reliably lost the race, and
  * the admin console showed "Courier no respondió" — a 2026-09 incident that
  * had nothing to do with mail delivery (Haraka kept relaying the whole time)
- * and everything to do with this being the SAME shape of bug the README
- * already documents for `GET /learn/courses`: an unbounded `Promise.all`
+ * and everything to do with this being the SAME shape of bug as
+ * `GET /learn/courses`: an unbounded `Promise.all`
  * whose request count scales with data nobody reviews at deploy time.
  *
  * The fix is the same one applied there: one row in flight's worth of work

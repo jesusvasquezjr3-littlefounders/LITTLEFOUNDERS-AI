@@ -1,0 +1,163 @@
+{
+  "nav": {
+    "label": "Sections",
+    "home": "Home",
+    "learn": "Learn",
+    "mentor": "Mentor",
+    "wallet": "Wallet",
+    "tasks": "Tasks",
+    "family": "Family",
+    "collapse": "Collapse the menu",
+    "expand": "Open the menu"
+  },
+  "home": {
+    "deck": "deck",
+    "position": "{name}, card {n} of {total}",
+    "hint": "The arrow keys pass the cards. Enter opens the top one.",
+    "failed": "We couldn't load your home.",
+    "retry": "Try again",
+    "greetings": {
+      "morning": [
+        "Good morning, {name}",
+        "Morning, {name}",
+        "Hi, {name}",
+        "Hey, {name}",
+        "Rise and shine, {name}",
+        "Good to see you, {name}"
+      ],
+      "afternoon": [
+        "Good afternoon, {name}",
+        "Hi, {name}",
+        "Hey, {name}",
+        "Hello, {name}",
+        "Good to see you, {name}",
+        "Hi again, {name}"
+      ],
+      "evening": [
+        "Good evening, {name}",
+        "Evening, {name}",
+        "Hi, {name}",
+        "Hey, {name}",
+        "Good to see you, {name}",
+        "Hi again, {name}"
+      ],
+      "night": [
+        "Hi, {name}",
+        "Hey, {name}",
+        "Still up, {name}",
+        "Look at the time, {name}",
+        "Hi again, {name}"
+      ]
+    },
+    "subtitles": {
+      "morning": [
+        "It's a great time to learn.",
+        "Your mentors are already up.",
+        "Starting early has its charm.",
+        "Had breakfast? Everything is harder on an empty stomach.",
+        "A new day and a new scene.",
+        "Sleepy or not, we're here.",
+        "A few minutes now and the rest of the day is yours.",
+        "Today you can get something you didn't yesterday.",
+        "Mornings go further than they look.",
+        "Good time for a new idea about money."
+      ],
+      "afternoon": [
+        "Good to have you back.",
+        "A good time for a break that is worth something.",
+        "Your mentors saved you a seat.",
+        "A little while here, then back to your day.",
+        "The afternoon is long. There's room for something new.",
+        "Had lunch? On to what's next.",
+        "You can learn in the middle of the afternoon too.",
+        "Take a moment for yourself.",
+        "What you figure out today pays off this weekend.",
+        "Everything is where you left it."
+      ],
+      "evening": [
+        "Good to have you back.",
+        "A little more before the day ends.",
+        "A good time to take it slow.",
+        "End the day knowing something new.",
+        "No rush. Today's stuff will be here tomorrow.",
+        "Your mentors are still around.",
+        "The night is just starting.",
+        "The day is almost done. Nice way to close it.",
+        "A bit of this, then rest.",
+        "How was your day?"
+      ],
+      "night": [
+        "Up late? Learning matters, and so does sleep.",
+        "At this hour the best thing to save is sleep.",
+        "Your mentors are yawning. It's your call.",
+        "All of this will be here tomorrow.",
+        "One quick idea, then bed.",
+        "Tired people decide worse. With money too.",
+        "Rest is an investment too.",
+        "It's late. Whatever you do now, keep it short.",
+        "A good night's sleep doesn't cost a single Seed.",
+        "We don't close, but you should."
+      ],
+      "any": [
+        "Good to see you here.",
+        "Your deck is ready.",
+        "Pass the cards and pick where to start.",
+        "Nobody rushes you here.",
+        "A mistake here costs nothing.",
+        "A different scene is waiting every day.",
+        "Learn about money without risking any.",
+        "You set the pace.",
+        "Coming back is what counts.",
+        "This is where you practice before it's real.",
+        "Your mentors were waiting for you.",
+        "Today is a good day to be curious."
+      ]
+    },
+    "cover": {
+      "today": "On stage today",
+      "scene": "Scene {n} of {total}",
+      "soon": "Soon",
+      "tiles": {
+        "lesson": "Your lesson",
+        "tasks": "Today's tasks",
+        "seeds": "Seeds",
+        "streak": "Streak"
+      }
+    }
+  },
+  "empty": {
+    "text": "Nothing here yet."
+  },
+  "scenes": {
+    "exchange": "The stock exchange",
+    "vault": "The bank vault",
+    "market": "The market",
+    "lemonade": "The lemonade stand",
+    "piggybank": "The giant piggy bank",
+    "garden": "The sunflower garden",
+    "startup": "The garage office",
+    "fair": "The invention fair",
+    "race": "The race",
+    "space": "Out in space",
+    "planet": "Another planet",
+    "jungle": "The jungle",
+    "sea": "The bottom of the sea",
+    "summit": "The summit",
+    "treasure": "Treasure island",
+    "balloon": "The balloon",
+    "classroom": "The classroom",
+    "library": "The library",
+    "kitchen": "The kitchen",
+    "camp": "The camp",
+    "beach": "The beach",
+    "funfair": "The funfair",
+    "concert": "The concert",
+    "timetravel": "Time travel",
+    "dinopark": "The dinosaur park",
+    "detectives": "The detectives",
+    "arcade": "The video game",
+    "heroes": "The superheroes",
+    "western": "The western duel",
+    "magic": "The school of magic"
+  }
+}

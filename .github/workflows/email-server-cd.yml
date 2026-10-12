@@ -5,9 +5,8 @@ name: email-server CD
 #
 # GATED: the deploy job only runs when the repository variable
 # EMAIL_SERVER_LIVE == 'true'. Until Courier's Railway service exists and its
-# Amazon SES credentials are set (the "wiring" step — see email-server/README.md
-# "Going live" and RUNBOOK.md), the job is SKIPPED (neutral, not failed), so this
-# workflow never red-flags main before the service is ready. Flip the variable to
+# Amazon SES credentials are set (the "wiring" step), the job is SKIPPED (neutral,
+# not failed), so this workflow never red-flags main before the service is ready. Flip the variable to
 # 'true' as the last wiring step to activate continuous deploys.
 on:
   workflow_run:
@@ -20,13 +19,18 @@ permissions:
 
 jobs:
   deploy:
+    # Only a push to this repository's main deploys. `workflow_run` also fires for the CI run of a pull
+    # request, and its `branches` filter matches the name of a fork's branch, so without these two
+    # checks a fork's branch called "main" would be built and deployed with the deploy token.
     if: >-
       github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
       vars.EMAIL_SERVER_LIVE == 'true'
     name: Deploy email-server (Courier) to Railway
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
       - name: Install Railway CLI

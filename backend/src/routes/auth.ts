@@ -1,633 +1,401 @@
-import { admitsAcquisitionAnswer, allowsSelfManagedAnalytics, readAnalyticsPreference, setAnalyticsPreference } from '../services/analyticsPreference.js';
-import { getRolesForGate } from '../services/insights.js';
-import { ownOptInEnrols } from '../services/dialogueExperimentNotice.js';
-import { Router } from 'express';
+import { createHash, randomBytes } from 'node:crypto';
+import { Router, type Request, type Response } from 'express';
 import { z } from 'zod';
-import { getConfig } from '../config.js';
-import { fail, ok } from '../lib/http.js';
-import { authedUser, requireAuth } from '../middleware/auth.js';
-import { accountRateLimiter, authRateLimiter } from '../middleware/rateLimit.js';
-import { kidEmail } from './family.js';
-import * as gotrue from '../services/gotrue.js';
-import { markUnder13Origin } from '../services/ageOrigin.js';
-import { birthMonthToKeep, declaredBandForDate, readAgeScreen, recordAgeScreen } from '../services/ageScreen.js';
-import { enforceKidSuspensionAtAdmission } from '../services/guardianLifecycle.js';
-import { ACCOUNT_SUSPENDED_MESSAGE, answerAdmission, readAccountAdmission } from '../middleware/accountAdmission.js';
-import { readOpenDeletion } from '../services/accountDeletion.js';
-import { attributeSignup, hasActiveAnalyticsConsent } from '../services/insights.js';
-import { getOnboardingResponse, getOwnAdminPermissions, getOwnAvatar, getOwnProfile, getOwnRoles, insertAuditLog } from '../services/supabaseRest.js';
-import { projectAvatarOptions, projectCover } from '../services/profileShape.js';
-
-/** Social providers Core is willing to broker (GoTrue must also have each enabled). */
-const OAUTH_PROVIDERS = ['google'] as const;
-type OAuthProvider = (typeof OAUTH_PROVIDERS)[number];
+import type { Config } from '../config.js';
+import { ApiError, sendData } from '../lib/http.js';
+import { describeError, log, toError } from '../lib/log.js';
+import { authOf, type AuthMiddleware } from '../middleware/auth.js';
+import type { Cookies } from '../services/cookies.js';
+import type { Gotrue, Session } from '../services/gotrue.js';
+import type { KnownDevices } from '../services/knownDevice.js';
+import type { TokenVerifier } from '../services/tokens.js';
+import type { Challenges } from '../services/challenge.js';
+import { keyFor, visitorKey, type Limits } from '../services/limits.js';
+import type { AccountContext, Vault } from '../services/vault.js';
 
 /*
- * /api/v1/auth — email+password today; social providers (Google first, then
- * Discord/Facebook…) will add GET /auth/providers + the GoTrue /authorize
- * redirect flow here without changing existing shapes.
+ * Sign-in and sign-up. There is no password anywhere: a person proves who they are with a
+ * six-digit code sent to their email address (valid 15 minutes, used once), or with Google.
+ * Entering a code for an address nobody has used yet creates the account, so signing in and
+ * signing up are the same two steps.
  *
- * Every new signup is `universal` (/AGENTS.md §1.4) — enforced by the DB
- * trigger (migration 0003), not by anything the client sends. `parentIntent`
- * only records that the user wants the Tutor upgrade; the ONLY path to the
- * `parent` role is Guardian verification (/api/v1/verification/parent).
+ * Two rules shape every handler here:
+ *   - an answer never tells whether an address or a username has an account, by what it says or by
+ *     how long it takes;
+ *   - every counter is taken before the thing it protects is attempted.
  */
+export const CODE_LENGTH = 6;
+export const CODE_LIFETIME_SECONDS = 15 * 60;
+export const RESEND_AFTER_SECONDS = 60;
 
 const LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;
+const USERNAME = /^[a-z0-9_]{3,20}$/;
 
-/** `profiles.username` (migration 0005) — the only shape a non-email login identifier can be. */
-const USERNAME_RE = /^[a-z0-9_]{3,20}$/;
+// An identifier is an email address or a username. It is trimmed and lower-cased before anything else.
+const Identifier = z.string().trim().toLowerCase().min(3).max(254);
 
-/*
- * AGE SCREENING, AND WHY IT IS A CHECK AND NOT A FIELD WE KEEP.
- *
- * Nothing here used to ask. The route's own comment said a fresh signup is
- * "an adult account by construction" because the DB trigger makes it
- * `universal` - but the role is our vocabulary, not a fact about the person.
- * A nine-year-old could hand us a name and an email, which is precisely the
- * collection COPPA is about, whatever we call the row.
- *
- * So the date of birth is REQUIRED to create an account and is then thrown
- * away: it gates, it is not stored. Keeping it would be collecting a second
- * piece of personal data to justify not collecting the first. Onboarding asks
- * again, optionally, and that one IS stored - because there it buys the learner
- * an age-appropriate level rather than buying us a compliance record.
- *
- * A child under the threshold is not turned away from the product: the guest
- * path collects nothing at all, and a parent can create them a proper account
- * from /family. They are turned away from GIVING US AN EMAIL.
- */
-// A.4 retains the minimum age band in service-owned storage, not the date.
-
-/*
- * COMPLETED CALENDAR YEARS, in UTC — not elapsed milliseconds over an average
- * year.
- *
- * The previous implementation was `(now - born) / (365.25 days)`, and an
- * AVERAGE year cannot express a boundary that a CALENDAR defines. 365.25 is
- * longer than three years out of four, so the computed age lags the real
- * birthday and the gate opens LATE — by a fraction of a day when the window
- * holds four leap days, by more than a full day when it holds three, and it
- * shifts from year to year as that alignment moves.
- *
- * Measured on the old code before it was replaced: a child born 2013-08-27,
- * evaluated on 2026-08-27 — their thirteenth birthday — computed as 12.999316
- * at 00:00 UTC and 13.000114 at 07:00 UTC. Same child, same day, refused in
- * the morning and admitted after breakfast. Sweeping 1461 consecutive days,
- * the person turning exactly 13 that day was refused on 1095 of the 1460 that
- * have a thirteenth birthday at all - 75.0%.
- *
- * It never let an under-13 through — the drift only ever ran conservative —
- * and that is exactly why it survived: it cost signups, not safety, and a
- * refused signup does not page anybody. The one test covering this gate built
- * its fixture date with `9 * 365.25 * 24 * 3600 * 1000`, the same expression
- * as the implementation, so it agreed with the bug by construction. A test
- * written in the units of the code under test can only ever confirm it.
- */
-export function yearsOld(isoDate: string, now: number): number {
-  const bornMs = Date.parse(isoDate);
-  if (Number.isNaN(bornMs)) return Number.NaN;
-  const born = new Date(bornMs);
-  const at = new Date(now);
-  let years = at.getUTCFullYear() - born.getUTCFullYear();
-  const monthDelta = at.getUTCMonth() - born.getUTCMonth();
-  if (monthDelta < 0 || (monthDelta === 0 && at.getUTCDate() < born.getUTCDate())) {
-    years -= 1;
-  }
-  return years;
-}
-
-const SignupBody = z.object({
-  email: z.email().max(254),
-  password: z.string().min(8, 'Password must be at least 8 characters').max(128),
-  displayName: z.string().trim().min(1).max(80),
+const CodeRequestBody = z.object({
+  identifier: Identifier,
   locale: z.enum(LOCALES).default('en-US'),
-  parentIntent: z.boolean().default(false),
-  /** The date is discarded; its age band is persisted after account creation. */
-  birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'A date of birth is required'),
-  /**
-   * S-04 (OD-28): optional `YYYY-MM`; when sent it must be the month of
-   * `birthDate`. For a 13-to-17 band Core keeps the month derived from the date
-   * either way, so the account moves to the adult tier at 18. Old clients never send it.
-   */
-  birthMonth: z.string().optional(),
-  /** First-party visitor id (lf_aid) — links the signup to its acquisition source. */
-  anonId: z.string().uuid().optional(),
-});
+  // The work done before asking (services/challenge.ts).
+  challenge: z.string().min(20).max(120),
+  solution: z.string().regex(/^[0-9a-z]{1,16}$/),
+}).strict();
+const CodeVerifyBody = z.object({ identifier: Identifier, code: z.string().regex(/^\d{6}$/) }).strict();
+const GoogleStartQuery = z.object({ mode: z.enum(['popup', 'redirect']).default('redirect') });
+const GoogleCallbackQuery = z.object({ code: z.string().min(8).max(512).optional() });
+
+type Target = { kind: 'email'; email: string } | { kind: 'username'; email: string | null; username: string };
 
 /*
- * ONE FIELD, TWO KINDS OF ACCOUNT. An adult signs in with an email; a child
- * signs in with the handle their parent chose, because a child has no mailbox
- * and we do not collect one (§1.9). Rather than a second endpoint or a mode
- * toggle a nine-year-old has to understand, the identifier is accepted either
- * way and disambiguated by the one character that cannot appear in a username:
- * `@` is excluded by the `^[a-z0-9_]{3,20}$` constraint on `profiles.username`
- * (migration 0005), so the two shapes can never collide.
- *
- * `email` is kept as the field name for wire compatibility with every client
- * already sending it; `identifier` is accepted as the honest alias.
+ * The mailbox an address delivers to, for counting only (the email still goes to what was typed).
+ * `name+anything@` reaches the mailbox of `name@` at most providers, and Gmail also ignores the
+ * dots, so without this one mailbox would have as many counters as it has spellings.
  */
-const LoginBody = z
-  .object({
-    email: z.string().trim().max(254).optional(),
-    identifier: z.string().trim().max(254).optional(),
-    password: z.string().min(1).max(128),
-  })
-  .transform((v) => ({ identifier: v.identifier ?? v.email ?? '', password: v.password }))
-  .refine((v) => v.identifier.length > 0, { message: 'An email or username is required' });
+function mailbox(email: string): string {
+  const at = email.lastIndexOf('@');
+  const domain = email.slice(at + 1);
+  const name = email.slice(0, at).split('+')[0] ?? '';
 
-const RefreshBody = z.object({ refreshToken: z.string().min(1) });
-
-const RecoverBody = z.object({ email: z.email().max(254) });
-
-const ResetPasswordBody = z.object({
-  password: z.string().min(8, 'Password must be at least 8 characters').max(128),
-});
-
-const ChangePasswordBody = z.object({
-  currentPassword: z.string().min(1).max(128),
-  newPassword: z.string().min(8, 'Password must be at least 8 characters').max(128),
-});
-
-const ChangeEmailBody = z.object({
-  newEmail: z.email().max(254),
-  currentPassword: z.string().min(1).max(128),
-});
-
-const UpgradeBody = z.object({
-  email: z.email().max(254),
-  password: z.string().min(8, 'Password must be at least 8 characters').max(128),
-  /** So Core can mint a fresh session whose is_anonymous claim is already false. */
-  refreshToken: z.string().min(1),
-  /** First-party visitor id — attribution fires HERE, not at /auth/guest, since becoming a real account is the funnel event that matters. */
-  anonId: z.string().uuid().optional(),
-});
-
-function sessionPayload(s: Partial<gotrue.GotrueSession>) {
-  return s.access_token
-    ? {
-        accessToken: s.access_token,
-        refreshToken: s.refresh_token ?? '',
-        expiresIn: s.expires_in ?? 3600,
-        user: s.user ? { id: s.user.id, email: s.user.email, metadata: s.user.user_metadata ?? {} } : null,
-      }
-    : null;
+  return `${domain === 'gmail.com' || domain === 'googlemail.com' ? name.replaceAll('.', '') : name}@${domain === 'googlemail.com' ? 'gmail.com' : domain}`;
 }
 
-/**
- * A.1 (F3-identity-site): a session GoTrue has just issued (sign-in or
- * refresh) reaches the client only for an active account. A paused child's
- * sessions are all revoked; when the marker cannot be read, only the new
- * session ends and the caller retries (fail closed, never a pass).
- */
-async function admitNewSession(res: Parameters<typeof fail>[0], session: Partial<gotrue.GotrueSession>): Promise<boolean> {
-  const userId = session.user?.id;
-  if (!userId || !session.access_token) return true;
-  const admission = await readAccountAdmission(userId);
-  if (admission === 'active') return true;
-  if (admission === 'suspended') {
-    const revoked = await gotrue.adminRevokeUserSessions(userId);
-    if (revoked.error) console.error(`[backend] session revocation FAILED for paused account user=${userId} at sign-in`);
-  } else {
-    await gotrue.signOut(session.access_token, 'local');
-  }
-  answerAdmission(res, admission);
-  return false;
+/** What the frontend may know about the signed-in account. */
+function accountView(userId: string, account: AccountContext) {
+  const type = account.roles.includes('child') ? 'child' : account.roles.includes('universal') ? 'universal' : null;
+
+  return {
+    id: userId,
+    email: account.email,
+    username: account.username,
+    displayName: account.displayName,
+    locale: account.locale,
+    mentor: account.mentor,
+    parentIntent: account.parentIntent,
+    roles: account.roles,
+    type,
+    // An account without a declared age has no type yet and must go through the age step first.
+    needsAge: !account.ageDeclared,
+  };
 }
 
-export function authRouter(): Router {
+export function createAuthRouter(deps: { config: Config; gotrue: Gotrue; vault: Vault; cookies: Cookies; knownDevices: KnownDevices; challenges: Challenges; limits: Limits; auth: AuthMiddleware; verifyToken: TokenVerifier }): Router {
+  const { config, gotrue, vault, cookies, knownDevices, challenges, limits, auth, verifyToken } = deps;
   const router = Router();
 
-  async function analyticsManagement(res: Parameters<typeof fail>[0]) {
-    const user = authedUser(res);
-    const [age, roles] = await Promise.all([readAgeScreen(user.id), getRolesForGate(user.id)]);
-    if (!age || !roles || roles.length === 0) return null;
-    // S-04 (OD-28): a teen who moved to the adult tier by birth month keeps the
-    // toggle, because their teen choice still decides (allowsSelfManagedAnalytics).
-    const teenChoiceApplies = age.ageBand === '13_to_17' || age.adultByBirthMonth === true;
-    const eligible = !user.isGuest && !age.required && !age.protectedOrigin && teenChoiceApplies && !roles.includes('kid');
-    // M-12 (OD-26): this toggle is also the consent that admits the account to
-    // the C.17 dialogue-style experiment; the screen says so only when it does.
-    return { eligible, dialogueExperiment: eligible && ownOptInEnrols(age, getConfig().MENTOR_DIALOGUE_EXPERIMENT_BANDS) };
+  const clientKey = (req: Request): string => visitorKey(req.ip);
+
+  async function resolve(identifier: string): Promise<Target | null> {
+    if (identifier.includes('@')) {
+      return z.email().max(254).safeParse(identifier).success ? { kind: 'email', email: identifier } : null;
+    }
+
+    if (!USERNAME.test(identifier)) return null;
+
+    return { kind: 'username', email: await vault.emailForUsername(identifier), username: identifier };
   }
-  router.get('/analytics-preference', requireAuth, async (_req, res) => {
-    const management = await analyticsManagement(res);
-    if (management === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve analytics eligibility');
-    if (!management.eligible) return ok(res, { canManage: false, enabled: false, disclosed: false, dialogueExperiment: false });
-    const preference = await readAnalyticsPreference(authedUser(res).id);
-    return preference
-      ? ok(res, { canManage: true, ...preference, dialogueExperiment: management.dialogueExperiment })
-      : fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read analytics preference');
-  });
-  router.put('/analytics-preference', requireAuth, async (req, res) => {
-    const body = z.object({ enabled: z.boolean() }).strict().safeParse(req.body);
-    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'Choose whether to share optional analytics');
-    const management = await analyticsManagement(res);
-    if (management === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve analytics eligibility');
-    if (!management.eligible) return fail(res, 403, 'FORBIDDEN', 'This account cannot manage teen analytics');
-    const user = authedUser(res);
-    if (await setAnalyticsPreference(user.id, body.data.enabled) !== body.data.enabled) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not save analytics preference');
-    const confirmed = await readAnalyticsPreference(user.id);
-    if (!confirmed?.disclosed || confirmed.enabled !== body.data.enabled) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not confirm analytics preference');
-    return ok(res, { canManage: true, ...confirmed, dialogueExperiment: management.dialogueExperiment });
-  });
 
-  router.get('/age-screen', requireAuth, async (_req, res) => {
-    const state = await readAgeScreen(authedUser(res).id);
-    if (!state) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve age screening');
-    return ok(res, state);
-  });
+  /*
+   * Two counter keys per request. `typed` is what the person typed, an address or a username: its
+   * limits are the ones a caller can see (a 429). `account` is the address the code goes to,
+   * whichever way it was named: its limits hold silently. If a refusal on one identifier could be
+   * seen through the other, filling a username's counter and probing an address would tell which
+   * address the username belongs to.
+   *
+   * Both come in two sets, `stranger` and `known`. A browser that has signed in to the account
+   * before (services/knownDevice.ts) counts in the `known` set, which nobody else can spend. Without
+   * that, somebody who knows a child's username could use up the account's guesses and emails on
+   * purpose and lock the child out for a day without the child being told why.
+   */
+  type Scope = 'stranger' | 'known';
 
-  router.post('/age-screen', requireAuth, authRateLimiter, async (req, res) => {
-    // S-04 (OD-28): `birthMonth` is optional; old clients send `{ birthDate }` only.
-    // When sent it must be the month of the birth date. The band is kept; for a
-    // teen, also the birth month derived from the date, never the day.
-    const parsed = z.object({ birthDate: z.string(), birthMonth: z.string().optional() }).strict().safeParse(req.body);
-    const band = parsed.success ? declaredBandForDate(parsed.data.birthDate) : null;
-    if (!parsed.success || !band) return fail(res, 400, 'VALIDATION_ERROR', 'Enter a valid birth date');
-    if (birthMonthToKeep(parsed.data.birthDate, parsed.data.birthMonth, band) === 'invalid') {
-      return fail(res, 400, 'VALIDATION_ERROR', 'The birth month must be the month of the birth date');
-    }
-    const id = authedUser(res).id;
-    // A.4 (OD-3): a parent-created child never declares their own age; the
-    // verified Tutor gives it (POST/PATCH /family/kids). Refused before any write.
-    const roles = await getRolesForGate(id);
-    if (roles === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve the account role');
-    if (roles.includes('kid')) return fail(res, 403, 'KID_AGE_BY_TUTOR', 'Your Tutor gives your age');
-    if (!await recordAgeScreen(id, band, parsed.data.birthDate)) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record age screening');
-    const state = await readAgeScreen(id);
-    if (!state || state.required) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not confirm age screening');
-    return ok(res, state);
-  });
+  const SCOPES: readonly Scope[] = ['stranger', 'known'];
 
-  router.post('/signup', accountRateLimiter, async (req, res) => {
-    const parsed = SignupBody.safeParse(req.body);
-    if (!parsed.success) {
-      return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid input');
-    }
-    const declaredBand = declaredBandForDate(parsed.data.birthDate);
-    if (!declaredBand) {
-      return fail(res, 400, 'VALIDATION_ERROR', 'That date of birth is not valid');
-    }
-    if (birthMonthToKeep(parsed.data.birthDate, parsed.data.birthMonth, declaredBand) === 'invalid') {
-      return fail(res, 400, 'VALIDATION_ERROR', 'The birth month must be the month of the birth date');
-    }
-    if (declaredBand === 'under_13') {
-      // A distinct code, because the frontend must explain the way OUT of this
-      // (a parent creates the account) rather than show a generic rejection.
-      return fail(res, 403, 'AGE_RESTRICTED', 'An adult has to create this account');
-    }
+  const scopeOf = (req: Request, target: Target): Scope => (target.email && knownDevices.knows(req, target.email) ? 'known' : 'stranger');
+  const typedKey = (target: Target, scope: Scope): string => keyFor(`${scope}:${target.kind === 'email' ? `email:${mailbox(target.email)}` : `username:${target.username}`}`);
+  const accountKey = (target: Target, scope: Scope): string | null => (target.email ? keyFor(`${scope}:account:${mailbox(target.email)}`) : null);
 
-    // `birthDate` is deliberately NOT forwarded: signUp takes what it needs and
-    // Core derives and stores only its minimum age band below (for a teen,
-    // also the birth month so the band moves to adult at 18, OD-28).
-    const { data, error } = await gotrue.signUp(parsed.data);
-    if (error) return fail(res, error.status >= 500 ? 502 : error.status, error.code, error.message);
-    const newUserId = data.user?.id ?? data.id;
-    if (!newUserId || !await recordAgeScreen(newUserId, declaredBand, parsed.data.birthDate)) {
-      return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record age screening');
-    }
+  /** A new code replaces the old one for everybody, so the attempts on it start again in both sets. */
+  async function resetAttemptsPerCode(target: Target): Promise<void> {
+    for (const scope of SCOPES) {
+      await limits.reset('attemptsPerCode', typedKey(target, scope));
 
-    // Attribution: which channel produced this signup (/INSIGHTS.md §7).
-    // Every fresh signup is `universal` by DB trigger AND has now passed the
-    // age screen above — the previous version of this comment claimed the
-    // account was adult "by construction", which was an assumption about the
-    // role name rather than a check on the person.
-    if (parsed.data.anonId && newUserId) {
-      void attributeSignup(parsed.data.anonId, newUserId, ['universal']);
-    }
+      const account = accountKey(target, scope);
 
-    // Autoconfirm ON → session; OFF (prod) → email confirmation pending.
-    const session = sessionPayload(data);
-    return ok(res, { session, confirmationRequired: session === null }, 201);
+      if (account) await limits.reset('attemptsPerCode', account);
+    }
+  }
+
+  /** Stores the session in cookies and answers with the account. */
+  async function startSession(req: Request, res: Response, session: Session, sessionId: string): Promise<void> {
+    await vault.syncBaseType(session.userId);
+
+    const account = await vault.sessionContext(session.userId, sessionId);
+
+    if (!account?.active) throw new ApiError('SESSION_EXPIRED');
+
+    cookies.setSession(res, session);
+    if (account.email) knownDevices.remember(req, res, account.email);
+    sendData(res, { account: accountView(session.userId, account) });
+  }
+
+  // ---------------------------------------------------------------------------------------------
+  // One-time code by email
+  // ---------------------------------------------------------------------------------------------
+
+  /*
+   * The piece of work a browser does before it asks for a code (services/challenge.ts). Handing
+   * one out costs Core nothing and stores nothing.
+   */
+  router.get('/challenge', async (req, res) => {
+    await limits.consume('ipSession', clientKey(req));
+    sendData(res, { challenge: challenges.issue(), difficulty: challenges.difficulty });
   });
 
-  // Guest session — Duolingo-style: start using the platform with zero signup
-  // friction. This is a real auth.users row (GoTrue anonymous sign-in), so
-  // every existing bootstrap trigger (profile + universal role +
-  // learning_stats, migration 0003/0006) and every RLS policy already work
-  // unchanged. "Guest" here is product vocabulary for GoTrue's is_anonymous —
-  // unrelated to the pre-signup lf_aid marketing visitor id used elsewhere.
-  router.post('/guest', accountRateLimiter, async (req, res) => {
-    const origin = z.object({ under13Origin: z.literal(true).optional() }).strict().safeParse(req.body ?? {});
-    if (!origin.success) return fail(res, 400, 'VALIDATION_ERROR', 'Invalid guest origin');
-    const { data, error } = await gotrue.signInAnonymously();
-    if (error) return fail(res, error.status >= 500 ? 502 : error.status, error.code, error.message);
-    if (origin.data.under13Origin) {
-      const flagged = Boolean(data.user?.id) && await markUnder13Origin(data.user!.id);
-      // Appendix M 1.1 Guest-Session Origin-Flag Coverage (target 100%): every
-      // age-refusal guest request leaves an event with whether its flag was
-      // confirmed. Read by public.identity_metrics; no detail beyond that.
-      if (data.user?.id) await insertAuditLog(data.user.id, 'auth.guest.age_refusal', data.user.id, { flagged });
-      if (!flagged) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not protect the guest session');
+  router.post('/code', async (req, res) => {
+    await limits.consume('ipCodeRequest', clientKey(req));
+
+    const body = CodeRequestBody.safeParse(req.body);
+
+    if (!body.success) throw new ApiError('BAD_REQUEST');
+
+    // The work is checked first and the challenge is spent, whatever comes next: one request, one challenge.
+    if (!challenges.accepts(body.data.challenge, body.data.solution) || !(await limits.allow('challengeOnce', keyFor(body.data.challenge)))) {
+      throw new ApiError('PROOF_REQUIRED');
     }
-    return ok(res, { session: sessionPayload(data) }, 201);
+
+    const target = await resolve(body.data.identifier);
+
+    if (!target) throw new ApiError('BAD_REQUEST');
+
+    const scope = scopeOf(req, target);
+    const typed = typedKey(target, scope);
+
+    // One email a minute and five an hour per identifier, whoever asks. They apply to an identifier
+    // nobody owns too, so they say nothing about whether it exists.
+    await limits.consume('codeCooldown', typed);
+    await limits.consume('codeHourly', typed);
+
+    // Answer first, send afterwards, whatever was typed. A username that exists and one that does
+    // not, an address with an account and one without, an address that just got a code through its
+    // username and one that did not: all take the same time and get the same answer. The price is
+    // that a failure to send is not told to the person; it is logged, and they can ask again.
+    sendData(res, { sent: true, codeLength: CODE_LENGTH, expiresInSeconds: CODE_LIFETIME_SECONDS, resendAfterSeconds: RESEND_AFTER_SECONDS });
+
+    const { email } = target;
+    const account = accountKey(target, scope);
+
+    if (!email || !account) return;
+
+    void (async () => {
+      // The address already got a code less than a minute ago (asked for another way): that code
+      // is still good, so nothing new is sent.
+      if (!(await limits.allow('codeCooldown', account)) || !(await limits.allow('codeHourly', account))) return;
+
+      // Only an address typed in full can open an account; a username never does.
+      const createAccount = target.kind === 'email';
+
+      // New addresses share one allowance an hour for the whole service, so a flood of made-up
+      // addresses cannot use up the emails of people who already have an account.
+      if (createAccount && !(await vault.accountExists(email)) && !(await limits.allow('newAddressHourly', 'all'))) {
+        return log.warn('auth.code.new_address_ceiling');
+      }
+
+      const result = await gotrue.sendCode(email, { createAccount, locale: body.data.locale });
+
+      if (!result.ok) return log.warn('auth.code.send_failed', { failure: result.failure, by: target.kind });
+
+      // A new code starts with a clean set of attempts; the old code no longer works.
+      await resetAttemptsPerCode(target);
+    })().catch((thrown: unknown) => log.error('auth.code.send_failed', describeError(toError(thrown))));
   });
 
-  // Attach a permanent identity to the CURRENT guest session, in place — same
-  // auth.users.id, so every row already written (profile, learning_stats,
-  // lesson_progress) carries over with zero data migration. Never the normal
-  // /signup path, which would mint a second, blank identity instead.
-  router.post('/upgrade', requireAuth, authRateLimiter, async (req, res) => {
-    const user = authedUser(res);
-    if (!user.isGuest) {
-      return fail(res, 409, 'NOT_A_GUEST', 'This account already has a permanent identity');
-    }
-    const parsed = UpgradeBody.safeParse(req.body);
-    if (!parsed.success) {
-      return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid input');
+  router.post('/code/verify', async (req, res) => {
+    await limits.consume('ipCodeVerify', clientKey(req));
+
+    const body = CodeVerifyBody.safeParse(req.body);
+
+    if (!body.success) throw new ApiError('CODE_INVALID');
+
+    const target = await resolve(body.data.identifier);
+
+    if (!target) throw new ApiError('CODE_INVALID');
+
+    const scope = scopeOf(req, target);
+    const typed = typedKey(target, scope);
+    const account = accountKey(target, scope);
+
+    // Count the attempt before making it. Two requests racing with the same code cannot both slip
+    // under the limit, because taking a point is atomic.
+    await limits.consume('attemptsPerCode', typed, 'TOO_MANY_ATTEMPTS');
+    await limits.consume('attemptsDaily', typed, 'TOO_MANY_ATTEMPTS');
+
+    // The address's own attempts count too, silently, however it was named: five per code in all.
+    // Once they are used up the code is simply wrong, whatever is typed.
+    const exhausted = account !== null
+      && (!(await limits.allow('attemptsPerCode', account)) || !(await limits.allow('attemptsDaily', account)));
+
+    // Worth seeing in the logs: somebody is guessing at one account. No address, no username.
+    if (exhausted) log.warn('auth.code.attempts_exhausted', { scope });
+
+    // An identifier nobody owns, or an address out of attempts, is still checked against the
+    // authentication service with an address that cannot exist, so it fails the same way and in the
+    // same time as a wrong code.
+    const email = target.email && !exhausted ? target.email : `${typed}@unknown.invalid`;
+    const result = await gotrue.verifyCode(email, body.data.code);
+
+    if (!result.ok) {
+      if (result.failure === 'unavailable') throw new ApiError('UNAVAILABLE');
+
+      throw new ApiError('CODE_INVALID');
     }
 
-    const { error: updateError } = await gotrue.upgradeAnonymousUser(user.accessToken, {
-      email: parsed.data.email,
-      password: parsed.data.password,
-    });
-    if (updateError) {
-      const status = updateError.status >= 500 ? 502 : updateError.status;
-      return fail(res, status, updateError.code, updateError.message);
+    for (const key of new Set([typed, account ?? typed])) {
+      await limits.reset('attemptsPerCode', key);
+      await limits.refund('attemptsDaily', key);
     }
 
-    // The bearer token already in hand still carries the stale
-    // is_anonymous:true claim until reissued — refresh immediately so the
-    // session this response hands back correctly reports the account as
-    // permanent from this call on, with no extra client round-trip.
-    const { data: refreshed, error: refreshError } = await gotrue.refreshSession(parsed.data.refreshToken);
-    if (refreshError) {
-      return fail(res, 502, 'INTERNAL', 'Account upgraded but the session could not be refreshed — sign in again');
-    }
-
-    if (parsed.data.anonId) {
-      void attributeSignup(parsed.data.anonId, user.id, ['universal']);
-    }
-
-    return ok(res, { session: sessionPayload(refreshed) });
+    await startSession(req, res, result.value, await sessionIdOf(result.value.accessToken));
   });
 
-  router.post('/login', authRateLimiter, async (req, res) => {
-    const parsed = LoginBody.safeParse(req.body);
-    if (!parsed.success) {
-      return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid input');
-    }
-    // A username resolves to the synthetic `.invalid` address the kid account
-    // was created with - derived, never stored twice, which is also why a kid's
-    // username is not editable (see family.ts kidEmail).
-    const identifier = parsed.data.identifier;
-    /*
-     * E.1 probing boundary: an identifier without `@` is a kid handle, and the
-     * DB constraint on `profiles.username` is `^[a-z0-9_]{3,20}$` (migration
-     * 0005). Reject any other shape here instead of handing GoTrue an
-     * arbitrarily long synthetic address, so every well-formed handle probe
-     * gets the same uniform INVALID_CREDENTIALS response and malformed input
-     * is refused before any auth lookup.
-     */
-    if (!identifier.includes('@') && !USERNAME_RE.test(identifier.toLowerCase())) {
-      return fail(res, 400, 'VALIDATION_ERROR', 'An email or username is required');
-    }
-    const email = identifier.includes('@') ? identifier : kidEmail(identifier.toLowerCase());
-    const { data, error } = await gotrue.signInWithPassword(email, parsed.data.password);
-    if (error) {
-      /*
-       * A.1 + E.1: GoTrue refuses a paused child's account BEFORE it checks the
-       * password, so its "banned" answer proves nothing about the caller. It
-       * gets the same uniform INVALID_CREDENTIALS as every other failed probe;
-       * naming the pause here would tell anyone holding a username that the
-       * child's Tutor is gone.
-       */
-      if (error.code === 'ACCOUNT_SUSPENDED') return fail(res, 401, 'INVALID_CREDENTIALS', 'Invalid login credentials');
-      const status = error.code === 'INVALID_CREDENTIALS' || error.code === 'EMAIL_NOT_CONFIRMED' ? 401 : error.status >= 500 ? 502 : error.status;
-      return fail(res, status, error.code, error.message);
-    }
-    // The password was right: a paused child (the GoTrue ban missing, e.g. a
-    // stack before the identity_enforcement migration) gets no session.
-    if (!(await admitNewSession(res, data))) return;
-    return ok(res, { session: sessionPayload(data) });
+  // ---------------------------------------------------------------------------------------------
+  // Session
+  // ---------------------------------------------------------------------------------------------
+
+  router.get('/session', auth.requireAuth, (req, res) => {
+    const { userId, account } = authOf(req);
+
+    sendData(res, { account: accountView(userId, account) });
   });
 
-  router.post('/refresh', authRateLimiter, async (req, res) => {
-    const parsed = RefreshBody.safeParse(req.body);
-    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'refreshToken is required');
-    const { data, error } = await gotrue.refreshSession(parsed.data.refreshToken);
-    // A refresh token is the holder's own credential, so the pause may be named.
-    if (error?.code === 'ACCOUNT_SUSPENDED') return fail(res, 403, 'ACCOUNT_SUSPENDED', ACCOUNT_SUSPENDED_MESSAGE);
-    if (error) return fail(res, 401, 'UNAUTHORIZED', 'Session expired — sign in again');
-    if (!(await admitNewSession(res, data))) return;
-    return ok(res, { session: sessionPayload(data) });
-  });
+  router.post('/refresh', async (req, res) => {
+    await limits.consume('ipSession', clientKey(req));
 
-  router.post('/logout', requireAuth, async (_req, res) => {
-    await gotrue.signOut(authedUser(res).accessToken); // best-effort; token is dropped client-side regardless
-    return ok(res, { signedOut: true });
-  });
+    const refreshToken = cookies.refreshToken(req);
 
-  // Sends the recovery.html email (email-server/AGENTS.md). Always answers
-  // 200 — GoTrue itself never reveals whether the address has an account, so
-  // this route doesn't either. The link lands on /reset-password carrying
-  // `type=recovery` fragment tokens, which the frontend must exchange for a
-  // new password rather than treat as a normal login (see /reset-password).
-  router.post('/recover', authRateLimiter, async (req, res) => {
-    const parsed = RecoverBody.safeParse(req.body);
-    if (!parsed.success) {
-      return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid input');
+    if (!refreshToken) throw new ApiError('UNAUTHENTICATED');
+
+    const result = await gotrue.refresh(refreshToken);
+
+    if (!result.ok) {
+      if (result.failure === 'unavailable') throw new ApiError('UNAVAILABLE');
+
+      // A refresh token that was already used, revoked or expired: the session is over.
+      cookies.clearSession(res);
+
+      throw new ApiError('SESSION_EXPIRED');
     }
-    const { FRONTEND_URL } = getConfig();
-    await gotrue.recover(parsed.data.email, `${FRONTEND_URL}/reset-password`);
-    return ok(res, { sent: true });
+
+    await startSession(req, res, result.value, await sessionIdOf(result.value.accessToken));
   });
 
-  // Completes a recovery link. The bearer token is the session GoTrue minted
-  // when the recovery link was verified — a full, ordinary `role:
-  // authenticated` session (1h, with its own refresh token), NOT a
-  // single-use or short-lived credential, and requireAuth alone can't tell
-  // it apart from any other valid session. GoTrue does mark HOW the session
-  // was established via `amr` (`[{method: "otp", ...}]` for a verified
-  // recovery/magic-link, vs `"password"`/`"oauth"` for an ordinary login) —
-  // required here so a stolen ordinary access token can't be used to
-  // silently set a new password with no re-auth (unlike /change-password,
-  // this route intentionally never asks for the current password, since the
-  // whole point of recovery is not knowing it).
-  router.post('/reset-password', requireAuth, authRateLimiter, async (req, res) => {
-    const parsed = ResetPasswordBody.safeParse(req.body);
-    if (!parsed.success) {
-      return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid input');
+  router.post('/sign-out', async (req, res) => {
+    let accessToken = cookies.accessToken(req);
+    const refreshToken = cookies.refreshToken(req);
+
+    // The cookies go whatever happens next: signing out must always work from the person's side.
+    cookies.clearSession(res);
+
+    // The access cookie leaves the browser when its token expires (about an hour), while the session
+    // and its refresh token live on at the authentication service. Ending the session needs a
+    // token that is still good, so one is obtained with the refresh token and used at once: a copy
+    // of the refresh token taken earlier must not outlive the person's sign-out.
+    if (!accessToken && refreshToken) {
+      const refreshed = await gotrue.refresh(refreshToken);
+
+      if (refreshed.ok) accessToken = refreshed.value.accessToken;
+      else if (refreshed.failure === 'unavailable') log.warn('auth.sign_out.unavailable');
     }
-    const user = authedUser(res);
-    if (!user.amr.some((e) => e.method === 'otp')) {
-      return fail(res, 403, 'FORBIDDEN', 'This session was not established via a password-recovery link');
+
+    if (accessToken) {
+      const result = await gotrue.signOut(accessToken);
+
+      if (!result.ok && result.failure === 'unavailable') log.warn('auth.sign_out.unavailable');
     }
-    const { error } = await gotrue.updateUser(user.accessToken, { password: parsed.data.password });
-    if (error) return fail(res, error.status >= 500 ? 502 : error.status, error.code, error.message);
-    return ok(res, { updated: true });
+
+    sendData(res, { signedOut: true });
   });
 
-  // In-session password change (Settings). Re-verifies currentPassword via a
-  // real GoTrue sign-in — GoTrue's `PUT /user` applies a new password to any
-  // valid bearer token with no re-auth of its own, so this is the only gate.
-  router.post('/change-password', requireAuth, authRateLimiter, async (req, res) => {
-    const parsed = ChangePasswordBody.safeParse(req.body);
-    if (!parsed.success) {
-      return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid input');
-    }
-    const user = authedUser(res);
-    const { error: verifyError } = await gotrue.signInWithPassword(user.email, parsed.data.currentPassword);
-    if (verifyError) return fail(res, 401, 'INVALID_CREDENTIALS', 'Current password is incorrect');
-    const { error } = await gotrue.updateUser(user.accessToken, { password: parsed.data.newPassword });
-    if (error) return fail(res, error.status >= 500 ? 502 : error.status, error.code, error.message);
-    return ok(res, { updated: true });
+  // ---------------------------------------------------------------------------------------------
+  // Google
+  // ---------------------------------------------------------------------------------------------
+
+  router.get('/providers', async (_req, res) => {
+    sendData(res, { google: await googleEnabled() });
   });
 
-  // In-session email change (Settings). Sends email_change.html to the new
-  // address (and the old one, if GOTRUE_MAILER_SECURE_EMAIL_CHANGE_ENABLED)
-  // — auth.users.email does NOT change until that link is confirmed, so the
-  // response only promises a pending change, never a completed one.
-  router.post('/change-email', requireAuth, authRateLimiter, async (req, res) => {
-    const parsed = ChangeEmailBody.safeParse(req.body);
-    if (!parsed.success) {
-      return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid input');
-    }
-    const user = authedUser(res);
-    // A.6: a child account has a synthetic, non-deliverable sign-in address
-    // BY DESIGN (data minimization — see family.ts kidEmail). Attaching a
-    // real email would quietly hand the child an independent recovery path
-    // outside the guardian's sight, so the capability is removed for the
-    // kid role rather than merely hidden.
-    const roles = await getRolesForGate(user.id);
-    if (roles === null) return fail(res, 502, 'INTERNAL', 'Could not verify account roles');
-    if (roles.includes('kid')) {
-      // Appendix M 1.3: every refused attempt is counted (identity_metrics
-      // reads 'auth.kid_email_change.refused'); the address is never logged.
-      await insertAuditLog(user.id, 'auth.kid_email_change.refused', user.id, {});
-      return fail(res, 403, 'KID_EMAIL_FORBIDDEN', 'A child account has no email to change');
-    }
-    const { error: verifyError } = await gotrue.signInWithPassword(user.email, parsed.data.currentPassword);
-    if (verifyError) return fail(res, 401, 'INVALID_CREDENTIALS', 'Current password is incorrect');
-    const { FRONTEND_URL } = getConfig();
-    const { error } = await gotrue.updateUser(
-      user.accessToken,
-      { email: parsed.data.newEmail },
-      `${FRONTEND_URL}/profile/settings`,
-    );
-    if (error) return fail(res, error.status >= 500 ? 502 : error.status, error.code, error.message);
-    return ok(res, { pending: true });
+  /*
+   * Starts a Google sign-in. The browser is sent to Google through the authentication service with
+   * a challenge; the secret that answers it stays in a cookie in this browser. Only the browser
+   * that started the sign-in can finish it, so a link prepared by somebody else cannot sign a
+   * person in to the wrong account.
+   */
+  router.get('/google/start', async (req, res) => {
+    await limits.consume('ipSession', clientKey(req));
+
+    const query = GoogleStartQuery.safeParse(req.query);
+    const mode = query.success ? query.data.mode : 'redirect';
+
+    if (!(await googleEnabled())) return res.redirect(303, finishUrl(mode, 'unavailable'));
+
+    const verifier = randomBytes(48).toString('base64url');
+    const challenge = createHash('sha256').update(verifier, 'ascii').digest('base64url');
+
+    cookies.setOAuthState(res, { verifier, mode });
+    res.redirect(303, gotrue.googleAuthorizeUrl({ redirectTo: `${config.publicApiOrigin}/api/v1/auth/google/callback`, codeChallenge: challenge }));
   });
 
-  // Which social providers are actually enabled server-side (GoTrue). The
-  // frontend shows a provider's button only when it appears here, so enabling
-  // Google is a pure server-side config step — no frontend redeploy needed.
-  // Cheap public reads (no credentials) → covered by the global limiter (§1.14),
-  // not the strict auth limiter reserved for credential attempts.
-  router.get('/oauth/providers', async (_req, res) => {
-    const { data } = await gotrue.getSettings();
-    const external = data?.external ?? {};
-    const providers = OAUTH_PROVIDERS.filter((p) => external[p] === true);
-    return ok(res, { providers });
+  router.get('/google/callback', async (req, res) => {
+    const state = cookies.oauthState(req);
+
+    cookies.clearOAuthState(res);
+
+    const mode = state?.mode ?? 'redirect';
+    const query = GoogleCallbackQuery.safeParse(req.query);
+
+    // No state: this browser did not start a sign-in. No code: the person cancelled, or Google refused.
+    if (!state || !query.success || !query.data.code) return res.redirect(303, finishUrl(mode, 'cancelled'));
+
+    const result = await gotrue.exchangeOAuthCode(query.data.code, state.verifier);
+
+    if (!result.ok) return res.redirect(303, finishUrl(mode, result.failure === 'unavailable' ? 'unavailable' : 'failed'));
+
+    await vault.syncBaseType(result.value.userId);
+    cookies.setSession(res, result.value);
+    res.redirect(303, finishUrl(mode, 'ok'));
   });
 
-  // Hand the browser the GoTrue /authorize URL for a provider. Core owns the
-  // redirect_to (the frontend never needs the auth host — §1.5). The browser
-  // follows this to GoTrue → the provider → back to /auth/callback.
-  router.get('/oauth/:provider', (req, res) => {
-    const provider = String(req.params.provider);
-    if (!OAUTH_PROVIDERS.includes(provider as OAuthProvider)) {
-      return fail(res, 400, 'VALIDATION_ERROR', 'Unsupported provider');
-    }
-    const { FRONTEND_URL } = getConfig();
-    return ok(res, { url: gotrue.authorizeUrl(provider, `${FRONTEND_URL}/auth/callback`) });
-  });
+  // The answer is the same for a minute: this is asked on every page that shows the sign-in window.
+  let googleCache: { value: boolean; until: number } | null = null;
 
-  router.get('/me', requireAuth, async (_req, res) => {
-    const user = authedUser(res);
-    const [profiles, roles, avatars, onboarding] = await Promise.all([
-      getOwnProfile(user.accessToken, user.id),
-      getOwnRoles(user.accessToken, user.id),
-      getOwnAvatar(user.accessToken, user.id),
-      getOnboardingResponse(user.id),
-    ]);
-    if (!profiles || !roles) return fail(res, 502, 'INTERNAL', 'Profile service unreachable');
-    const roleNames = roles.map((r) => r.role);
-    /*
-     * A.1 suspension enforcement at session admission: a kid whose last
-     * verified guardian link disappeared is suspended (migration 0110). The
-     * enforcement is session revocation — once this reads the marker, every
-     * live session dies, so the account is unusable rather than merely
-     * warned. The lazy 90-day purge runs at the same boundary. A failed
-     * marker read never revokes or deletes (§1.14).
-     */
-    if (roleNames.includes('kid')) {
-      const suspension = await enforceKidSuspensionAtAdmission(user.id);
-      if (suspension === 'deleted') return fail(res, 401, 'ACCOUNT_DELETED', 'This account was removed');
-      if (suspension === 'suspended') return fail(res, 403, 'ACCOUNT_SUSPENDED', 'This account is paused');
-    }
-    // Display-only (routes the client to /onboarding, nothing is written from
-    // it) — a transient Vault miss collapses to false rather than 502ing the
-    // whole /me call over a non-critical field (backend/AGENTS.md READ-MODIFY-
-    // WRITE rule applies to writers, not this kind of reader).
-    const onboardingComplete = (onboarding?.length ?? 0) > 0;
-    const staffPermissions = roleNames.some((role) => role === 'admin' || role === 'superadmin')
-      ? await getOwnAdminPermissions(user.accessToken, user.id)
-      : [];
-    // Whether the usage beacon may transmit for this account (/INSIGHTS.md).
-    // Kids: only while guardian consent is active — fail-closed, so a Vault
-    // hiccup silences the beacon rather than defaulting it on. Adults are
-    // covered by the platform terms; independent teens require their stored
-    // optional-analytics choice. The ingest route re-checks regardless;
-    // this flag exists so a kid's browser does not even TRANSMIT unconsented.
-    // Empty role set = unconfirmed (a lost RLS policy reads as [] here, not
-    // as an error) — the beacon stays OFF rather than defaulting to adult.
-    const screening = await readAgeScreen(user.id);
-    const analyticsEnabled = !screening || screening.required || screening.protectedOrigin || roleNames.length === 0 || user.isGuest
-      ? false
-      : roleNames.includes('kid')
-        ? (await hasActiveAnalyticsConsent(user.id)) === true
-        : await allowsSelfManagedAnalytics(user.id, screening);
-    // A.2, Appendix M 1.1: whether the onboarding survey may ask "how did you
-    // hear about us". Core stores the answer only under this same predicate
-    // (POST /onboarding/complete); the flag lets the flow skip a question whose
-    // answer would be discarded. False once onboarding is done.
-    const discoverySurvey = !onboardingComplete && await admitsAcquisitionAnswer(user.id, screening, roleNames);
-    /*
-     * Was this account created just now?
-     *
-     * The OAuth landing has no other way to tell a first-ever Google sign-in
-     * from a returning one — GoTrue hands back an identical session either
-     * way — and without the distinction every social signup was invisible to
-     * the acquisition funnel. Core answers it from the profile row it has
-     * already fetched, so the client never has to guess.
-     *
-     * The window is generous relative to a redirect (seconds) and short
-     * relative to a return visit (hours at least). The failure mode if it is
-     * ever wrong is one event mislabelled between two funnel steps — never a
-     * data-loss or access decision.
-     */
-    /*
-     * E.6: a self-service deletion scheduled for this account. Signing back in
-     * during the waiting period lands here; the shell shows the deletion
-     * screen (date + "Keep my account") instead of the app. Display-only: an
-     * unreadable state omits the screen rather than failing admission, and
-     * the deletion itself never depends on this read.
-     */
-    const openDeletion = await readOpenDeletion(user.id);
-    const accountDeletion = openDeletion !== 'unavailable' && openDeletion !== null
-      && (openDeletion.status === 'pending' || openDeletion.status === 'held')
-      ? { status: openDeletion.status, scheduledFor: openDeletion.scheduled_for, requestedAt: openDeletion.requested_at }
-      : null;
-    const createdAt = profiles[0]?.created_at ? Date.parse(profiles[0].created_at) : NaN;
-    const newAccount = Number.isFinite(createdAt) && Date.now() - createdAt < 120_000;
+  async function googleEnabled(): Promise<boolean> {
+    if (googleCache && googleCache.until > Date.now()) return googleCache.value;
 
-    return ok(res, {
-      user: { id: user.id, email: user.email },
-      // E.12: a legacy cover that is not a preset is never served, not even to its owner.
-      profile: profiles[0] ? { ...profiles[0], cover: projectCover(profiles[0].cover) } : null,
-      roles: roleNames,
-      adminPermissions: staffPermissions?.map((row) => row.permission) ?? [],
-      avatarOptions: projectAvatarOptions(avatars?.[0]?.options),
-      analyticsEnabled,
-      discoverySurvey,
-      newAccount,
-      isGuest: user.isGuest,
-      onboardingComplete,
-      accountDeletion,
-    });
-  });
+    const value = await gotrue.googleEnabled();
+
+    googleCache = { value, until: Date.now() + 60_000 };
+
+    return value;
+  }
+
+  /** The frontend page that closes the popup, or carries on in the same tab. It gets a result word, never a token. */
+  function finishUrl(mode: 'popup' | 'redirect', result: 'ok' | 'cancelled' | 'failed' | 'unavailable'): string {
+    const url = new URL('/auth/callback', config.frontendOrigin);
+
+    url.searchParams.set('mode', mode);
+    url.searchParams.set('result', result);
+
+    return url.toString();
+  }
+
+  /** The session a freshly issued token belongs to. The token came straight from the authentication service. */
+  async function sessionIdOf(accessToken: string): Promise<string> {
+    const claims = await verifyToken(accessToken);
+
+    if (!claims) throw new ApiError('UNAVAILABLE');
+
+    return claims.sessionId;
+  }
 
   return router;
 }

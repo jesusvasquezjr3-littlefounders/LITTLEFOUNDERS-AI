@@ -1,0 +1,190 @@
+{
+ "prefix": "zara-",
+ "viewBox": [
+  60,
+  50,
+  1490,
+  1510
+ ],
+ "eyes": [
+  {
+   "parts": [
+    "eye-white-l",
+    "iris-l",
+    "pupil-l",
+    "glint-l",
+    "glint-small-l",
+    "lash-l"
+   ],
+   "gaze": [
+    "iris-l",
+    "pupil-l",
+    "glint-l",
+    "glint-small-l"
+   ],
+   "center": [
+    653,
+    632
+   ],
+   "range": 13,
+   "side": -1,
+   "pupil": [
+    "iris-l",
+    "pupil-l"
+   ]
+  },
+  {
+   "parts": [
+    "eye-white-r",
+    "iris-r",
+    "pupil-r",
+    "glint-r",
+    "glint-small-r",
+    "lash-r"
+   ],
+   "gaze": [
+    "iris-r",
+    "pupil-r",
+    "glint-r",
+    "glint-small-r"
+   ],
+   "center": [
+    963,
+    632
+   ],
+   "range": 13,
+   "side": 1,
+   "pupil": [
+    "iris-r",
+    "pupil-r"
+   ]
+  }
+ ],
+ "brows": [
+  {
+   "part": "brow-l",
+   "center": [
+    643,
+    530
+   ],
+   "side": -1
+  },
+  {
+   "part": "brow-r",
+   "center": [
+    973,
+    530
+   ],
+   "side": 1
+  }
+ ],
+ "face": [
+  {
+   "parts": [
+    "cheek-l",
+    "cheek-r"
+   ],
+   "depth": 0.7
+  },
+  {
+   "parts": [
+    "mouth",
+    "tongue",
+    "teeth"
+   ],
+   "depth": 1.0
+  },
+  {
+   "parts": [
+    "ear-l",
+    "ear-r"
+   ],
+   "depth": -0.6
+  }
+ ],
+ "mouth": {
+  "parts": [
+   "mouth",
+   "tongue",
+   "teeth"
+  ],
+  "anchor": [
+   808,
+   790
+  ],
+  "rest": {
+   "sx": 0.9,
+   "sy": 0.4
+  },
+  "open": {
+   "sx": 1.0,
+   "sy": 1.05
+  },
+  "halfWidth": 110,
+  "reach": 26
+ },
+ "cheeks": [
+  "cheek-l",
+  "cheek-r"
+ ],
+ "head": {
+  "pivot": [
+   808,
+   1000
+  ],
+  "parts": [
+   "hair",
+   "hair-light",
+   "hair-light-l",
+   "hair-light-r"
+  ]
+ },
+ "body": [
+  "tank",
+  "chain",
+  "pendant",
+  "pendant-core",
+  "shoulders"
+ ],
+ "nose": {
+  "parts": [],
+  "lines": [
+   "nose-wrinkle-l",
+   "nose-wrinkle-r"
+  ],
+  "flare": [
+   "nostril-l",
+   "nostril-r"
+  ],
+  "center": [
+   808,
+   758
+  ]
+ },
+ "gain": 1.1,
+ "expressionScale": 0.85,
+ "strands": [
+  {
+   "parts": [
+    "sideburn-l",
+    "sideburn-light-l"
+   ],
+   "root": [
+    512,
+    490
+   ],
+   "side": -1
+  },
+  {
+   "parts": [
+    "sideburn-r",
+    "sideburn-light-r"
+   ],
+   "root": [
+    1104,
+    490
+   ],
+   "side": 1
+  }
+ ]
+}

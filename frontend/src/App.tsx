@@ -1,120 +1,110 @@
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { ThemeProvider } from '@/theme/useTheme';
-import { AuthProvider } from '@/auth/AuthContext';
+import { MotionConfig } from 'motion/react';
+import { Toaster } from 'sileo';
+import { ThemeProvider, useTheme } from '@/theme/useTheme';
 import { AnalyticsScripts } from '@/lib/analytics';
-import { RequireAuth } from '@/auth/RequireAuth';
-import { RequireOnboarded } from '@/auth/RequireOnboarded';
-import { useInsightsBeacon } from '@/lib/useInsightsBeacon';
-import { useMarketingBeacon } from '@/lib/useMarketingBeacon';
 import { CookieConsentBanner } from '@/components/CookieConsentBanner';
+import { AppShell } from '@/components/AppShell';
+import { AuthDialogProvider } from '@/features/auth/AuthDialog';
+import { SessionProvider } from '@/features/auth/session';
+import { GoHomeAfterSignIn } from '@/features/app/GoHome';
+import { OnboardingHandoff } from '@/features/onboarding/Handoff';
 import { releaseBootVeil } from '@/lib/boot';
-import { AppShellLayout, StaffShellLayout } from '@/app-shell/AppLayouts';
-import { AuthLayout, SiteLayout } from '@/app-shell/PublicLayouts';
-import { devRoutes, notFoundRoute, standaloneStateRoutes } from '@/app-routes/core';
-import { siteAccountRoutes, siteAuthRoutes, sitePageRoutes, siteStandaloneRoutes } from '@/app-routes/site';
-import { learnShellRoutes, learnStandaloneRoutes } from '@/app-routes/learn';
-import { mentorStandaloneRoutes } from '@/app-routes/mentor';
-import { familyShellRoutes } from '@/app-routes/family';
-import { profileShellRoutes } from '@/app-routes/profile';
-import { staffShellRoutes } from '@/app-routes/staff';
 
-import { useEffect, useState } from 'react';
+// Development only: the avatars alive. `import.meta.env.DEV` is false in a production build, so this chunk is not shipped.
+const DevAvatars = import.meta.env.DEV ? lazy(() => import('@/features/avatars/DevAvatars')) : null;
 
-/*
- * The route table, composed (W2 Lane 0). Each wave-2 lane owns one module
- * under src/app-routes/ (site, learn, mentor, family, profile, staff) that
- * exports its child routes with their guards; core.tsx (Lane 0) holds the dev
- * harnesses, the standalone states and the route of last resort. This file
- * only decides which rebuilt shell (src/app-shell/) each group renders in:
- *
- *   SiteShell         the public pages
- *   AuthShell         sign-in, sign-up, recovery, verification, OAuth landing
- *   LearnerShell /    every signed-in page but the console: the learner app, or
- *   TutorShell        the Tutor console for a verified parent (OD-6)
- *   StaffShell        /admin, items filtered by the staff grants
- *   single-state      not found, a suspended account, account deletion
- *   (none)            the full-screen layers: onboarding, account upgrade,
- *                     placement, the lesson player, the Mentor stage and the
- *                     public badge page
- */
+// Development only: the loading window open. Not shipped, like the avatars page.
+const DevLoading = import.meta.env.DEV ? lazy(() => import('@/features/loading/DevLoading')) : null;
 
-/*
- * First-party usage beacon (/INSIGHTS.md), mounted ONCE above every route
- * group — the lesson player lives OUTSIDE the app shell, so a layout-level
- * beacon died on every lesson entry, silently discarding lesson events.
- * Renders nothing; transmits nothing without a session + analyticsEnabled.
- */
-function InsightsBeacon({ consentVersion }: { consentVersion: number }) {
-  useInsightsBeacon();
-  // Acquisition funnel: anonymous, marketing-only, cookie-consent gated.
-  // consentVersion is bumped by the banner so accepting starts tracking
-  // IMMEDIATELY — the banner's own setState only re-renders the banner, so
-  // without this the hook would not re-evaluate consent until the next
-  // navigation and the landing visit that produced the accept would be lost.
-  useMarketingBeacon(consentVersion);
-  return null;
+// Development only: every icon of the application, to look at them together. Not shipped.
+const DevIcons = import.meta.env.DEV ? lazy(() => import('@/icons/DevIcons')) : null;
+
+// Development only: the home with its board of the day full of made-up rows. Not shipped.
+const DevHome = import.meta.env.DEV ? lazy(() => import('@/features/app/DevHome')) : null;
+
+const Landing = lazy(() => import('@/features/landing/Landing').then((module) => ({ default: module.Landing })));
+
+const NotFound = lazy(() => import('@/features/notFound/NotFound').then((module) => ({ default: module.NotFound })));
+
+const Unsubscribe = lazy(() => import('@/features/email/Unsubscribe').then((module) => ({ default: module.Unsubscribe })));
+
+const Onboarding = lazy(() => import('@/features/onboarding/Onboarding').then((module) => ({ default: module.Onboarding })));
+
+// The signed-in application: its layout and its pages are fetched only by somebody who goes in.
+const AppLayout = lazy(() => import('@/features/app/AppLayout').then((module) => ({ default: module.AppLayout })));
+
+const AppHome = lazy(() => import('@/features/app/Home').then((module) => ({ default: module.Home })));
+
+const Destination = lazy(() => import('@/features/app/Destination').then((module) => ({ default: module.Destination })));
+
+const AuthCallback = lazy(() => import('@/features/auth/AuthCallback').then((module) => ({ default: module.AuthCallback })));
+
+/** Toasts follow the visitor's theme (not the operating system's), drawn as the opposite surface so they stand off the page. */
+function ThemedToaster() {
+  const { isDark } = useTheme();
+
+  return <Toaster position="top-center" theme={isDark ? 'dark' : 'light'} />;
 }
 
+/*
+ * The whole app: the signed-in application (`/home` and its destinations, in its own layout), the landing at `/` inside the site shell, the page a Google sign-in comes back to
+ * (outside the shell: it often lives in a small window), the onboarding's two paths (outside the
+ * shell too: one thing per screen), the page the "Unsubscribe" link of an email
+ * opens, and the not-found page for every other URL
+ * (the shell shows a skeleton while a page's code loads). The session and the sign-in window are
+ * provided here, above every page. Reduced motion is honored once, here,
+ * for every Motion component below.
+ */
 export function App() {
   const [consentVersion, setConsentVersion] = useState(0);
 
   /*
-   * Dissolve the boot veil index.html armed before the first paint
-   * (Bible 02 rule 2, 04 §2; see index.html). Here rather than in main.tsx because an
-   * effect at the app root is the first moment React has actually COMMITTED —
-   * calling it beside createRoot().render() would only mean "render was
-   * requested", which under concurrent rendering can be several frames early,
-   * and revealing an empty #root is the defect this replaces, not a fix for it.
+   * Dissolve the boot veil index.html armed before the first paint. An effect
+   * at the app root is the first moment React has actually committed, so the
+   * veil never reveals an empty #root.
    */
   useEffect(() => {
     void releaseBootVeil();
   }, []);
 
   return (
-    <ThemeProvider>
-      <AuthProvider>
+    <MotionConfig reducedMotion="user">
+      <ThemeProvider>
         <AnalyticsScripts consentVersion={consentVersion} />
-        <InsightsBeacon consentVersion={consentVersion} />
+        <ThemedToaster />
+        <SessionProvider>
+          <AuthDialogProvider>
+            <OnboardingHandoff />
+            <GoHomeAfterSignIn />
+            <Routes>
+              <Route path="onboarding" element={<Suspense fallback={null}><Onboarding path="learner" /></Suspense>} />
+              <Route path="onboarding/parent" element={<Suspense fallback={null}><Onboarding path="parent" /></Suspense>} />
+              <Route element={<Suspense fallback={null}><AppLayout /></Suspense>}>
+                <Route path="home" element={<AppHome />} />
+                <Route path="learn" element={<Destination name="learn" />} />
+                <Route path="mentor" element={<Destination name="mentor" />} />
+                <Route path="wallet" element={<Destination name="wallet" />} />
+                <Route path="tasks" element={<Destination name="tasks" />} />
+                <Route path="family" element={<Destination name="family" />} />
+              </Route>
+              <Route path="auth/callback" element={<Suspense fallback={null}><AuthCallback /></Suspense>} />
+              <Route element={<AppShell />}>
+                <Route index element={<Landing />} />
+                <Route path="unsubscribe" element={<Unsubscribe />} />
+                {DevAvatars ? <Route path="dev/avatars" element={<DevAvatars />} /> : null}
+                {DevLoading ? <Route path="dev/loading" element={<DevLoading />} /> : null}
+                {DevIcons ? <Route path="dev/icons" element={<DevIcons />} /> : null}
+                {DevHome ? <Route path="dev/home" element={<DevHome />} /> : null}
+                <Route path="*" element={<NotFound />} />
+              </Route>
+            </Routes>
+          </AuthDialogProvider>
+        </SessionProvider>
+        {/* After the page in the DOM so the skip link stays the first stop; it is fixed to the bottom either way. */}
         <CookieConsentBanner onDecision={() => setConsentVersion((v) => v + 1)} />
-        <Routes>
-          {devRoutes}
-          <Route element={<SiteLayout />}>{sitePageRoutes}</Route>
-          <Route element={<AuthLayout />}>
-            {siteAuthRoutes}
-            {siteAccountRoutes}
-          </Route>
-          {siteStandaloneRoutes}
-          {standaloneStateRoutes}
-          {learnStandaloneRoutes}
-          {mentorStandaloneRoutes}
-          <Route
-            element={
-              <RequireAuth>
-                <RequireOnboarded>
-                  <AppShellLayout />
-                </RequireOnboarded>
-              </RequireAuth>
-            }
-          >
-            {learnShellRoutes}
-            {familyShellRoutes}
-            {profileShellRoutes}
-          </Route>
-          <Route
-            element={
-              <RequireAuth>
-                <RequireOnboarded>
-                  <StaffShellLayout />
-                </RequireOnboarded>
-              </RequireAuth>
-            }
-          >
-            {staffShellRoutes}
-          </Route>
-          {/* The route of last resort: must stay LAST. */}
-          {notFoundRoute}
-        </Routes>
-      </AuthProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </MotionConfig>
   );
 }

@@ -1,0 +1,85 @@
+{
+  "cookies": {
+    "region": "Cookie choice",
+    "title": "Your cookie choice",
+    "body": "We use necessary cookies to run the site. With your OK, we also count visits and which link brought you.",
+    "accept": "Accept optional",
+    "reject": "Reject optional",
+    "preferences": "Preferences",
+    "sheetTitle": "Cookie preferences",
+    "sheetIntro": "Optional cookies stay off until you accept them. Change this any time from the page footer.",
+    "necessaryTitle": "Necessary",
+    "necessaryBody": "Keep you signed in and remember choices like language and mode.",
+    "attributionTitle": "Where you came from",
+    "attributionBody": "Records which link or campaign brought you here.",
+    "measurementTitle": "Visit measurement",
+    "measurementBody": "Counts visits and pages so we can improve the site.",
+    "alwaysOn": "Always on",
+    "optional": "Optional",
+    "together": "Both optional kinds are accepted or rejected together.",
+    "currentGranted": "Your choice: optional cookies accepted.",
+    "currentDenied": "Your choice: optional cookies rejected.",
+    "currentUnset": "No choice yet. Optional cookies are off.",
+    "privacyLink": "Privacy Notice",
+    "close": "Close",
+    "toastGranted": "Optional cookies accepted",
+    "toastDenied": "Optional cookies rejected"
+  },
+  "landingV2": {
+    "title": "Let your kids practice money",
+    "titleAccent": "before it's real.",
+    "lead": "A playground for ages 13 to 18, with no real money. Money habits, saving, staying out of debt and starting a business.",
+    "heroParent": "I'm a Parent",
+    "heroLearn": "I just want to learn",
+    "heroSceneAlt": "Dr. Rho and Zara, two Mentors, with a flame, a book, a light bulb, a star, toy blocks and seeds floating around them.",
+    "pathTitle": "Four skills, one step at a time",
+    "pathLead": "They start with the basics and move up when they are ready, the way you learn a language.",
+    "path": [
+      {
+        "step": "Step 1",
+        "name": "Money habits",
+        "age": "From age 13",
+        "text": "How they see money and what it is for: spending, wanting and choosing."
+      },
+      {
+        "step": "Step 2",
+        "name": "Saving",
+        "age": "From age 13",
+        "text": "Set a goal, put money aside and watch it grow."
+      },
+      {
+        "step": "Step 3",
+        "name": "Staying out of debt",
+        "age": "From age 15",
+        "text": "What borrowing really costs, and how to get out if it happens."
+      },
+      {
+        "step": "Step 4",
+        "name": "Starting a business",
+        "age": "From age 17",
+        "text": "Turn an idea into something of their own."
+      }
+    ],
+    "problemBig": "By age 7,",
+    "problemTitle": "money habits are already forming.",
+    "problemLink": "Yet many reach adulthood without learning to manage money:",
+    "problemFigure": "More than 4 in 10",
+    "problemFact": "adults in the US don’t understand money basics.",
+    "problemChartLabel": "in 10",
+    "problemLost": 4,
+    "problemBridge": "So your child can start practicing today, with no real risk.",
+    "problemSources": "Sources: University of Cambridge, 2013 · S&P Global FinLit Survey, 2014",
+    "principlesTitle": "Practice that builds confidence",
+    "principles": [
+      {
+        "name": "No real money, ever",
+        "text": "Everything happens in a practice world. Nothing they do here touches a bank account or a card."
+      },
+      {
+        "name": "Their decisions, their results",
+        "text": "Your child chooses, sees what happens and tries again. That is how a habit starts to feel like theirs."
+      }
+    ],
+    "ctaTitle": "Give your kids a place to practice"
+  }
+}

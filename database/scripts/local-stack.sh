@@ -4,7 +4,8 @@
 # The stack itself lives in database/supabase/docker (the supabase/supabase
 # clone pinned by SUPABASE_VERSION — see sync-supabase.sh). This wrapper
 # delegates to the upstream tooling (run.sh / reset.sh / utils/generate-keys.sh)
-# and adds the LittleFounders pieces: our migrations, seeds, and psql access.
+# and adds the LittleFounders pieces: our migrations, our gateway config, a
+# local mail catcher, and psql access.
 #
 # Usage:
 #   local-stack.sh up        # ensure .env (secrets generated on first run) + start
@@ -13,7 +14,6 @@
 #   local-stack.sh reset     # nuke → up → migrate  (the from-zero gate)
 #   local-stack.sh migrate   # apply only migrations not recorded in the ledger
 #   local-stack.sh migrate --baseline NNNN # record an independently verified legacy baseline
-#   local-stack.sh seed      # apply database/seeds/dev_seed.sql (DEV ONLY)
 #   local-stack.sh psql ...  # psql inside the db container (extra args pass through)
 #   local-stack.sh status    # docker compose ps
 #   local-stack.sh db-url    # print the pooler connection string (for gen types etc.)
@@ -43,9 +43,10 @@ require_clone() {
 # Not 5432: this machine already has a Postgres bound there.
 SESSION_PORT="${SESSION_PORT:-54322}"
 
-# First run: create .env from the upstream example, generate real secrets
-# (never committed — database/supabase/ is gitignored), and apply local-dev
-# overrides (email autoconfirm on: no SMTP locally; named tenant/org).
+# First run: create .env from the upstream example and generate real secrets
+# (never committed: database/supabase/ is gitignored). Every run: apply the
+# local settings below, so a .env made by an older version of this script is
+# brought up to date without losing its secrets.
 ensure_env() {
   require_clone
   # Missing OR still carrying upstream placeholder secrets (reset.sh recreates
@@ -54,22 +55,63 @@ ensure_env() {
     echo "Creating docker/.env with generated secrets ..."
     cp "$DOCKER_DIR/.env.example" "$DOCKER_DIR/.env"
     (cd "$DOCKER_DIR" && sh utils/generate-keys.sh --update-env)
-    sed -i.old \
-      -e 's|^POOLER_TENANT_ID=.*$|POOLER_TENANT_ID=littlefounders-local|' \
-      -e 's|^ENABLE_EMAIL_AUTOCONFIRM=.*$|ENABLE_EMAIL_AUTOCONFIRM=true|' \
-      -e 's|^ENABLE_ANONYMOUS_USERS=.*$|ENABLE_ANONYMOUS_USERS=true|' \
-      -e 's|^STUDIO_DEFAULT_ORGANIZATION=.*$|STUDIO_DEFAULT_ORGANIZATION=LittleFounders|' \
-      -e 's|^STUDIO_DEFAULT_PROJECT=.*$|STUDIO_DEFAULT_PROJECT=Vault Local|' \
-      -e 's|^ADDITIONAL_REDIRECT_URLS=.*$|ADDITIONAL_REDIRECT_URLS=http://localhost:5173/auth/callback,http://localhost:5173/reset-password,http://localhost:5173/profile/settings|' \
-      "$DOCKER_DIR/.env"
-    rm -f "$DOCKER_DIR/.env.old"
+  fi
+  # Sign-in is by a one-time code sent by email, so addresses are NOT confirmed
+  # automatically. The authentication service does not send the email itself:
+  # it hands the code to Core (the hook in the overlay below), which asks the
+  # mail service for the email, and the mail service delivers to the local
+  # catcher (mailpit, below). There are no anonymous accounts. The only address the authentication service may
+  # send a browser back to is Core's Google callback (Core listens on 4000).
+  sed -i.old \
+    -e 's|^POOLER_TENANT_ID=.*$|POOLER_TENANT_ID=littlefounders-local|' \
+    -e 's|^ENABLE_EMAIL_AUTOCONFIRM=.*$|ENABLE_EMAIL_AUTOCONFIRM=false|' \
+    -e 's|^ENABLE_ANONYMOUS_USERS=.*$|ENABLE_ANONYMOUS_USERS=false|' \
+    -e 's|^ENABLE_PHONE_SIGNUP=.*$|ENABLE_PHONE_SIGNUP=false|' \
+    -e 's|^STUDIO_DEFAULT_ORGANIZATION=.*$|STUDIO_DEFAULT_ORGANIZATION=LittleFounders|' \
+    -e 's|^STUDIO_DEFAULT_PROJECT=.*$|STUDIO_DEFAULT_PROJECT=Vault Local|' \
+    -e 's|^SITE_URL=.*$|SITE_URL=http://localhost:5173|' \
+    -e 's|^ADDITIONAL_REDIRECT_URLS=.*$|ADDITIONAL_REDIRECT_URLS=http://localhost:4000/api/v1/auth/google/callback|' \
+    -e 's|^SMTP_HOST=.*$|SMTP_HOST=mailpit|' \
+    -e 's|^SMTP_PORT=.*$|SMTP_PORT=1025|' \
+    -e 's|^SMTP_USER=.*$|SMTP_USER=|' \
+    -e 's|^SMTP_PASS=.*$|SMTP_PASS=|' \
+    -e 's|^SMTP_ADMIN_EMAIL=.*$|SMTP_ADMIN_EMAIL=noreply@littlefounders.ai|' \
+    -e 's|^SMTP_SENDER_NAME=.*$|SMTP_SENDER_NAME=LittleFounders|' \
+    "$DOCKER_DIR/.env"
+  rm -f "$DOCKER_DIR/.env.old"
+  # The secret the authentication service signs its "send email" hook with.
+  # Core needs the same value as SEND_EMAIL_HOOK_SECRET in backend/.env.
+  if ! grep -q '^SEND_EMAIL_HOOK_SECRET=' "$DOCKER_DIR/.env"; then
+    printf '\nSEND_EMAIL_HOOK_SECRET=v1,whsec_%s\n' "$(openssl rand -base64 32)" >> "$DOCKER_DIR/.env"
+    echo "Generated SEND_EMAIL_HOOK_SECRET in docker/.env: copy it to backend/.env"
+  fi
+  # The mail service's own key: a token that names the database role
+  # `mail_service` (migrations/0004). The gateway needs it (overlay below) and
+  # the mail service needs the same value as MAIL_SERVICE_KEY in email-server/.env.
+  if ! grep -q '^MAIL_SERVICE_KEY=' "$DOCKER_DIR/.env"; then
+    printf '\nMAIL_SERVICE_KEY=%s\n' "$(JWT_SECRET="$(env_var JWT_SECRET)" node "$DB_DIR/scripts/mint-role-key.mjs" mail_service)" >> "$DOCKER_DIR/.env"
+    echo "Generated MAIL_SERVICE_KEY in docker/.env: copy it to email-server/.env"
   fi
   ensure_port_override
 }
 
-# Local-only compose overlay: remap the pooler's session port on the host
-# (POSTGRES_PORT must stay 5432 — internal service URLs are built from it).
-# Registered via the upstream COMPOSE_FILE layering (run.sh config add).
+# Host ports of the local mail catcher: its inbox (web page and API) and the
+# SMTP port the mail service delivers to.
+MAILPIT_PORT="${MAILPIT_PORT:-8025}"
+MAILPIT_SMTP_PORT="${MAILPIT_SMTP_PORT:-1025}"
+
+# Local-only compose overlay, registered via the upstream COMPOSE_FILE
+# layering (run.sh config add):
+#   - the pooler's session port on the host (POSTGRES_PORT must stay 5432:
+#     internal service URLs are built from it);
+#   - the authentication settings the product depends on, with the names the
+#     production `auth` service uses;
+#   - OUR gateway config instead of upstream's, so the local gateway is closed
+#     to browsers exactly as production is (database/railway/kong/kong.yml);
+#   - the "send email" hook, pointed at Core on this machine (port 4000);
+#   - a mail catcher, so the one-time code can be read without sending mail.
+#     The mail service on this machine (email-server, EMAIL_ENGINE=smtp)
+#     delivers to its SMTP port.
 ensure_port_override() {
   cat > "$DOCKER_DIR/docker-compose.local-ports.yml" <<EOF
 services:
@@ -77,13 +119,57 @@ services:
     ports: !override
       - ${SESSION_PORT}:5432
       - \${POOLER_PROXY_PORT_TRANSACTION}:6543
-  # A.6 / Appendix M 1.3: pinned, not left to GoTrue's default. An address
-  # change must also be confirmed from the OLD address; a child's is a
-  # synthetic .invalid one, so a child's change can never complete (the
-  # database refuses it too: guard_kid_email).
   auth:
+    extra_hosts:
+      - host.docker.internal:host-gateway
     environment:
+      # An address change must also be confirmed from the old address.
       GOTRUE_MAILER_SECURE_EMAIL_CHANGE_ENABLED: "true"
+      # The one-time code: 6 digits, valid for 15 minutes, one email per
+      # address per minute.
+      GOTRUE_MAILER_OTP_EXP: "900"
+      GOTRUE_MAILER_OTP_LENGTH: "6"
+      GOTRUE_SMTP_MAX_FREQUENCY: "60s"
+      # Core is the only client, so the per-address limits live in Core; this
+      # one is the ceiling for the whole service.
+      GOTRUE_RATE_LIMIT_EMAIL_SENT: "600"
+      # Emails are written and sent by our own services: the code is handed to
+      # Core, signed (backend/src/routes/hooks.ts).
+      GOTRUE_HOOK_SEND_EMAIL_ENABLED: "true"
+      GOTRUE_HOOK_SEND_EMAIL_URI: "http://host.docker.internal:4000/api/v1/hooks/send-email"
+      GOTRUE_HOOK_SEND_EMAIL_SECRETS: "\${SEND_EMAIL_HOOK_SECRET}"
+      # A refresh token is used once; using an old one again ends the session.
+      GOTRUE_SECURITY_REFRESH_TOKEN_ROTATION_ENABLED: "true"
+      GOTRUE_SECURITY_REFRESH_TOKEN_REUSE_INTERVAL: "10"
+      # Google sign-in. Off unless these are set in docker/.env (same names as
+      # the production service).
+      GOTRUE_EXTERNAL_GOOGLE_ENABLED: "\${GOTRUE_EXTERNAL_GOOGLE_ENABLED:-false}"
+      GOTRUE_EXTERNAL_GOOGLE_CLIENT_ID: "\${GOTRUE_EXTERNAL_GOOGLE_CLIENT_ID:-}"
+      GOTRUE_EXTERNAL_GOOGLE_SECRET: "\${GOTRUE_EXTERNAL_GOOGLE_SECRET:-}"
+      GOTRUE_EXTERNAL_GOOGLE_REDIRECT_URI: "\${API_EXTERNAL_URL}/callback"
+  kong:
+    volumes: !override
+      - ../../railway/kong/kong.yml:/home/kong/temp.yml:ro,z
+      - ./volumes/api/kong-entrypoint.sh:/home/kong/kong-entrypoint.sh:ro,z
+    environment:
+      KONG_AUTH_HOST: auth
+      KONG_REST_HOST: rest
+      KONG_REALTIME_HOST: realtime-dev.supabase-realtime
+      KONG_STORAGE_HOST: storage
+      KONG_META_HOST: meta
+      KONG_STUDIO_HOST: studio
+      MAIL_SERVICE_KEY: "\${MAIL_SERVICE_KEY}"
+  mailpit:
+    container_name: supabase-mailpit
+    image: axllent/mailpit:v1.31.4
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:${MAILPIT_PORT}:8025
+      - 127.0.0.1:${MAILPIT_SMTP_PORT}:1025
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: "1"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "1"
+      MP_MAX_MESSAGES: "500"
 EOF
   (cd "$DOCKER_DIR" && sh run.sh config add local-ports >/dev/null)
 }
@@ -142,7 +228,7 @@ ledger_exists() {
 }
 
 application_schema_exists() {
-  psql_in_db -tA -c "select to_regclass('public.courses') is not null;" | tr -d '[:space:]'
+  psql_in_db -tA -c "select to_regclass('public.profiles') is not null;" | tr -d '[:space:]'
 }
 
 ensure_migration_ledger() {
@@ -213,10 +299,9 @@ cmd_migrate() {
     exit 1
   fi
 
-  # Replaying the historical 0002 provisional schema after 0007 has replaced
-  # `lessons.course_id` drops the live RLS policy and then errors. Refuse to
-  # touch any legacy database until an operator records the independently
-  # verified high-water mark with --baseline.
+  # A database that already has the application schema but no ledger was not
+  # built by this script. Refuse to replay migrations over it until an operator
+  # records the independently verified high-water mark with --baseline.
   if [[ "$(ledger_exists)" != "t" && "$(application_schema_exists)" == "t" ]]; then
     echo "FAIL: legacy database has no migration ledger; refusing unsafe replay. Verify its high-water mark, then run 'npm run db:migrate -- --baseline NNNN'." >&2
     exit 1
@@ -250,12 +335,6 @@ cmd_migrate() {
   echo "OK: every migration is recorded and current"
 }
 
-cmd_seed() {
-  echo "==> seeds/dev_seed.sql (DEV ONLY)"
-  psql_in_db -q < "$DB_DIR/seeds/dev_seed.sql"
-  echo "OK: dev seed applied"
-}
-
 cmd_reset() {
   cmd_nuke
   cmd_up
@@ -282,7 +361,6 @@ case "$CMD" in
   nuke)    cmd_nuke ;;
   reset)   cmd_reset ;;
   migrate) cmd_migrate "$@" ;;
-  seed)    cmd_seed ;;
   psql)    compose exec -T db psql -U "$MIGRATE_ROLE" -d postgres "$@" ;;
   status)  compose ps ;;
   db-url)  cmd_db_url ;;

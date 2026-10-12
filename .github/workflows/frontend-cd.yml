@@ -14,7 +14,13 @@ permissions:
 
 jobs:
   deploy:
-    if: github.event.workflow_run.conclusion == 'success'
+    # Only a push to this repository's main deploys. `workflow_run` also fires for the CI run of a pull
+    # request, and its `branches` filter matches the name of a fork's branch, so without these two
+    # checks a fork's branch called "main" would be built and deployed with the deploy token.
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
     name: Deploy frontend to Vercel
     runs-on: ubuntu-latest
     env:
@@ -23,18 +29,21 @@ jobs:
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
     steps:
       # Deploy the exact commit that passed frontend CI, not the HEAD of main.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
-      - uses: actions/setup-node@v4
+      # The optimized 3D scenes are Git LFS files; the multi-hundred-MB sources in glb/ are not needed.
+      - run: git lfs pull --include='frontend/public/scenes/**'
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 24
+      # The Vercel CLI is pinned: it runs with the deploy token, so a new release is taken on purpose.
       # `vercel build` runs the Build Command configured on the Vercel
       # project (cd frontend && npm install && npm run build), using the
       # Production env vars (VITE_BACKEND_URL, etc.) pulled from Vercel.
       - name: Pull Vercel environment (production)
-        run: npx vercel@latest pull --yes --environment=production --token=$VERCEL_TOKEN
+        run: npx vercel@63.1.2 pull --yes --environment=production --token=$VERCEL_TOKEN
       - name: Build with Vercel
-        run: npx vercel@latest build --prod --token=$VERCEL_TOKEN
+        run: npx vercel@63.1.2 build --prod --token=$VERCEL_TOKEN
       - name: Deploy prebuilt to production
-        run: npx vercel@latest deploy --prebuilt --prod --token=$VERCEL_TOKEN
+        run: npx vercel@63.1.2 deploy --prebuilt --prod --token=$VERCEL_TOKEN
