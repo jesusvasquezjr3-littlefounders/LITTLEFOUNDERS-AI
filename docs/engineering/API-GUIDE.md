@@ -1,7 +1,7 @@
 ---
 title: API guide
 status: scaffold
-updated: 2026-10-10
+updated: 2026-10-12
 ---
 
 # API guide
@@ -42,6 +42,8 @@ What Core's first endpoints do ([[F-001-authentication]]); the shared rules abov
 - A refusal by a limit is 429 with `Retry-After` and `retryAfterSeconds` ([[RATE-LIMITING-AND-ABUSE]]).
 - The session travels in cookies, so the frontend sends `credentials: 'include'` and never handles a token (`frontend/src/lib/api.ts`).
 - Nothing is cached: every answer carries `Cache-Control: no-store`.
+- A read that belongs to the signed-in person takes no user id: it answers about the account of the session. `GET /api/v1/home` is the first one ([[F-004-application]]): the menu the account has, the composition of the day and the cards of the day, in one answer.
+- `GET /api/v1/home/guest` is that read for somebody with no account (D-056). It is public on purpose and so it carries nothing of a person: a menu and a composition of the day that are the same for every guest. A public read never takes or returns anything that belongs to one.
 
 ## Related
 

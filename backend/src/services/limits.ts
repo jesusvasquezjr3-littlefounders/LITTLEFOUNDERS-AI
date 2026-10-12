@@ -32,6 +32,9 @@ const SPECS = {
   codeHourly: { points: 5, seconds: 60 * 60, onStoreFailure: 'closed' },
   attemptsPerCode: { points: 5, seconds: 15 * 60, onStoreFailure: 'closed' },
   attemptsDaily: { points: 30, seconds: 24 * 60 * 60, onStoreFailure: 'closed' },
+  // Per signed-in account. Reads of a person's own pages are counted by who they are and not by
+  // their address: a classroom or a family shares one address, and must not share one allowance.
+  accountRead: { points: 120, seconds: 15 * 60, onStoreFailure: 'open' },
   // For the whole service. Codes sent to addresses that have no account yet, in an hour: the
   // number comes from the configuration (it must stay under the authentication service's own
   // ceiling, so that people who already have an account can always get their code).
@@ -43,6 +46,14 @@ const SPECS = {
 } as const satisfies Record<string, Spec>;
 
 export type LimitName = keyof typeof SPECS;
+
+/*
+ * The limits that count how often something is asked for. In development, with RELAXED_LIMITS, they
+ * are a hundred times wider (config.ts refuses the setting anywhere else). The ones left out guard
+ * a code against guessing or let something happen once, and are never widened.
+ */
+const VOLUME: ReadonlySet<LimitName> = new Set<LimitName>(['ipGlobal', 'ipCodeRequest', 'ipCodeVerify', 'ipSession', 'ipAccount', 'codeCooldown', 'codeHourly', 'accountRead', 'newAddressHourly']);
+const RELAXED_BY = 100;
 
 /** Counter keys never hold an address or a username, only a digest of one. */
 export function keyFor(value: string): string {
@@ -95,8 +106,12 @@ export async function createLimits(config: Config) {
 
   const limiters = new Map<LimitName, RateLimiterAbstract>();
 
+  if (config.relaxedLimits) log.warn('limits.relaxed', { by: RELAXED_BY });
+
   for (const [name, spec] of Object.entries(SPECS)) {
-    const points = name === 'newAddressHourly' ? config.newAddressCodesPerHour : spec.points;
+    const usual = name === 'newAddressHourly' ? config.newAddressCodesPerHour : spec.points;
+    // SAFETY: `name` is a key of SPECS, which is what LimitName is.
+    const points = config.relaxedLimits && VOLUME.has(name as LimitName) ? usual * RELAXED_BY : usual;
     const options = { keyPrefix: `lf:core:${name}`, points, duration: spec.seconds };
 
     limiters.set(name as LimitName, redis ? new RateLimiterRedis({ ...options, storeClient: redis }) : new RateLimiterMemory(options));

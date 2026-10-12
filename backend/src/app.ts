@@ -10,9 +10,11 @@ import { createAccountRouter } from './routes/account.js';
 import { createAdminRouter } from './routes/admin.js';
 import { createAuthRouter } from './routes/auth.js';
 import { createEmailRouter, createOneClickRouter } from './routes/email.js';
+import { createHomeRouter } from './routes/home.js';
 import { createHooksRouter } from './routes/hooks.js';
 import { createCookies } from './services/cookies.js';
 import { createGotrue } from './services/gotrue.js';
+import { createHome } from './services/home.js';
 import { createKnownDevices } from './services/knownDevice.js';
 import { visitorKey, type Limits } from './services/limits.js';
 import { createMailer } from './services/mailer.js';
@@ -43,6 +45,7 @@ export function createApp(config: Config, limits: Limits): express.Express {
   const auth = createAuthMiddleware({ cookies, verifyToken, vault });
   const mailer = createMailer(config);
   const unsubscribe = createUnsubscribe(config);
+  const home = createHome(config);
 
   app.disable('x-powered-by');
   app.set('trust proxy', config.trustProxyHops);
@@ -76,6 +79,7 @@ export function createApp(config: Config, limits: Limits): express.Express {
 
   app.use('/api/v1/auth', createAuthRouter({ config, gotrue, vault, cookies, knownDevices, challenges, limits, auth, verifyToken }));
   app.use('/api/v1/account', createAccountRouter({ vault, limits, auth, mailer, unsubscribe }));
+  app.use('/api/v1/home', createHomeRouter({ home, limits, auth }));
   app.use('/api/v1/email', createEmailRouter({ vault, limits, unsubscribe }));
   app.use('/api/v1/admin', createAdminRouter({ vault, auth }));
 

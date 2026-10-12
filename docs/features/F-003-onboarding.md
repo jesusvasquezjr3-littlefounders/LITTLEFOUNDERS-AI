@@ -1,7 +1,7 @@
 ---
 title: F-003 Onboarding
 status: draft
-updated: 2026-10-11
+updated: 2026-10-12
 ---
 
 # F-003 Onboarding
@@ -57,9 +57,11 @@ Approved by the owner on 2026-10-10. Zara, Dr. Rho, Liruf and Dina are MentorIA 
 
 ## Joining now or later
 
-- **Now** opens the sign-up window ([[F-001-authentication]]) with both ways to create the account on offer, Google and a code by email. When the account exists, `features/onboarding/Handoff.tsx` gives it the age (so the window does not ask again), then the name, the mentor and, on the parent's walk, that the person came in as a parent. Then the answers are erased from the browser and the person is on the home page, signed in.
+- **Now** opens the sign-up window ([[F-001-authentication]]) with both ways to create the account on offer, Google and a code by email. When the account exists, `features/onboarding/Handoff.tsx` gives it the age (so the window does not ask again), then the name, the mentor and, on the parent's walk, that the person came in as a parent. Then the answers are erased from the browser and the person is taken to `/home`, their home in the application ([[F-004-application]]).
 - **Under 13** the sign-up window still shows its age step, with the age already filled in, because the permission box is owed (D-025).
-- **Later** returns to the home page. There is no application to land on yet (D-039). A notice there says that what was chosen is saved on this device, with two buttons: create the account, and erase it.
+- An account that already has its name or its mentor is taken from `/onboarding` to `/home`: it has nothing to answer here.
+- An account that has neither (made with "Sign in") is brought here by the application ([[F-004-application]]), on the parent's walk when it came in as a parent. It is not asked its age again: the step is left out, and whether the person is under 18 comes from the account's type. Its last screen has one button, which gives the answers to the account and goes into the application.
+- **Later** goes into the application as a guest (D-056): no account is needed to come in. The answers stay in this browser, and the application and the site's home page both show a notice that says so, with two buttons: create the account, and erase it. Erasing ends the visit.
 - **Coming in as a parent is a statement, not a type.** The account is an ordinary one with `parent_intent` set; the `parent` type is still granted only after verification (D-030). The database refuses the flag for an account under 18.
 - **Answers are never written into somebody else's account.** The handoff acts only on an account that has neither a name nor a mentor; for any other account the answers left on the device are simply erased.
 

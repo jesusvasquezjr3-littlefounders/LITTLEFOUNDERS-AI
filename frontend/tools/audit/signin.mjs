@@ -122,6 +122,12 @@ await run('signin', args, async (page, config) => {
   await sleep(2500);
   await shot('9-signed-in');
   await expect('the window closed', `${DIALOG} === null`);
+  // A person who signs in from the site is taken into the application (D-051); an account this new has no name
+  // and no mentor, so it chooses them first. That walk is audit:app's; this one goes back to the site.
+  await expect('a new account is taken to choose its name and mentor', `location.pathname === '/onboarding'`);
+  await page.call('Page.navigate', { url: new URL('/', config.url).href });
+  await sleep(3500);
+  await page.ev(axeSource);
   await expect('the account button replaced Sign in', `document.querySelector('header button[aria-haspopup="menu"]:last-of-type') !== null`);
 
   // The account menu, then sign out.
@@ -130,6 +136,7 @@ await run('signin', args, async (page, config) => {
   await page.ev(`document.querySelector('[data-slot="dropdown-menu-item"]').click()`);
   await sleep(1800);
   await shot('11-signed-out');
+  await expect('signing out returns to the site', `location.pathname === '/'`);
   await expect('signing out brings Sign in back', config.width < 768
     ? `document.querySelector('[data-cta="sign-in"]') !== null`
     : `[...document.querySelectorAll('header button')].some((b) => /sign in|iniciar sesión|entrar/i.test(b.textContent))`);

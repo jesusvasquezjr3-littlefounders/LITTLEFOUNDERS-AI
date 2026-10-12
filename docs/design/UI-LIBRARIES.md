@@ -1,7 +1,7 @@
 ---
 title: UI libraries
 status: accepted
-updated: 2026-10-10
+updated: 2026-10-12
 ---
 
 # UI libraries
@@ -36,8 +36,9 @@ Names the only building blocks of the interface, so no agent reaches for another
 | 000h by Cojeev | General components | shadcn registry `@cojeev` | Button, Sheet, Dialog, Dropdown menu, Badge, Alert, Skeleton and Breadcrumb, and for the sign-in window Input, Input OTP, Checkbox, Field and Label (`src/components/ui/`; Card came with them as a dependency, and `input-otp` and `@radix-ui/react-checkbox` as packages). The Dialog close button is not used (it has a fixed English label); the sign-in window uses its own close button with a locale string |
 | Bklit UI | Charts | shadcn registry `@bklit` | Ring chart for the "4 in 10" figure (`src/components/charts/`) |
 | Sileo | Toasts | npm `sileo` + `sileo/styles.css` | Cookie choice confirmation; `<Toaster>` in `App.tsx` |
-| Morphicons | Icons that change state | npm `morphicons` + `lucide` icon data | Sun/moon theme toggle |
+| Morphicons | Icons that change state | npm `morphicons` + `lucide` icon data | Sun/moon theme toggle, and the icons of the screens built before D-054. No new icon uses it: every new icon is our own (T-012 tracks the replacement of the old ones) |
 | Thinking Orbs | Waiting on work | npm `thinking-orbs` | None yet: a page that loads shows the skeleton; the orb is for "the Mentor is thinking" |
+| lottie-web (light build) | Plays the application's own icons (D-054) | npm `lottie-web`, import `lottie-web/build/player/lottie_light` only | `components/AppIcon.tsx`; fetched the first time an icon has to move. The light build draws SVG and has no expressions, so no `eval`. Not an icon library: the icons are ours (rule 4 in [[FRONTEND-GUIDE]]) |
 | Bencho | Interaction blocks to copy | Copied from the site | None yet (see below) |
 
 ## How it is wired

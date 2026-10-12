@@ -7,11 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Field, FieldControl, FieldDescription, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { useAuthDialog } from '@/features/auth/AuthDialog';
+import { nextPlace } from '@/features/app/nextPlace';
 import { useSession } from '@/features/auth/session';
 import { body, heading } from '@/features/landing/type';
 import { StepArt } from '@/features/onboarding/StepArt';
 import { furthest, sceneFor, stepsFor, type StepId } from '@/features/onboarding/steps';
-import { isReservedName, MAX_AGE, MENTORS, MIN_AGE, NAME, onboarding, useOnboardingAnswers, type Answers, type Mentor, type Path } from '@/features/onboarding/store';
+import { ADULT_AGE, isReservedName, MAX_AGE, MENTORS, MIN_AGE, NAME, onboarding, useOnboardingAnswers, type Answers, type Mentor, type Path } from '@/features/onboarding/store';
 
 /** The words of one screen. Which of the optional ones exist depends on the step. */
 type Screen = { title: string; text: string; button?: string; now?: string; later?: string; done?: string };
@@ -44,22 +45,27 @@ export function Onboarding({ path }: { path: Path }) {
   const stored = useOnboardingAnswers();
   const answers = stored && stored.path === path ? stored : null;
   const wasFinished = useRef(false);
+  const { status, account } = useSession();
+  // an account that already has its name or its mentor has nothing to answer here
+  const isSettled = status === 'signedIn' && account !== null && !account.needsAge && (account.mentor !== null || account.displayName !== '');
 
   if (answers?.finished) wasFinished.current = true;
 
   /*
    * A visit starts the answers for this path, or picks up the ones this browser already has. When
    * they disappear after the last step, the new account has taken them (Handoff.tsx) and the
-   * onboarding is over.
+   * onboarding is over: the person goes to their home in the application (D-051).
    */
   useEffect(() => {
+    if (isSettled) return void navigate(nextPlace.path(), { replace: true });
+
     if (answers) return;
 
-    if (wasFinished.current) void navigate('/', { replace: true });
+    if (wasFinished.current) void navigate(status === 'signedIn' ? nextPlace.path() : '/', { replace: true });
     else onboarding.begin(path);
-  }, [answers, path, navigate]);
+  }, [answers, path, navigate, status, isSettled]);
 
-  return answers ? <Walk answers={answers} /> : null;
+  return answers && !isSettled ? <Walk answers={answers} /> : null;
 }
 
 function Walk({ answers }: { answers: Answers }) {
@@ -70,11 +76,15 @@ function Walk({ answers }: { answers: Answers }) {
   const session = useSession();
   const authDialog = useAuthDialog();
   const titleId = useId();
-  const steps = stepsFor(answers.path, answers.age);
+  // An account that already said its age is not asked again. All this page needs from the age is
+  // whether the person is under 18, and the account's type says that.
+  const known = session.status === 'signedIn' && session.account && !session.account.needsAge ? session.account.type : null;
+  const age = answers.age ?? (known === 'universal' ? ADULT_AGE : known === 'child' ? ADULT_AGE - 1 : undefined);
+  const steps = stepsFor(answers.path, age).filter((candidate) => candidate !== 'age' || known === null);
   const allowed = furthest(steps, answers);
   const asked = steps.findIndex((candidate) => candidate === params.get('step'));
   // No step in the address: a first visit starts at the beginning, a return picks up where it stopped.
-  const index = asked === -1 ? (answers.age === undefined ? 0 : allowed) : Math.min(asked, allowed);
+  const index = asked === -1 ? (answers.age === undefined && answers.name === undefined ? 0 : allowed) : Math.min(asked, allowed);
   const step: StepId = steps[index] ?? 'welcome';
   const words = { name: answers.name ?? '', mentor: answers.mentor ? copy.mentors[answers.mentor].name : '' };
 
@@ -107,7 +117,8 @@ function Walk({ answers }: { answers: Answers }) {
     // Under 18 on the parent path: the learner's path starts with the answers already given (store.ts, `begin`).
     content = <Actions><Button type="button" size="lg" className="w-full sm:w-auto" onClick={() => { void navigate('/onboarding?step=name', { replace: true }); }}>{screen.button}</Button></Actions>;
   } else if (step === 'join') {
-    const later = () => { onboarding.answer({ finished: true }); void navigate('/'); };
+    // No account is needed to come in (D-021): the person goes on as a guest, with what they chose kept on this device.
+    const later = () => { onboarding.answer({ finished: true }); void navigate(nextPlace.path()); };
 
     content = session.status === 'signedIn'
       ? <Actions><Button type="button" size="lg" className="w-full sm:w-auto" onClick={() => onboarding.answer({ finished: true })}>{screen.done}</Button></Actions>

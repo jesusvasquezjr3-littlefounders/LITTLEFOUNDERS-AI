@@ -55,7 +55,8 @@ export function OnboardingHandoff() {
 
         if (answers.mentor !== undefined) profile.mentor = answers.mentor;
 
-        if (answers.path === 'parent' && age !== undefined && age >= ADULT_AGE) profile.parentIntent = true;
+        // an account that had said its age before the onboarding was not asked again: its type says it is an adult's
+        if (answers.path === 'parent' && (age === undefined ? account.type === 'universal' : age >= ADULT_AGE)) profile.parentIntent = true;
 
         await session.saveProfile(profile);
         onboarding.clear();

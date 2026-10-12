@@ -46,6 +46,10 @@ const Env = z.object({
   // well under the authentication service's GOTRUE_RATE_LIMIT_EMAIL_SENT: the difference is what
   // stays reserved for people who already have an account.
   NEW_ADDRESS_CODES_PER_HOUR: z.coerce.number().int().min(1).max(100000).default(300),
+  // Development only: the limits that count how often something is asked for are a hundred times
+  // wider, so a developer and the audit tools on one machine do not lock each other out. The limits
+  // on guessing a code stay as they are. Core refuses to start with this set anywhere else.
+  RELAXED_LIMITS: z.enum(['true', 'false']).default('false'),
 });
 
 export type Config = Readonly<{
@@ -65,6 +69,7 @@ export type Config = Readonly<{
   sendEmailHookSecret: string | undefined;
   trustProxyHops: number;
   newAddressCodesPerHour: number;
+  relaxedLimits: boolean;
 }>;
 
 /** An origin is scheme, host and port: no path, no trailing slash. */
@@ -75,6 +80,10 @@ function originOf(url: string): string {
 export function loadConfig(source: NodeJS.ProcessEnv = process.env): Config {
   const parsed = Env.parse(source);
   const isProduction = parsed.NODE_ENV === 'production';
+  const relaxedLimits = parsed.RELAXED_LIMITS === 'true';
+
+  // fails closed with NODE_ENV: a missing or misspelled environment is production, and this stops there
+  if (relaxedLimits && parsed.NODE_ENV !== 'development') throw new Error('RELAXED_LIMITS is for development only: remove it');
   const frontendOrigin = originOf(parsed.FRONTEND_URL);
   const publicApiOrigin = originOf(parsed.PUBLIC_API_ORIGIN ?? parsed.FRONTEND_URL);
   const supabaseUrl = parsed.SUPABASE_URL.replace(/\/+$/, '');
@@ -111,5 +120,6 @@ export function loadConfig(source: NodeJS.ProcessEnv = process.env): Config {
     sendEmailHookSecret: parsed.SEND_EMAIL_HOOK_SECRET,
     trustProxyHops: parsed.TRUST_PROXY_HOPS,
     newAddressCodesPerHour: parsed.NEW_ADDRESS_CODES_PER_HOUR,
+    relaxedLimits,
   });
 }

@@ -126,6 +126,50 @@ html:root[data-mode] {
   --primary: #5c55fd;
   --primary-foreground: #ffffff;
 
+  /*
+   * "Go on": the color of the button that takes a signed-in person back to their home. Green, the
+   * color of going ahead, kept apart from the orange of a first step and the indigo of the brand.
+   * White on it is 4.6 to 1.
+   */
+  --lf-positive: #018675;
+  --lf-positive-hover: #016e60;
+  --lf-on-positive: #ffffff;
+
+  /*
+   * The playing cards of the home (features/app/Deck.tsx). A card is paper: its face is light and
+   * its ink dark in both color modes, and each place has its own pale tint.
+   */
+  --lf-card-ink: #11132a;
+  --lf-card-back: #4f47e6;
+  --lf-card-home: #fff8e6;
+  --lf-card-learn: #e3efff;
+  --lf-card-mentor: #ebe8ff;
+  --lf-card-wallet: #fff0c4;
+  --lf-card-tasks: #dbf6ee;
+  --lf-card-family: #ffe4ee;
+
+  /* The flat tiles of the board on the cover (HomeCover.tsx): one full color each, the card's ink on all. */
+  --lf-tile-scene: #d6d0ff;
+  --lf-tile-learn: #bcd9ff;
+  --lf-tile-tasks: #b4ecd9;
+  --lf-tile-seeds: #ffdc7a;
+  --lf-tile-streak: #ffc9b0;
+
+  /*
+   * Round, soft shapes everywhere, with no vertices (D-051). Cojeev's own scale starts at a 4 px corner, which
+   * reads as a corner; ours starts where a shape already reads as round and grows from there. A control that can
+   * be a capsule is one (buttons, chips and inputs take --r-pill in the library); these are for what cannot:
+   * cards, panels, sheets, and the small things inside them.
+   */
+  --r-xs: 10px;
+  --r-sm: 14px;
+  --r-md: 18px;
+  --r-card-sm: 24px;
+  --r-card: 32px;
+  --r-panel: 36px;
+  --r-sheet: 40px;
+  --r-frame: 48px;
+
   /* Bklit charts: series colors follow the brand palette in both modes. */
   --chart-background: var(--v-canvas);
   --chart-foreground: var(--v-text);
@@ -249,4 +293,51 @@ html:root[data-mode] {
 @media (prefers-reduced-motion: reduce) {
   [data-seed='animated'] .lf-seed,
   [data-seed='animated'] .lf-seed-glint { animation: none; }
+}
+
+/*
+ * The application's own icons (components/AppIcon.tsx, D-054). An icon is a small picture in its own colors, the
+ * same on the light page, the dark page and the dark sidebar. The few plain signs (a chevron, a cross) are drawn
+ * in the text color instead: their layers carry a class, here and in the frame the Lottie player draws.
+ */
+.lf-icon {
+  position: relative;
+  display: inline-grid;
+  flex: none;
+  inline-size: 1.5em;
+  block-size: 1.5em;
+  vertical-align: middle;
+}
+
+.lf-icon > * {
+  grid-area: 1 / 1;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: visible;
+}
+
+/* once the player draws the icon, the rest frame under it is not drawn twice */
+.lf-icon[data-live] > .lf-icon-rest {
+  visibility: hidden;
+}
+
+.lf-icon .ink-stroke path {
+  stroke: currentColor;
+}
+
+.lf-icon .ink-fill path {
+  fill: currentColor;
+}
+
+/*
+ * The application's sidebar follows the color mode. The library draws it dark in both; in light
+ * mode it takes the page's paper and ink instead (features/app/AppLayout.tsx).
+ */
+.lf-sidebar-light {
+  --v-structure: var(--v-paper);
+  --on-structure: var(--v-text);
+  --sidebar-foreground: var(--v-text);
+  --sidebar-muted: var(--v-text-2);
+  border: 1px solid var(--v-border);
+  box-shadow: 0 10px 30px rgba(17, 19, 42, 0.06);
 }

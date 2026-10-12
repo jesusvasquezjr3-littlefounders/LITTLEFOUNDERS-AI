@@ -1,7 +1,7 @@
 ---
 title: Documentation index
 status: scaffold
-updated: 2026-10-11
+updated: 2026-10-12
 ---
 
 # Documentation index
@@ -50,6 +50,7 @@ How it looks and behaves.
 - [[AVATAR-SPEECH]]: How the avatars say words in English, Spanish and Portuguese: the research, the thirteen mouth shapes, the dictionary and audio-driven lip sync.
 - [[AVATAR-SPEECH]]: How the avatars say words in English, Spanish and Portuguese: the research, the thirteen mouth shapes, the dictionary and audio-driven lip sync.
 - [[CHARACTER-COMPOSITIONS]]: The rules for every scene that shows the characters, how scenes are rendered, and the scenes that exist.
+- [[ICON-SYSTEM]]: The rules every icon and symbol is drawn and animated by, the steps to make a new one, and the icons that exist.
 - [[CHARACTER-POSES]]: The four characters, what survived the restart, and the previous version's catalog of 100 poses kept as a draft to review.
 - [[RESEARCH-FOUNDATION]]: The published evidence behind the design (color, shape, gamification, rewards, children's motor ability), graded, and what it means for the current tokens.
 
@@ -97,6 +98,7 @@ Per-feature technical requirements (one document each).
 - [[F-001-authentication]]: Sign-in, sign-up and user types: how a person gets an account and a session, what kinds of account exist, and what protects all of it.
 - [[F-002-emails]]: Every email LittleFounders sends: what it looks like, which ones exist, how one reaches a person in their language, and how the optional ones are stopped.
 - [[F-003-onboarding]]: What a person walks through after pressing one of the two buttons of the home page, before any account exists: who the mentors are, what the product gives them, and the choice to create the account now or later.
+- [[F-004-application]]: The structure a signed-in person moves in: the menu, the home with the composition of the day and the pile of the day, and the empty destinations each feature will fill.
 
 ## Which documents to load for a task
 

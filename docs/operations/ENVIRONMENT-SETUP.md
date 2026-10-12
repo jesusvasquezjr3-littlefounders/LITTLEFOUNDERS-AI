@@ -1,7 +1,7 @@
 ---
 title: Environment setup
 status: scaffold
-updated: 2026-10-11
+updated: 2026-10-12
 ---
 
 # Environment setup
@@ -45,6 +45,28 @@ Three things, each in its own terminal, after measuring free memory (the Supabas
 
 The emails arrive in the mail catcher at `http://localhost:8025`, in their real design (the images come from the frontend's dev server). `npm run preview` in `email-server/` writes every email in every language to `email-server/preview/` without sending anything ([[F-002-emails]]). `npm run audit:signin` in `frontend/` walks the whole window and saves a screenshot of each step. Google sign-in is off locally unless `GOTRUE_EXTERNAL_GOOGLE_ENABLED=true`, `GOTRUE_EXTERNAL_GOOGLE_CLIENT_ID` and `GOTRUE_EXTERNAL_GOOGLE_SECRET` are added to `database/supabase/docker/.env` (a test client whose redirect address is `http://localhost:8000/auth/v1/callback`; never the production secret).
 
+### Rules for the local environment
+
+They are mandatory (rule 15 of `CLAUDE.md`): nothing a person uses is reported as working until its flow was walked under them. They exist because breaking them produced wrong diagnoses on 2026-10-11: walks that passed while the owner could not get through.
+
+1. **Look before starting.** List what is running (`Get-CimInstance Win32_Process -Filter "Name='node.exe'"` on Windows, `pgrep -fl node` elsewhere) and what listens on 5173, 4000, 4005 and 8025. Start only what is missing.
+2. **One of each.** One dev server (5173, and it refuses any other port), one Core (4000), one mail service (4005), one Supabase stack. Stop a server before starting it again; never leave an old `tsx watch` or an old dev server behind, from this copy of the repository or another.
+3. **Stop what you started** when the work is done, or say plainly what was left running and on which port.
+4. **A flow is tested from nothing.** Each flow runs in a browser with no cookies and nothing stored, and says so before its first step (`npm run audit:flows` does). The states that only exist with history (a guest, an account left half way, a returning person) are reached by walking to them in that same browser, not by leaving them over from another test.
+5. **Test what the person does, where they do it.** Through the interface, on `http://localhost:5173`, reading the code from the mail catcher. A call to Core that answers correctly does not show that a button leads anywhere.
+6. **Every ending of a flow is checked,** not only the one that creates an account: "later", closing the window half way, erasing, signing out, coming back.
+7. **A failure is read before it is retried.** A walk that passes on the second run failed for a reason the first time (a limit, a slow service, two servers): find it and write it down.
+8. **Say what was not run.** A report names the flows walked, the widths, the languages, and anything skipped.
+
+### When sign-in does not work locally
+
+Found on 2026-10-11, when the owner could not get through while every automated walk passed:
+
+- **One of each, and no more.** Core allows one origin, `http://localhost:5173`. A second dev server used to move to 5174 without saying so: the site loaded there and no request to Core worked. The dev server now refuses any other port (`strictPort` in `frontend/vite.config.ts`). Before starting anything, look at what is already running (`Get-CimInstance Win32_Process -Filter "Name='node.exe'"` on Windows) and stop old dev servers and old `tsx watch` processes of Core.
+- **The code does not come to a real inbox.** Local mail goes to the mail catcher and no further: open `http://localhost:8025` to read the code, whatever address was typed.
+- **The limits are the real ones unless `RELAXED_LIMITS=true` is in `backend/.env`** (D-057). Without it: ten code requests per address of the network in 15 minutes, one per email address per minute and five per hour ([[RATE-LIMITING-AND-ABUSE]]); past the per-address ones the window still says the code was sent and none arrives, on purpose; and the audit walks ask for codes from the same machine and use up the same ten. Locally the counters are in Core's memory: restarting Core clears them. With it, the authentication service still keeps a minute between two emails to one address.
+- **A cold dev server is slow once.** The first click after it starts waits for the sign-in window's code to be built.
+
 ## Environment variables
 
 Production's names are kept (D-031 in [[DECISIONS]]): the new version reads what is already set there. The names below were read from the production services on 2026-10-10, names only. A value is never written in this repository; `.env.example` files carry placeholders.
@@ -66,6 +88,7 @@ Production's names are kept (D-031 in [[DECISIONS]]): the new version reads what
 | `PUBLIC_API_ORIGIN` | New. The address a browser reaches Core at: `https://api-b2c.littlefounders.ai` | to add |
 | `TRUST_PROXY_HOPS` | New, optional (1). Proxies between the visitor and Core | confirm at deployment |
 | `NEW_ADDRESS_CODES_PER_HOUR` | New, optional (300). Codes an hour that may go to addresses with no account yet, for the whole service. Keep it well under the authentication service's `GOTRUE_RATE_LIMIT_EMAIL_SENT` | confirm at deployment |
+| `RELAXED_LIMITS` | New, development only. `true` makes the request limits a hundred times wider on a developer's machine (D-057, [[RATE-LIMITING-AND-ABUSE]]). Core refuses to start with it unless `NODE_ENV` is `development` | never |
 | `SUPABASE_JWT_ISSUER` | New, optional. Unset: `SUPABASE_URL` + `/auth/v1` | no |
 
 The production service also holds variables of features that do not exist yet in the new version (`TUTOR_SESSION_SECRET`, `LESSON_ATTEMPT_SECRET`, `ORACLE_*`, `FILEBASE_*`, `DATAINTEL_*`, `PARENT_ID_CHECK_URL`, `PLAUSIBLE_*`, `UMAMI_*`, `KUMA_*`, `COURSE_PATHWAY_ENGINE`) and a few nothing read at the restart (`ACCESS_TOKEN_EXPIRE_MINUTES`, `ALGORITHM`, `CORS_ORIGINS`, `DATABASE_*`, `SECRET_KEY`, `SUPABASE_KEY`). They stay where they are: a feature that returns reads its variable under the same name.

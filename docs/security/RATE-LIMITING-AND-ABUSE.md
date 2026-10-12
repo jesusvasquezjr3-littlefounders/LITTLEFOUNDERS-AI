@@ -1,7 +1,7 @@
 ---
 title: Rate limiting and abuse prevention
 status: scaffold
-updated: 2026-10-11
+updated: 2026-10-12
 ---
 
 # Rate limiting and abuse prevention
@@ -44,6 +44,7 @@ The limits Core enforces for sign-in ([[F-001-authentication]]), in `backend/src
 | Entering a code | Visitor address | 30 in 15 minutes | Refuse |
 | Entering a code | Identifier, once for strangers and once for browsers the account knows | 5 per code, 30 a day | Refuse |
 | Renewing a session, starting Google | Visitor address | 120 in 15 minutes | Let through |
+| Reading a signed-in person's own pages (the home, [[F-004-application]]) | The account | 120 in 15 minutes | Let through |
 | Setting the age or the username | Visitor address | 30 in 15 minutes | Refuse |
 
 - **Why the code is safe at six digits.** Its protection is the number of guesses, not its length: five per code and thirty a day per address, whoever guesses and from wherever. The attempt is counted before it is made and the count is atomic, so parallel requests cannot slip under it. A new code replaces the old one and starts a new count. Nobody can guess around Core, because the gateway refuses every other caller ([[SECURITY-GUIDE]]).
@@ -58,6 +59,10 @@ The limits Core enforces for sign-in ([[F-001-authentication]]), in `backend/src
 - **The two doors that are not for browsers** ([[F-002-emails]]): the authentication service's hook is not counted per address, because every call comes from that one service, and is refused without its signature; the one-click unsubscribe shares the 30 per 15 minutes of the account routes.
 - **The visitor address** is read through `TRUST_PROXY_HOPS` proxies. A wrong value there makes every visitor share one counter, so it is confirmed against the real proxy chain at deployment.
 - Not built: a wall stronger than the piece of work at sign-up (open with the owner), an alert beyond the log lines when a limit is hit, removal of accounts that never entered their code (T-028).
+
+## In development
+
+The numbers above are the ones a developer's machine runs with too, unless `RELAXED_LIMITS=true` is in `backend/.env` (D-057). Then the limits that count how often something is asked for are a hundred times wider: codes per network address and per email address, session, account and code-check calls per network address, reads per account, and the allowance for new addresses. The limits on guessing a code and the things that happen once are not touched. Core honors the setting only when `NODE_ENV` is exactly `development` and refuses to start with it otherwise; it logs `limits.relaxed` when it is on. It must never be set in production, and is not among the production variables.
 
 ## Related
 

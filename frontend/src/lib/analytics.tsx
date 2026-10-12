@@ -59,10 +59,17 @@ declare global {
 
 const DEVICE_OPT_OUT_FLAG = 'lf_analytics_device_optout';
 
-/** Pages no tracker sees or loads on: their address carries something that belongs to one person. */
-const PRIVATE_PATHS = ['/unsubscribe', '/auth/callback'];
+/**
+ * Pages no tracker sees or loads on. The first two carry something that belongs to one person in their address.
+ * The rest are the signed-in application: what a person does in it, most of them minors, is not measured by any
+ * third party (D-055). Measuring the product itself is decided with its own feature, never by default.
+ */
+const PRIVATE_PATHS = ['/unsubscribe', '/auth/callback', '/home', '/learn', '/mentor', '/wallet', '/tasks', '/family'];
 
-const isPrivatePath = (pathname: string): boolean => PRIVATE_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
+// the router matches a path whatever its case, so `/HOME` is the application too
+const isPrivatePath = (pathname: string): boolean => PRIVATE_PATHS.some((path) => pathname.toLowerCase() === path || pathname.toLowerCase().startsWith(`${path}/`));
+
+const TRACKER_TAGS = ['lf-plausible', 'lf-umami', 'lf-ga4'];
 
 function readFlag(key: string): string | null {
   try {
@@ -210,6 +217,14 @@ export function AnalyticsScripts({ consentVersion = 0 }: { consentVersion?: numb
         window.gtag?.('event', 'page_view', { page_path: pathname, page_location: url });
       }
     } else {
+      // Removing a tag does not stop code that already ran. A person who walks from a public page into a
+      // private one gets that page loaded afresh, so no tracker is left in memory there (D-055).
+      if (isPrivatePath(pathname) && TRACKER_TAGS.some((id) => document.getElementById(id) !== null)) {
+        window.location.replace(`${pathname}${window.location.search}`);
+
+        return;
+      }
+
       ejectScript('lf-plausible');
       ejectScript('lf-umami');
       if (GA4_ID) {

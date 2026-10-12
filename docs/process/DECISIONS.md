@@ -1,7 +1,7 @@
 ---
 title: Decision log
 status: scaffold
-updated: 2026-10-11
+updated: 2026-10-12
 ---
 
 # Decision log
@@ -255,7 +255,7 @@ If the person chooses "later", their answers are kept in the browser, so a later
 
 ### D-039: After "later" the person returns to the home page
 
-Date: 2026-10-10. Status: accepted, for now.
+Date: 2026-10-10. Status: superseded by D-056 on 2026-10-11, when the application existed.
 
 There is no dashboard or application to arrive at yet. Until there is, "later" returns to the home page, with a discreet notice that what was chosen is saved on this device. Where the onboarding leads is decided when the application is started.
 
@@ -331,7 +331,7 @@ What the security review of 2026-10-10 left open is kept as one list, T-036 in [
 
 Date: 2026-10-11. Status: accepted (the owner's choice among prototypes).
 
-After three rounds of prototypes of the signed-in application (`/dev/app`, only in the dev server) the owner chose its structure. The home page is a stage (a composition of the mentors) beside a pile of real playing cards, face down, with its top card turned over: the top card is what comes next and holds its one button, and passing it turns over the next one. Around it: on a desktop a sidebar that can be collapsed, on a phone a dock of icons with no words. Every shape is round and soft, with no vertices, and that holds for the whole platform. The destinations are Learn (the games live inside it), Mentor (the place to see and set up MentorIA, not the conversation), Wallet, Tasks, and Family for an adult's account; administration is a later session. Their paths are `/home`, `/learn`, `/mentor`, `/wallet`, `/tasks` and `/family`, and a person with a session lands on `/home`. A card is shown only when the feature behind it exists, so the home grows one feature at a time and never shows what does not work. There is one design, for people aged 13 and over (D-027); younger people are admitted but nothing is redrawn for them. It is built in steps the owner approves one by one (T-037 in [[BUILD-TASKS]]); each feature is its own later session.
+After three rounds of prototypes of the signed-in application (a page of the dev server, since replaced by the application itself) the owner chose its structure. The home page is a stage (a composition of the mentors) beside a pile of real playing cards, face down, with its top card turned over: the top card is what comes next and holds its one button, and passing it turns over the next one. Around it: on a desktop a sidebar that can be collapsed, on a phone a dock of icons with no words. Every shape is round and soft, with no vertices, and that holds for the whole platform. The destinations are Learn (the games live inside it), Mentor (the place to see and set up MentorIA, not the conversation), Wallet, Tasks, and Family for an adult's account; administration is a later session. Their paths are `/home`, `/learn`, `/mentor`, `/wallet`, `/tasks` and `/family`, and a person with a session lands on `/home`. A card is shown only when the feature behind it exists, so the home grows one feature at a time and never shows what does not work. There is one design, for people aged 13 and over (D-027); younger people are admitted but nothing is redrawn for them. It is built in steps the owner approves one by one (T-037 in [[BUILD-TASKS]]); each feature is its own later session.
 
 ### D-052: The home shows a different composition every day
 
@@ -344,6 +344,30 @@ The stage of the home page shows one composition a day: the first time a person 
 Date: 2026-10-11. Status: accepted (proposed by the agent, approved by the owner with the plan of compositions).
 
 A composition may wink at a famous film or game through its setting and its action (a car that travels in time, a school of magic with floating candles). It never shows a recognizable character, logo, costume or name: those are somebody's property, and this is a commercial product for minors. Anything closer than a generic homage goes to counsel first.
+
+### D-054: Every icon is our own, in color, a Lottie file, and alive
+
+Date: 2026-10-11. Status: accepted (the owner's rule, stated as absolute for all iconography and symbology of the platform).
+
+The application has its own system of icons. An icon is a 2D composition in full color, with no outlines, kept as a Lottie file (`*.json`); it has to feel in motion (a streak is a flame that burns, not a still drawing of a fire) and it has micro-interactions. The owner rejected a first set drawn as two-tone line icons for being plain and "dead". No icon comes from an icon library any more: this replaces the earlier rule that only the icons that identify the product were our own, and it leaves Morphicons (D-007) without a role once the existing screens are migrated (T-012). The player is `lottie-web` in its light build, added as a dependency for this and chosen because it draws SVG and contains no `eval`, so the Content-Security-Policy stays as it is; the player that needs WebAssembly was not used for that reason. The owner approved the nine icons of the second set the same day. How an icon is drawn and moves, and the steps to make a new one, are in [[ICON-SYSTEM]]; the engineering is in rule 4 of [[FRONTEND-GUIDE]].
+
+### D-055: No tracker inside the signed-in application
+
+Date: 2026-10-11. Status: accepted by default while the application was built, change it if the owner wants.
+
+Plausible, Umami and Google Analytics load and count on the site's public pages after the visitor accepts (D-048). They do not load or see anything on the paths of the signed-in application (`/home`, `/learn`, `/mentor`, `/wallet`, `/tasks`, `/family`): most of the people there are minors, and what a child does inside the product is not handed to a third party by default (rule 8 of the repository). Measuring the product itself, with what and under which consent, is decided with the owner and counsel as its own feature (T-015, T-036). [[F-004-application]].
+
+### D-056: After "later" the person comes into the application as a guest
+
+Date: 2026-10-11. Status: accepted (the owner: "later" must not leave the person on the landing page). Supersedes D-039.
+
+D-021 says registration is never a requirement. So somebody who walks the onboarding and chooses "later" goes into the application, to `/home`, greeted by the name they gave and with the mentor they chose. What makes them a guest is in their own browser only: the onboarding's answers (D-038, 30 days, erasable at any time). Core knows nothing about a guest: it gives them the menu without Family and one composition of the day that is the same for every guest. The application tells a guest that what they chose is kept on this device, with the way to create the account and the way to erase it; creating it gives the answers to the new account and they stay where they are. On the site, a guest sees the green "Keep learning" button like anybody who has a way in. A visitor who never walked the onboarding is still sent to sign in. What a guest can do inside each feature, and what is kept of it, is decided with that feature: nothing a guest does is stored by Core. [[F-004-application]], [[F-003-onboarding]].
+
+### D-057: Wider request limits in development only
+
+Date: 2026-10-11. Status: accepted (the owner asked for the option that keeps production safe and local work fast).
+
+Core's limits are the same code and the same numbers everywhere. One setting, `RELAXED_LIMITS=true`, makes the limits that count how often something is asked for a hundred times wider (codes per network address and per email address, session and account calls, reads), so that a developer and the audit tools on one machine do not lock each other out. It is honored only when `NODE_ENV` is exactly `development`: with any other value, or none, Core refuses to start while it is set, so it cannot reach production by mistake. The limits that guard a code against guessing (five tries per code, thirty a day per address) and the things that happen once are never widened. The authentication service keeps its own minute between two emails to one address. [[RATE-LIMITING-AND-ABUSE]], [[ENVIRONMENT-SETUP]].
 
 ## Related
 

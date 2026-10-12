@@ -7,6 +7,7 @@ import { PageSkeleton } from '@/components/PageSkeleton';
 import type { ShellContext } from '@/components/pageTitle';
 import { SiteFooter } from '@/components/SiteFooter';
 import { TopbarControls } from '@/components/TopbarControls';
+import { KeepLearningButton, useHasSession } from '@/features/app/KeepLearning';
 import { useCoreCopy, useLocale } from '@/i18n/useCopy';
 import { ENTER } from '@/lib/motionPresets';
 import { landingTitle } from '@/siteTitle';
@@ -30,6 +31,7 @@ export function AppShell() {
   const pageTitle = title ?? landingTitle(locale);
   const appName = copy.appShell.brand;
   const navigated = useRef(false);
+  const hasSession = useHasSession();
   const context: ShellContext = { setTitle };
 
   useEffect(() => { document.title = pageTitle ? `${pageTitle} · ${appName}` : appName; }, [pageTitle, appName]);
@@ -53,7 +55,11 @@ export function AppShell() {
     <header className="sticky top-0 z-30 border-b border-[var(--v-border)] bg-[var(--background)]/90 backdrop-blur">
       <div className={`${CONTAINER} flex h-[72px] items-center justify-between gap-2`}>
         <a href="/" data-brand-link aria-label={appName} className="flex min-h-12 min-w-0 items-center"><img src="/brand/logo.png" alt={appName} width={560} height={102} className="h-5 w-auto min-[400px]:h-6 sm:h-8" /></a>
-        <TopbarControls />
+        <div className="flex items-center gap-2">
+          {/* somebody with a session goes back to their home from here; phones have the bar at the bottom for it */}
+          {hasSession ? <KeepLearningButton size="sm" origin="topbar" className="max-md:!hidden" /> : null}
+          <TopbarControls />
+        </div>
       </div>
     </header>
     <main id={mainId} tabIndex={-1} className={`${CONTAINER} flex-1 outline-none`}>

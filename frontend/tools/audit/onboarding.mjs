@@ -252,7 +252,8 @@ try {
 
     if (!account || account.displayName !== 'Nico' || account.mentor !== 'liruf' || account.type !== 'child' || account.needsAge) fail(`[${tag}]`, `the account did not get the answers: ${JSON.stringify(account)}`);
     if (after.kept !== null) fail(`[${tag}]`, 'the answers are still in the browser after the account took them');
-    if (after.path !== '/') fail(`[${tag}]`, `expected the home page at the end, got ${after.path}`);
+    // the onboarding ends in the application: the person's own home (D-051)
+    if (after.path !== '/home') fail(`[${tag}]`, `expected the application's home at the end, got ${after.path}`);
 
     console.log(`[${tag}] account: ${JSON.stringify(account && { name: account.displayName, mentor: account.mentor, type: account.type, locale: account.locale })}`);
 

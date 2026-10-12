@@ -8,6 +8,7 @@ import { CookieConsentBanner } from '@/components/CookieConsentBanner';
 import { AppShell } from '@/components/AppShell';
 import { AuthDialogProvider } from '@/features/auth/AuthDialog';
 import { SessionProvider } from '@/features/auth/session';
+import { GoHomeAfterSignIn } from '@/features/app/GoHome';
 import { OnboardingHandoff } from '@/features/onboarding/Handoff';
 import { releaseBootVeil } from '@/lib/boot';
 
@@ -17,8 +18,11 @@ const DevAvatars = import.meta.env.DEV ? lazy(() => import('@/features/avatars/D
 // Development only: the loading window open. Not shipped, like the avatars page.
 const DevLoading = import.meta.env.DEV ? lazy(() => import('@/features/loading/DevLoading')) : null;
 
-// Development only: the prototype of the signed-in application's structure. Not shipped.
-const DevAppShell = import.meta.env.DEV ? lazy(() => import('@/features/appShell/DevAppShell')) : null;
+// Development only: every icon of the application, to look at them together. Not shipped.
+const DevIcons = import.meta.env.DEV ? lazy(() => import('@/icons/DevIcons')) : null;
+
+// Development only: the home with its board of the day full of made-up rows. Not shipped.
+const DevHome = import.meta.env.DEV ? lazy(() => import('@/features/app/DevHome')) : null;
 
 const Landing = lazy(() => import('@/features/landing/Landing').then((module) => ({ default: module.Landing })));
 
@@ -27,6 +31,13 @@ const NotFound = lazy(() => import('@/features/notFound/NotFound').then((module)
 const Unsubscribe = lazy(() => import('@/features/email/Unsubscribe').then((module) => ({ default: module.Unsubscribe })));
 
 const Onboarding = lazy(() => import('@/features/onboarding/Onboarding').then((module) => ({ default: module.Onboarding })));
+
+// The signed-in application: its layout and its pages are fetched only by somebody who goes in.
+const AppLayout = lazy(() => import('@/features/app/AppLayout').then((module) => ({ default: module.AppLayout })));
+
+const AppHome = lazy(() => import('@/features/app/Home').then((module) => ({ default: module.Home })));
+
+const Destination = lazy(() => import('@/features/app/Destination').then((module) => ({ default: module.Destination })));
 
 const AuthCallback = lazy(() => import('@/features/auth/AuthCallback').then((module) => ({ default: module.AuthCallback })));
 
@@ -38,7 +49,7 @@ function ThemedToaster() {
 }
 
 /*
- * The whole app: the landing at `/` inside the site shell, the page a Google sign-in comes back to
+ * The whole app: the signed-in application (`/home` and its destinations, in its own layout), the landing at `/` inside the site shell, the page a Google sign-in comes back to
  * (outside the shell: it often lives in a small window), the onboarding's two paths (outside the
  * shell too: one thing per screen), the page the "Unsubscribe" link of an email
  * opens, and the not-found page for every other URL
@@ -66,16 +77,26 @@ export function App() {
         <SessionProvider>
           <AuthDialogProvider>
             <OnboardingHandoff />
+            <GoHomeAfterSignIn />
             <Routes>
               <Route path="onboarding" element={<Suspense fallback={null}><Onboarding path="learner" /></Suspense>} />
               <Route path="onboarding/parent" element={<Suspense fallback={null}><Onboarding path="parent" /></Suspense>} />
-              {DevAppShell ? <Route path="dev/app" element={<Suspense fallback={null}><DevAppShell /></Suspense>} /> : null}
+              <Route element={<Suspense fallback={null}><AppLayout /></Suspense>}>
+                <Route path="home" element={<AppHome />} />
+                <Route path="learn" element={<Destination name="learn" />} />
+                <Route path="mentor" element={<Destination name="mentor" />} />
+                <Route path="wallet" element={<Destination name="wallet" />} />
+                <Route path="tasks" element={<Destination name="tasks" />} />
+                <Route path="family" element={<Destination name="family" />} />
+              </Route>
               <Route path="auth/callback" element={<Suspense fallback={null}><AuthCallback /></Suspense>} />
               <Route element={<AppShell />}>
                 <Route index element={<Landing />} />
                 <Route path="unsubscribe" element={<Unsubscribe />} />
                 {DevAvatars ? <Route path="dev/avatars" element={<DevAvatars />} /> : null}
                 {DevLoading ? <Route path="dev/loading" element={<DevLoading />} /> : null}
+                {DevIcons ? <Route path="dev/icons" element={<DevIcons />} /> : null}
+                {DevHome ? <Route path="dev/home" element={<DevHome />} /> : null}
                 <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>

@@ -29,7 +29,7 @@
       ]
     },
     {
-      "source": "/(landing|brand|og|loading|email|onboarding)/(.*)",
+      "source": "/(landing|brand|og|loading|email|onboarding|stage)/(.*)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }]
     }
   ],

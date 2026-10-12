@@ -7,7 +7,7 @@
 //   npm run render:home -- --scene space --at 4.2           at another second of the loop
 //   npm run render:home -- --scene jungle --query "dist=16" with the camera moved (see `number()` in home-scene.js)
 //
-// LOOPS (what the page shows): a looping H.264 MP4 and a WebP poster per color mode, into public/home/loops/. A video
+// LOOPS (what the page shows): a looping H.264 MP4 and a WebP poster per color mode, into public/stage/loops/. A video
 // cannot be transparent in every browser, so each composition is rendered once, transparent, and every frame is laid
 // on the light and on the dark page color.
 //
@@ -27,7 +27,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const frontend = resolve(here, '../..');
 const args = parseArgs();
 const scratch = join(frontend, 'audit-out/home-render');
-const loopsDir = join(frontend, 'public/home/loops');
+const loopsDir = join(frontend, 'public/stage/loops');
 const FPS = 24;
 const LOOP_SECONDS = 8;
 const total = Number(args.frames ?? LOOP_SECONDS * FPS);

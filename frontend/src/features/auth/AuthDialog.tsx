@@ -17,7 +17,8 @@ const loadWindow = () => import('@/features/auth/AuthWindow');
 const AuthWindow = lazy(loadWindow);
 
 /** `join` is creating an account with every way to do it on offer (Google or a code): where the onboarding ends. */
-type AuthDialogContext = { open: (mode?: Mode | 'join') => void; preload: () => void };
+/** `join` is the end of the onboarding; `age` is the one step an account that has not said its age still owes. */
+type AuthDialogContext = { open: (mode?: Mode | 'join' | 'age') => void; preload: () => void };
 
 const Context = createContext<AuthDialogContext | null>(null);
 
@@ -62,7 +63,7 @@ export function AuthDialogProvider({ children }: { children: ReactNode }) {
   }, [isOpen, session.status, ageIsComing]);
 
   const context = useMemo<AuthDialogContext>(() => ({
-    open: (mode = 'signIn') => start(mode === 'join' ? { mode: 'signUp', step: 'choose' } : { mode, step: mode === 'signUp' ? 'identifier' : 'choose' }),
+    open: (mode = 'signIn') => start(mode === 'age' ? { mode: 'signIn', step: 'age' } : mode === 'join' ? { mode: 'signUp', step: 'choose' } : { mode, step: mode === 'signUp' ? 'identifier' : 'choose' }),
     preload: () => { void loadWindow(); },
   }), [start]);
 

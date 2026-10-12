@@ -15,7 +15,9 @@
     "signIn": "Iniciar sesión",
     "backToTop": "Volver arriba",
     "breadcrumb": "Ruta de navegación",
-    "home": "Inicio"
+    "home": "Inicio",
+    "keepLearning": "Continúa aprendiendo",
+    "finishAccount": "Termina tu cuenta"
   },
   "auth": {
     "title": "Inicia sesión",

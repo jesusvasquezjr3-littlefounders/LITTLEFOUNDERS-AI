@@ -1,0 +1,163 @@
+{
+  "nav": {
+    "label": "Secciones",
+    "home": "Inicio",
+    "learn": "Aprender",
+    "mentor": "Mentor",
+    "wallet": "Cartera",
+    "tasks": "Tareas",
+    "family": "Familia",
+    "collapse": "Contraer el menú",
+    "expand": "Abrir el menú"
+  },
+  "home": {
+    "deck": "baraja",
+    "position": "{name}, carta {n} de {total}",
+    "hint": "Con las flechas pasas las cartas. Con Enter abres la de arriba.",
+    "failed": "No pudimos cargar tu inicio.",
+    "retry": "Intentar de nuevo",
+    "greetings": {
+      "morning": [
+        "Buenos días, {name}",
+        "Buen día, {name}",
+        "Hola, {name}",
+        "Qué tal, {name}",
+        "Ya amaneció, {name}",
+        "Qué gusto verte, {name}"
+      ],
+      "afternoon": [
+        "Buenas tardes, {name}",
+        "Buena tarde, {name}",
+        "Hola, {name}",
+        "Qué tal, {name}",
+        "Qué onda, {name}",
+        "Qué gusto verte, {name}"
+      ],
+      "evening": [
+        "Buenas noches, {name}",
+        "Buena noche, {name}",
+        "Hola, {name}",
+        "Qué tal, {name}",
+        "Qué gusto verte, {name}",
+        "Hola otra vez, {name}"
+      ],
+      "night": [
+        "Hola, {name}",
+        "Buenas noches, {name}",
+        "Qué horas son estas, {name}",
+        "Sigues por aquí, {name}",
+        "Hola otra vez, {name}"
+      ]
+    },
+    "subtitles": {
+      "morning": [
+        "Es un gran momento para aprender.",
+        "Tus mentores ya están despiertos.",
+        "Empezar temprano tiene su encanto.",
+        "¿Ya desayunaste? Con hambre todo cuesta más.",
+        "Un día nuevo y una escena nueva.",
+        "Con sueño o sin sueño, aquí estamos.",
+        "Unos minutos ahora y el resto del día es tuyo.",
+        "Hoy puedes entender algo que ayer no.",
+        "La mañana rinde más de lo que parece.",
+        "Buen momento para una idea nueva sobre el dinero."
+      ],
+      "afternoon": [
+        "Qué bueno que regresaste.",
+        "Buen momento para una pausa que sirva de algo.",
+        "Tus mentores te guardaron lugar.",
+        "Un rato aquí y vuelves a lo tuyo.",
+        "La tarde es larga. Cabe algo nuevo.",
+        "¿Ya comiste? Entonces a lo que sigue.",
+        "A media tarde también se aprende.",
+        "Date un rato para ti.",
+        "Lo que entiendas hoy te sirve el fin de semana.",
+        "Aquí sigue todo como lo dejaste."
+      ],
+      "evening": [
+        "Qué bueno que regresaste.",
+        "Un rato más antes de cerrar el día.",
+        "Buen momento para ir con calma.",
+        "Termina el día sabiendo algo nuevo.",
+        "Sin prisa. Lo de hoy sigue aquí mañana.",
+        "Tus mentores siguen por aquí.",
+        "La noche apenas empieza.",
+        "Ya casi acaba el día. Buen cierre.",
+        "Un poco de esto y luego a descansar.",
+        "¿Cómo te fue hoy?"
+      ],
+      "night": [
+        "¿Desvelándote? Aprender importa, y dormir también.",
+        "A esta hora lo mejor que puedes ahorrar es sueño.",
+        "Tus mentores ya bostezan. Tú decides.",
+        "Mañana sigue aquí todo.",
+        "Una idea rápida y a dormir.",
+        "Con sueño se decide peor. Con dinero también.",
+        "El descanso también es una inversión.",
+        "Es tarde. Lo que hagas ahora, que sea breve.",
+        "Dormir bien no cuesta ni una Semilla.",
+        "Aquí no cerramos, pero tú sí deberías."
+      ],
+      "any": [
+        "Qué bueno verte por aquí.",
+        "Tu baraja está lista.",
+        "Pasa las cartas y elige por dónde empezar.",
+        "Aquí nadie te apura.",
+        "Equivocarse aquí no cuesta nada.",
+        "Cada día te espera una escena distinta.",
+        "Aprende de dinero sin arriesgar dinero.",
+        "Tú pones el ritmo.",
+        "Lo importante es volver.",
+        "Aquí se practica antes de que sea de verdad.",
+        "Tus mentores te estaban esperando.",
+        "Hoy es buen día para tener curiosidad."
+      ]
+    },
+    "cover": {
+      "today": "Hoy en el escenario",
+      "scene": "Escena {n} de {total}",
+      "soon": "Pronto",
+      "tiles": {
+        "lesson": "Tu lección",
+        "tasks": "Tareas de hoy",
+        "seeds": "Semillas",
+        "streak": "Racha"
+      }
+    }
+  },
+  "empty": {
+    "text": "Todavía no hay nada aquí."
+  },
+  "scenes": {
+    "exchange": "La casa de bolsa",
+    "vault": "La bóveda del banco",
+    "market": "El mercado",
+    "lemonade": "El puesto de limonada",
+    "piggybank": "La alcancía gigante",
+    "garden": "El huerto de girasoles",
+    "startup": "La oficina en el garaje",
+    "fair": "La feria de inventos",
+    "race": "La carrera",
+    "space": "En el espacio",
+    "planet": "Otro planeta",
+    "jungle": "La selva",
+    "sea": "El fondo del mar",
+    "summit": "La cumbre",
+    "treasure": "La isla del tesoro",
+    "balloon": "El globo",
+    "classroom": "El salón de clases",
+    "library": "La biblioteca",
+    "kitchen": "La cocina",
+    "camp": "El campamento",
+    "beach": "La playa",
+    "funfair": "La feria",
+    "concert": "El concierto",
+    "timetravel": "El viaje en el tiempo",
+    "dinopark": "El parque de dinosaurios",
+    "detectives": "Los detectives",
+    "arcade": "El videojuego",
+    "heroes": "Los superhéroes",
+    "western": "El duelo del oeste",
+    "magic": "La escuela de magia"
+  }
+}

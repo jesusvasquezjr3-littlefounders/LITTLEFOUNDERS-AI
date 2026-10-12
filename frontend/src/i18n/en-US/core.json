@@ -15,7 +15,9 @@
     "signIn": "Sign in",
     "backToTop": "Back to top",
     "breadcrumb": "Breadcrumb",
-    "home": "Home"
+    "home": "Home",
+    "keepLearning": "Keep learning",
+    "finishAccount": "Finish your account"
   },
   "auth": {
     "title": "Sign in",

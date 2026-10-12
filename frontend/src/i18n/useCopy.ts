@@ -20,6 +20,11 @@ export function useSiteCopy() {
   return copy[useLocale()].site;
 }
 
+/** The signed-in application's copy in the application's language. */
+export function useAppCopy() {
+  return copy[useLocale()].app;
+}
+
 /** The onboarding's copy in the application's language. */
 export function useOnboardingCopy() {
   return copy[useLocale()].onboarding;

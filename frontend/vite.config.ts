@@ -28,5 +28,7 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    // Core allows this one origin: a second dev server stops here instead of moving to 5174, where nothing works
+    strictPort: true,
   },
 });
